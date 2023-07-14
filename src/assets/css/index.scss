@@ -1,0 +1,35 @@
+@import './var.scss';
+@import './common.scss';
+@import './component.scss';
+@import 'tdesign-vue-next/dist/reset.css';
+@import 'tdesign-vue-next/es/style/index.css';
+
+html,
+body,
+#app {
+	height: 100vh;
+	width: 100vw;
+	cursor: default;
+	overflow: hidden;
+	user-select: none;
+}
+
+::-webkit-scrollbar {
+	width: 12px;
+	height: 12px;
+}
+
+::-webkit-scrollbar-corner {
+	display: none;
+}
+
+::-webkit-scrollbar-thumb {
+	border-radius: 6px;
+	border: 3px solid transparent;
+	background-clip: content-box;
+	background-color: var(--td-scrollbar-color);
+
+	&:hover {
+		background-color: var(--td-scrollbar-hover-color);
+	}
+}
