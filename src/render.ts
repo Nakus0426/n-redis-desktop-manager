@@ -4,6 +4,7 @@ import { setupRouter } from '@/router'
 import { setupIconify } from '@/config'
 
 import '@/assets/css/index.scss'
+import 'overlayscrollbars/overlayscrollbars.css'
 
 setupIconify()
 

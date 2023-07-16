@@ -3,8 +3,12 @@
 
 import { contextBridge, ipcRenderer } from 'electron'
 
-contextBridge.exposeInMainWorld('electron', {
-	test: () => {
-		ipcRenderer.send('test')
-	},
+// main window
+contextBridge.exposeInMainWorld('mainWindow', {
+	minimize: () => ipcRenderer.send('minimizeMainWindow'),
+	maximize: () => ipcRenderer.send('maximizeMainWindow'),
+	unmaximize: () => ipcRenderer.send('unmaximizeMainWindow'),
+	onMinimize: (callback: () => void) => ipcRenderer.on('onMainWindowMinimize', callback),
+	onMaximize: (callback: () => void) => ipcRenderer.on('onMainWindowMaximize', callback),
+	onUnMaximize: (callback: () => void) => ipcRenderer.on('onMainWindowUnMaximize', callback),
 })

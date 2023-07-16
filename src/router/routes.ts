@@ -1,10 +1,25 @@
 import { RouteRecordRaw } from 'vue-router'
 
-const IndexRouter: RouteRecordRaw = {
-	name: 'Index',
-	path: '/',
-	component: () => import('@/layout/Layout.vue'),
-	children: [],
+// links
+export const LinksIndexRoute: RouteRecordRaw = {
+	name: 'LinksIndex',
+	path: '/links',
+	component: () => import('@/views/links/Index.vue'),
 }
 
-export const routes = [IndexRouter]
+// Terminal
+export const TerminalIndexRoute: RouteRecordRaw = {
+	name: 'TerminalIndex',
+	path: '/terminal',
+	component: () => import('@/views/terminal/Index.vue'),
+}
+
+export const IndexRoute: RouteRecordRaw = {
+	name: 'Index',
+	path: '/',
+	redirect: LinksIndexRoute,
+	component: () => import('@/layout/Layout.vue'),
+	children: [LinksIndexRoute, TerminalIndexRoute],
+}
+
+export const routes = [IndexRoute]

@@ -11,5 +11,11 @@ declare module 'vue' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     TConfigProvider: typeof import('tdesign-vue-next')['ConfigProvider']
+    TDropdown: typeof import('tdesign-vue-next')['Dropdown']
+    TDropDown: typeof import('tdesign-vue-next')['DropDown']
+    TDropdownItem: typeof import('tdesign-vue-next')['DropdownItem']
+    TDropDownItem: typeof import('tdesign-vue-next')['DropDownItem']
+    TDropdownMenu: typeof import('tdesign-vue-next')['DropdownMenu']
+    TTooltip: typeof import('tdesign-vue-next')['Tooltip']
   }
 }

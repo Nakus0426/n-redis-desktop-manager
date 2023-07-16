@@ -13,3 +13,5 @@ export const router = createRouter({
 export function setupRouter(app: App<Element>) {
 	app.use(router)
 }
+
+export * from './routes'
