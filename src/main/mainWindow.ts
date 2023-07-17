@@ -1,5 +1,6 @@
 import { app, ipcMain, BrowserWindow } from 'electron'
 import path from 'path'
+import Store from 'electron-store'
 
 declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string
 declare const MAIN_WINDOW_VITE_NAME: string
@@ -56,6 +57,7 @@ app.on('ready', () => {
 	mainWindow = createWindow()
 	setupIpcIn()
 	setupIpcOut()
+	Store.initRenderer()
 })
 
 app.on('window-all-closed', () => {
