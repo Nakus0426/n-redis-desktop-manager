@@ -1,6 +1,6 @@
 import { app, ipcMain, BrowserWindow } from 'electron'
 import path from 'path'
-import Store from 'electron-store'
+import { WindowUtil } from '@/utils'
 
 declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string
 declare const MAIN_WINDOW_VITE_NAME: string
@@ -9,9 +9,7 @@ if (require('electron-squirrel-startup')) {
 	app.quit()
 }
 
-let mainWindow: BrowserWindow
-
-function createWindow() {
+export function create() {
 	const mainWindow = new BrowserWindow({
 		show: false,
 		width: 1440,
@@ -36,38 +34,16 @@ function createWindow() {
 		mainWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`))
 	}
 
-	mainWindow.webContents.openDevTools()
+	if (import.meta.env.DEV) mainWindow.webContents.openDevTools()
 
-	return mainWindow
-}
+	const windowUtil = new WindowUtil()
 
-function setupIpcIn() {
 	ipcMain.on('minimizeMainWindow', () => mainWindow.minimize())
 	ipcMain.on('maximizeMainWindow', () => mainWindow.maximize())
 	ipcMain.on('unmaximizeMainWindow', () => mainWindow.unmaximize())
-}
+	ipcMain.on('createChildWindow', (event, options) => windowUtil.create(mainWindow, options))
 
-function setupIpcOut() {
 	mainWindow.on('minimize', () => mainWindow.webContents.send('onMainWindowMinimize'))
 	mainWindow.on('maximize', () => mainWindow.webContents.send('onMainWindowMaximize'))
 	mainWindow.on('unmaximize', () => mainWindow.webContents.send('onMainWindowUnMaximize'))
 }
-
-app.on('ready', () => {
-	mainWindow = createWindow()
-	setupIpcIn()
-	setupIpcOut()
-	Store.initRenderer()
-})
-
-app.on('window-all-closed', () => {
-	if (process.platform !== 'darwin') {
-		app.quit()
-	}
-})
-
-app.on('activate', () => {
-	if (BrowserWindow.getAllWindows().length === 0) {
-		createWindow()
-	}
-})

@@ -22,4 +22,10 @@ export const IndexRoute: RouteRecordRaw = {
 	children: [LinksIndexRoute, TerminalIndexRoute],
 }
 
-export const routes = [IndexRoute]
+export const ChildRoute: RouteRecordRaw = {
+	name: 'child',
+	path: '/child',
+	component: () => import('@/views/terminal/Index.vue'),
+}
+
+export const routes = [IndexRoute, ChildRoute]

@@ -1,30 +1,36 @@
 /// <reference types="vite/client" />
 
+import { CreateChildWindowOptions } from '@/utils'
+
 export interface MainWindow {
 	/**
-	 * minimize Window
+	 * minimize window
 	 */
 	minimize: () => void
 	/**
-	 * maximize Window
+	 * maximize window
 	 */
 	maximize: () => void
 	/**
-	 * unmaximize Window
+	 * unmaximize window
 	 */
 	unmaximize: () => void
 	/**
-	 * Window minimize event
+	 * window minimize event
 	 */
 	onMinimize: (callback: () => void) => void
 	/**
-	 * Window maximize event
+	 * window maximize event
 	 */
 	onMaximize: (callback: () => void) => void
 	/**
-	 * Window unmaximize event
+	 * window unmaximize event
 	 */
 	onUnMaximize: (callback: () => void) => void
+	/**
+	 * create child window
+	 */
+	createChildWindow: (options: CreateChildWindowOptions) => void
 }
 
 declare global {

@@ -8,7 +8,8 @@ contextBridge.exposeInMainWorld('mainWindow', {
 	minimize: () => ipcRenderer.send('minimizeMainWindow'),
 	maximize: () => ipcRenderer.send('maximizeMainWindow'),
 	unmaximize: () => ipcRenderer.send('unmaximizeMainWindow'),
-	onMinimize: (callback: () => void) => ipcRenderer.on('onMainWindowMinimize', callback),
-	onMaximize: (callback: () => void) => ipcRenderer.on('onMainWindowMaximize', callback),
-	onUnMaximize: (callback: () => void) => ipcRenderer.on('onMainWindowUnMaximize', callback),
+	onMinimize: callback => ipcRenderer.on('onMainWindowMinimize', callback),
+	onMaximize: callback => ipcRenderer.on('onMainWindowMaximize', callback),
+	onUnMaximize: callback => ipcRenderer.on('onMainWindowUnMaximize', callback),
+	createChildWindow: args => ipcRenderer.send('createChildWindow', args),
 })
