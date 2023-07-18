@@ -1,15 +1,15 @@
 <template>
 	<div class="layout">
-		<Menu />
-		<SubMenu />
+		<Sider />
 		<Content />
 	</div>
 </template>
 
 <script setup lang="ts">
-import Menu from './Menu.vue'
-import SubMenu from './SubMenu.vue'
+import Sider from './Sider.vue'
 import Content from './Content.vue'
+
+defineOptions({ name: 'Layout' })
 </script>
 
 <style scoped lang="scss">

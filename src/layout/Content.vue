@@ -1,16 +1,13 @@
 <template>
 	<div class="content">
-		<div class="header">
-			<div class="header_center"></div>
-			<div class="header_suffix">
-				<div class="header_suffix_item" @click="handleMinimizeClick()">
-					<Icon height="16" width="16" icon="fluent:subtract-20-regular" />
-				</div>
-				<div class="header_suffix_item" @click="handleMaximizeClick()">
-					<Icon height="16" width="16" :icon="maximizeIcon" />
-				</div>
-				<div class="header_suffix_item exit"><Icon height="16" width="16" icon="fluent:dismiss-20-regular" /></div>
+		<div class="window-overlay">
+			<div class="window-overlay_item" @click="handleMinimizeClick()">
+				<Icon height="16" width="16" icon="fluent:subtract-20-regular" />
 			</div>
+			<div class="window-overlay_item" @click="handleMaximizeClick()">
+				<Icon height="16" width="16" :icon="maximizeIcon" />
+			</div>
+			<div class="window-overlay_item exit"><Icon height="16" width="16" icon="fluent:dismiss-20-regular" /></div>
 		</div>
 		<div class="body">
 			<RouterView>
@@ -25,6 +22,8 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'Content' })
+
 const isMaximize = ref(false)
 const maximizeIcon = computed(() =>
 	isMaximize.value ? 'fluent:square-multiple-20-regular' : 'fluent:maximize-20-regular'
@@ -48,57 +47,48 @@ function handleMaximizeClick() {
 <style scoped lang="scss">
 .content {
 	flex: 1;
-	display: flex;
-	flex-direction: column;
 }
 
-.header {
-	display: flex;
+.window-overlay {
+	position: absolute;
+	top: 0;
+	right: 0;
 	height: 30px;
+	display: flex;
 
-	&_center {
-		flex: 1;
-		-webkit-app-region: drag;
-	}
-
-	&_suffix {
-		height: 100%;
+	&_item {
 		display: flex;
-		justify-content: flex-end;
+		justify-content: center;
+		align-items: center;
+		width: 40px;
+		color: var(--td-text-color-primary);
+		cursor: pointer;
+		transition: all var(--td-transition);
 
-		&_item {
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			width: 40px;
-			color: var(--td-text-color-primary);
-			cursor: pointer;
-			transition: all var(--td-transition);
-
-			&.exit {
-				&:hover {
-					background-color: var(--td-error-color);
-					color: #ffffff;
-				}
-
-				&:active {
-					background-color: var(--td-error-color-active);
-				}
-			}
-
+		&.exit {
 			&:hover {
-				background-color: var(--td-bg-color-container-hover);
+				background-color: var(--td-error-color);
+				color: #ffffff;
 			}
 
 			&:active {
-				background-color: var(--td-bg-color-container-active);
+				background-color: var(--td-error-color-active);
 			}
+		}
+
+		&:hover {
+			background-color: var(--td-bg-color-container-hover);
+		}
+
+		&:active {
+			background-color: var(--td-bg-color-container-active);
 		}
 	}
 }
 
 .body {
-	flex: 1;
+	width: 100%;
+	height: 100%;
 	overflow: hidden;
 }
 </style>

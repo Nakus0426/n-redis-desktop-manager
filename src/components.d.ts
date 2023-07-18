@@ -7,15 +7,16 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    ContainerWithSider: typeof import('./components/ContainerWithSider.vue')['default']
     Icon: typeof import('@iconify/vue')['Icon']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    TButton: typeof import('tdesign-vue-next')['Button']
     TConfigProvider: typeof import('tdesign-vue-next')['ConfigProvider']
     TDropdown: typeof import('tdesign-vue-next')['Dropdown']
-    TDropDown: typeof import('tdesign-vue-next')['DropDown']
     TDropdownItem: typeof import('tdesign-vue-next')['DropdownItem']
-    TDropDownItem: typeof import('tdesign-vue-next')['DropDownItem']
     TDropdownMenu: typeof import('tdesign-vue-next')['DropdownMenu']
+    TInput: typeof import('tdesign-vue-next')['Input']
     TTooltip: typeof import('tdesign-vue-next')['Tooltip']
   }
 }

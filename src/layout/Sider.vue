@@ -1,5 +1,5 @@
 <template>
-	<div class="menu">
+	<div class="sider">
 		<div class="header"></div>
 		<div class="body">
 			<TTooltip content="连接" placement="right" :show-arrow="false">
@@ -40,6 +40,8 @@
 <script setup lang="ts">
 import { LinksIndexRoute, TerminalIndexRoute } from '@/router'
 
+defineOptions({ name: 'Sider' })
+
 const router = useRouter()
 
 // Handling links menu click events
@@ -59,7 +61,7 @@ function isMenuActived(path: string) {
 </script>
 
 <style scoped lang="scss">
-.menu {
+.sider {
 	height: 100%;
 	width: 50px;
 	display: flex;
