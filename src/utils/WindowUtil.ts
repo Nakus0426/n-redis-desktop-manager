@@ -1,5 +1,5 @@
 import { BrowserWindow, BrowserWindowConstructorOptions } from 'electron'
-import { forIn, merge } from 'lodash-es'
+import { merge } from 'lodash-es'
 import path from 'path'
 
 declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string

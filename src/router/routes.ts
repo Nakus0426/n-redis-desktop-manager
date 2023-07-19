@@ -7,13 +7,14 @@ export const LinksIndexRoute: RouteRecordRaw = {
 	component: () => import('@/views/links/Index.vue'),
 }
 
-// Terminal
+// terminal
 export const TerminalIndexRoute: RouteRecordRaw = {
 	name: 'TerminalIndex',
 	path: '/terminal',
 	component: () => import('@/views/terminal/Index.vue'),
 }
 
+// index
 export const IndexRoute: RouteRecordRaw = {
 	name: 'Index',
 	path: '/',
@@ -22,10 +23,11 @@ export const IndexRoute: RouteRecordRaw = {
 	children: [LinksIndexRoute, TerminalIndexRoute],
 }
 
-export const ChildRoute: RouteRecordRaw = {
-	name: 'child',
-	path: '/child',
-	component: () => import('@/views/terminal/Index.vue'),
+// setting
+export const SettingRoute: RouteRecordRaw = {
+	name: 'Setting',
+	path: '/setting',
+	component: () => import('@/views/setting/Index.vue'),
 }
 
-export const routes = [IndexRoute, ChildRoute]
+export const routes = [IndexRoute, SettingRoute]

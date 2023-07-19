@@ -1,9 +1,11 @@
 import { app, BrowserWindow } from 'electron'
 import Store from 'electron-store'
-import { create as createMainWindow } from './mainWindow'
+import { createMainWindow } from './windows'
+
+if (require('electron-squirrel-startup')) app.quit()
 
 app.on('ready', () => {
-  createMainWindow()
+	createMainWindow()
 	Store.initRenderer()
 })
 

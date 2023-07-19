@@ -11,5 +11,10 @@ contextBridge.exposeInMainWorld('mainWindow', {
 	onMinimize: callback => ipcRenderer.on('onMainWindowMinimize', callback),
 	onMaximize: callback => ipcRenderer.on('onMainWindowMaximize', callback),
 	onUnMaximize: callback => ipcRenderer.on('onMainWindowUnMaximize', callback),
-	createChildWindow: args => ipcRenderer.send('createChildWindow', args),
+	openSettingWindow: () => ipcRenderer.send('openSettingWindow'),
+})
+
+// setting window
+contextBridge.exposeInMainWorld('settingWindow', {
+	close: () => ipcRenderer.send('closeSettingWindow'),
 })

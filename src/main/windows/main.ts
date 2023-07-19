@@ -1,15 +1,8 @@
-import { app, ipcMain, BrowserWindow } from 'electron'
+import { ipcMain, BrowserWindow } from 'electron'
 import path from 'path'
-import { WindowUtil } from '@/utils'
+import { createSettingWindow } from './setting'
 
-declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string
-declare const MAIN_WINDOW_VITE_NAME: string
-
-if (require('electron-squirrel-startup')) {
-	app.quit()
-}
-
-export function create() {
+export function createMainWindow() {
 	const mainWindow = new BrowserWindow({
 		show: false,
 		width: 1440,
@@ -36,12 +29,10 @@ export function create() {
 
 	if (import.meta.env.DEV) mainWindow.webContents.openDevTools()
 
-	const windowUtil = new WindowUtil()
-
 	ipcMain.on('minimizeMainWindow', () => mainWindow.minimize())
 	ipcMain.on('maximizeMainWindow', () => mainWindow.maximize())
 	ipcMain.on('unmaximizeMainWindow', () => mainWindow.unmaximize())
-	ipcMain.on('createChildWindow', (event, options) => windowUtil.create(mainWindow, options))
+	ipcMain.on('openSettingWindow', () => createSettingWindow(mainWindow))
 
 	mainWindow.on('minimize', () => mainWindow.webContents.send('onMainWindowMinimize'))
 	mainWindow.on('maximize', () => mainWindow.webContents.send('onMainWindowMaximize'))

@@ -14,7 +14,7 @@
 
 <script setup lang="ts">
 function handleAddClick() {
-	window.mainWindow.createChildWindow({ path: '/child' })
+	window.mainWindow['openSettingWindow']()
 }
 </script>
 

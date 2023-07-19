@@ -1,40 +1,9 @@
 /// <reference types="vite/client" />
 
-import { CreateChildWindowOptions } from '@/utils'
+declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string
+declare const MAIN_WINDOW_VITE_NAME: string
 
-export interface MainWindow {
-	/**
-	 * minimize window
-	 */
-	minimize: () => void
-	/**
-	 * maximize window
-	 */
-	maximize: () => void
-	/**
-	 * unmaximize window
-	 */
-	unmaximize: () => void
-	/**
-	 * window minimize event
-	 */
-	onMinimize: (callback: () => void) => void
-	/**
-	 * window maximize event
-	 */
-	onMaximize: (callback: () => void) => void
-	/**
-	 * window unmaximize event
-	 */
-	onUnMaximize: (callback: () => void) => void
-	/**
-	 * create child window
-	 */
-	createChildWindow: (options: CreateChildWindowOptions) => void
-}
-
-declare global {
-	interface Window {
-		mainWindow: MainWindow
-	}
+declare interface Window {
+	mainWindow: ElectronAPI.MainWindow
+	settingWindow: ElectronAPI.SettingWindow
 }
