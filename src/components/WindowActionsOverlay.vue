@@ -17,8 +17,19 @@ defineOptions({ name: 'WindowActionsOverlay' })
 
 const props = withDefaults(
 	defineProps<{
+		/**
+		 * window api
+		 */
 		windowApi: any
+		/**
+		 * window minimizable
+		 * @default true
+		 */
 		maximizable?: boolean
+		/**
+		 * window maximizable
+		 * @default true
+		 */
 		minimizable?: boolean
 	}>(),
 	{
@@ -42,14 +53,23 @@ if (props.windowApi?.onUnMaximize) {
 	})
 }
 
+/**
+ * handle minimize button click
+ */
 function handleMinimizeClick() {
 	props.windowApi.minimize()
 }
 
+/**
+ * handle maximize button click
+ */
 function handleMaximizeClick() {
 	isMaximize.value ? props.windowApi.unmaximize() : props.windowApi.maximize()
 }
 
+/**
+ * handle close button click
+ */
 function handleCloseClick() {
 	props.windowApi.close()
 }

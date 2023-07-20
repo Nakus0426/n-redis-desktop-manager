@@ -32,7 +32,8 @@ export function createMainWindow() {
 	ipcMain.on('minimizeMainWindow', () => mainWindow.minimize())
 	ipcMain.on('maximizeMainWindow', () => mainWindow.maximize())
 	ipcMain.on('unmaximizeMainWindow', () => mainWindow.unmaximize())
-	ipcMain.on('openSettingWindow', () => createSettingWindow(mainWindow))
+	ipcMain.on('openSettingWindow', () => createSettingWindow())
+	ipcMain.on('closeMainWindow', () => mainWindow.close())
 
 	mainWindow.on('minimize', () => mainWindow.webContents.send('onMainWindowMinimize'))
 	mainWindow.on('maximize', () => mainWindow.webContents.send('onMainWindowMaximize'))

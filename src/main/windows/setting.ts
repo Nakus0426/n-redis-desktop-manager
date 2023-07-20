@@ -4,15 +4,14 @@ import path from 'path'
 /**
  * create setting window
  */
-export function createSettingWindow(parent: BrowserWindow) {
+export function createSettingWindow() {
 	let settingWindow = new BrowserWindow({
 		show: false,
-		width: 640,
-		height: 400,
+		width: 800,
+		height: 500,
 		center: true,
 		resizable: false,
 		frame: false,
-		parent,
 		webPreferences: {
 			nodeIntegration: true,
 			preload: path.join(__dirname, 'preload.js'),
@@ -31,5 +30,14 @@ export function createSettingWindow(parent: BrowserWindow) {
 
 	if (import.meta.env.DEV) settingWindow.webContents.openDevTools()
 
-	ipcMain.on('closeSettingWindow', () => settingWindow.close())
+	settingWindow.on('closed', e => {
+		settingWindow = null
+	})
+
+	ipcMain.on('minimizeSettingWindow', () => {
+		if (settingWindow) settingWindow.minimize()
+	})
+	ipcMain.on('closeSettingWindow', () => {
+		if (settingWindow) settingWindow.close()
+	})
 }

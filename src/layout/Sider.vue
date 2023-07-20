@@ -19,15 +19,15 @@
 					<Icon height="24" width="24" icon="fluent:text-align-justify-20-filled" />
 				</div>
 				<TDropdownMenu>
-					<TDropdownItem>
+					<TDropdownItem @click="handleExtraMenuClick(0)">
 						<template #prefixIcon><Icon height="16" width="16" icon="fluent:chat-help-20-regular" /></template>
 						<span>帮助</span>
 					</TDropdownItem>
-					<TDropdownItem>
+					<TDropdownItem @click="handleExtraMenuClick(1)">
 						<template #prefixIcon><Icon height="16" width="16" icon="fluent:settings-20-regular" /></template>
 						<span>设置</span>
 					</TDropdownItem>
-					<TDropdownItem>
+					<TDropdownItem @click="handleExtraMenuClick(2)">
 						<template #prefixIcon><Icon height="16" width="16" icon="fluent:info-20-regular" /></template>
 						<span>关于</span>
 					</TDropdownItem>
@@ -39,24 +39,30 @@
 
 <script setup lang="ts">
 import { LinksIndexRoute, TerminalIndexRoute } from '@/router'
+import { DropdownOption } from 'tdesign-vue-next'
 
 defineOptions({ name: 'Sider' })
 
 const router = useRouter()
 
-// Handling links menu click events
+// handling links menu click events
 function handleLinksMenuClick() {
 	router.push('/links')
 }
 
-// Handling terminal menu click events
+// handling terminal menu click events
 function hanldeTerminalMenuClick() {
 	router.push('/terminal')
 }
 
-// Determine if the menu is activated
+// determine if the menu is activated
 function isMenuActived(path: string) {
 	return router.currentRoute.value.path === path ? 'is-actived' : ''
+}
+
+// handling extra menu click events
+function handleExtraMenuClick(index: number) {
+	if (index === 1) window.mainWindow.openSettingWindow()
 }
 </script>
 

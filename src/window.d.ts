@@ -13,6 +13,14 @@ declare namespace ElectronAPI {
 		 */
 		unmaximize: () => void
 		/**
+		 * open setting window
+		 */
+		openSettingWindow: () => void
+		/**
+		 * close window
+		 */
+		close: () => void
+		/**
 		 * window minimize event
 		 */
 		onMinimize: (callback: () => void) => void
@@ -27,7 +35,11 @@ declare namespace ElectronAPI {
 	}
 	interface SettingWindow {
 		/**
-		 * close setting window
+		 * minimize window
+		 */
+		minimize: () => void
+		/**
+		 * close window
 		 */
 		close: () => void
 	}

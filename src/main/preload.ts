@@ -8,13 +8,15 @@ contextBridge.exposeInMainWorld('mainWindow', {
 	minimize: () => ipcRenderer.send('minimizeMainWindow'),
 	maximize: () => ipcRenderer.send('maximizeMainWindow'),
 	unmaximize: () => ipcRenderer.send('unmaximizeMainWindow'),
+	openSettingWindow: () => ipcRenderer.send('openSettingWindow'),
+	close: () => ipcRenderer.send('closeMainWindow'),
 	onMinimize: callback => ipcRenderer.on('onMainWindowMinimize', callback),
 	onMaximize: callback => ipcRenderer.on('onMainWindowMaximize', callback),
 	onUnMaximize: callback => ipcRenderer.on('onMainWindowUnMaximize', callback),
-	openSettingWindow: () => ipcRenderer.send('openSettingWindow'),
 })
 
 // setting window
 contextBridge.exposeInMainWorld('settingWindow', {
 	close: () => ipcRenderer.send('closeSettingWindow'),
+	minimize: () => ipcRenderer.send('minimizeSettingWindow'),
 })
