@@ -3,19 +3,24 @@
 		<div class="header"></div>
 		<div class="body">
 			<TTooltip content="连接" placement="right" :show-arrow="false">
-				<div class="menu_item" :class="isMenuActived(LinksIndexRoute.path)" @click="handleLinksMenuClick()">
+				<div
+					v-ripple
+					class="menu_item"
+					:class="isMenuActived(LinksIndexRoute.path)"
+					@click="handleMenuClick(LinksIndexRoute)"
+				>
 					<Icon height="24" width="24" icon="fluent:link-square-20-regular" />
 				</div>
 			</TTooltip>
 			<TTooltip content="终端" :class="isMenuActived(TerminalIndexRoute.path)" placement="right" :show-arrow="false">
-				<div class="menu_item" @click="hanldeTerminalMenuClick()">
+				<div v-ripple class="menu_item" @click="handleMenuClick(TerminalIndexRoute)">
 					<Icon height="24" width="24" icon="fluent:code-block-20-regular" />
 				</div>
 			</TTooltip>
 		</div>
 		<div class="footer">
 			<TDropdown placement="right-top" trigger="click">
-				<div class="menu_item">
+				<div v-ripple class="menu_item">
 					<Icon height="24" width="24" icon="fluent:text-align-justify-20-filled" />
 				</div>
 				<TDropdownMenu>
@@ -39,25 +44,21 @@
 
 <script setup lang="ts">
 import { LinksIndexRoute, TerminalIndexRoute } from '@/router'
-import { DropdownOption } from 'tdesign-vue-next'
+import { RouteRecordRaw } from 'vue-router'
 
 defineOptions({ name: 'Sider' })
 
 const router = useRouter()
+const route = useRoute()
 
-// handling links menu click events
-function handleLinksMenuClick() {
-	router.push('/links')
-}
-
-// handling terminal menu click events
-function hanldeTerminalMenuClick() {
-	router.push('/terminal')
+// handling menu click events
+function handleMenuClick(route: RouteRecordRaw) {
+	router.push(route)
 }
 
 // determine if the menu is activated
 function isMenuActived(path: string) {
-	return router.currentRoute.value.path === path ? 'is-actived' : ''
+	return route.path === path ? 'is-actived' : ''
 }
 
 // handling extra menu click events
@@ -89,6 +90,7 @@ function handleExtraMenuClick(index: number) {
 	transition: all var(--td-transition);
 	cursor: pointer;
 	-webkit-app-region: no-drag;
+	--ripple-color: var(--td-bg-color-secondarycontainer-active);
 
 	&.is-actived {
 		color: var(--td-brand-color);
@@ -101,10 +103,6 @@ function handleExtraMenuClick(index: number) {
 
 	&:hover {
 		background-color: var(--td-bg-color-secondarycontainer-hover);
-	}
-
-	&:active {
-		background-color: var(--td-bg-color-secondarycontainer-active);
 	}
 }
 
