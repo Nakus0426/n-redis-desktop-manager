@@ -93,7 +93,6 @@ function isMenuActived(path: string) {
 		}
 
 		&.is-actived {
-			color: var(--td-brand-color);
 			background-color: var(--td-bg-color-secondarycontainer-active);
 
 			&:hover {
@@ -107,7 +106,7 @@ function isMenuActived(path: string) {
 	flex: 1;
 	display: flex;
 	flex-direction: column;
-	background-color: var(--td-bg-color-component);
+	background-color: var(--td-bg-color-page);
 
 	&_header {
 		padding: var(--td-comp-paddingTB-m);
@@ -120,6 +119,61 @@ function isMenuActived(path: string) {
 	&_content {
 		flex: 1;
 		border-top: 1px solid var(--td-component-border);
+	}
+}
+</style>
+
+<style lang="scss">
+.cell {
+	display: flex;
+	flex-direction: column;
+	gap: var(--td-comp-margin-s);
+
+	&_title {
+		font: var(--td-font-body-medium);
+		color: var(--td-text-color-secondary);
+	}
+
+	&_content {
+		display: flex;
+		border-radius: var(--td-radius-medium);
+		background-color: var(--td-bg-color-container);
+		padding: var(--td-comp-paddingTB-s);
+
+		&-horizontal {
+			flex-direction: row;
+			gap: var(--td-comp-margin-m);
+		}
+
+		&-vertical {
+			flex-direction: column;
+		}
+
+		&_item {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: var(--td-comp-margin-m);
+			font: var(--td-font-body-medium);
+			color: var(--td-text-color-primary);
+			padding: var(--td-comp-paddingTB-s) 0;
+
+			&:first-child {
+				padding-top: 0;
+			}
+
+			&:last-child {
+				padding-bottom: 0;
+			}
+
+			&:not(:last-child) {
+				border-bottom: 1px solid var(--td-component-stroke);
+			}
+
+			&_value {
+				display: flex;
+			}
+		}
 	}
 }
 </style>

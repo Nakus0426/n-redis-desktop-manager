@@ -1,6 +1,8 @@
-import { ipcMain, BrowserWindow } from 'electron'
+import { ipcMain, BrowserWindow, nativeTheme } from 'electron'
 import path from 'path'
-import { createSettingWindow } from './setting'
+import Store from 'electron-store'
+import { SettingWindow } from './setting'
+import { channel } from './channels'
 
 export function createMainWindow() {
 	const mainWindow = new BrowserWindow({
@@ -17,6 +19,8 @@ export function createMainWindow() {
 		},
 	})
 
+	const store = new Store()
+
 	mainWindow.on('ready-to-show', () => {
 		mainWindow.show()
 	})
@@ -29,13 +33,42 @@ export function createMainWindow() {
 
 	if (import.meta.env.DEV) mainWindow.webContents.openDevTools()
 
-	ipcMain.on('minimizeMainWindow', () => mainWindow.minimize())
-	ipcMain.on('maximizeMainWindow', () => mainWindow.maximize())
-	ipcMain.on('unmaximizeMainWindow', () => mainWindow.unmaximize())
-	ipcMain.on('openSettingWindow', () => createSettingWindow())
-	ipcMain.on('closeMainWindow', () => mainWindow.close())
+	const settingWindow = new SettingWindow()
 
-	mainWindow.on('minimize', () => mainWindow.webContents.send('onMainWindowMinimize'))
-	mainWindow.on('maximize', () => mainWindow.webContents.send('onMainWindowMaximize'))
-	mainWindow.on('unmaximize', () => mainWindow.webContents.send('onMainWindowUnMaximize'))
+	// functions
+	ipcMain.on(channel.main.minimize, () => mainWindow.minimize())
+	ipcMain.on(channel.main.maximize, () => mainWindow.maximize())
+	ipcMain.on(channel.main.unmaximize, () => mainWindow.unmaximize())
+	ipcMain.on(channel.main.openSetting, () => settingWindow.open())
+	ipcMain.on(channel.main.close, () => mainWindow.close())
+	ipcMain.on(channel.main.getAppTheme, event => {
+		event.returnValue = nativeTheme.shouldUseDarkColors ? 'dark' : 'light'
+	})
+	// storage
+	ipcMain.on(channel.main.store.size, event => {
+		event.returnValue = store.size
+	})
+	ipcMain.on(channel.main.store.set, (event, key, value) => store.set(key, value))
+	ipcMain.on(channel.main.store.get, (event, key, defaultValue) => {
+		event.returnValue = store.get(key, defaultValue)
+	})
+	ipcMain.on(channel.main.store.remove, (event, key) => store.delete(key))
+	ipcMain.on(channel.main.store.clear, () => store.clear())
+	ipcMain.on(channel.main.store.key, (event, index) => {
+		event.returnValue = Object.keys(store.store)[index]
+	})
+	// pinia
+	ipcMain.on(channel.main.pinia.change, (event, key, value, isResetVersion, storeVersion) => {
+		BrowserWindow.getAllWindows().forEach(window => {
+			const webContentsId = window.webContents.id
+			if (webContentsId !== event.sender.id && !window.isDestroyed()) {
+				window.webContents.send(channel.main.pinia.onChange, key, value, isResetVersion, storeVersion)
+			}
+		})
+	})
+
+	// events
+	mainWindow.on('minimize', () => mainWindow.webContents.send(channel.main.onMinimize))
+	mainWindow.on('maximize', () => mainWindow.webContents.send(channel.main.onMaximize))
+	mainWindow.on('unmaximize', () => mainWindow.webContents.send(channel.main.onUnmaximize))
 }

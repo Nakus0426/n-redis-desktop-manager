@@ -22,6 +22,7 @@ const windowApi = window.mainWindow
 <style scoped lang="scss">
 .content {
 	flex: 1;
+	background-color: var(--td-bg-color-page);
 }
 
 .body {

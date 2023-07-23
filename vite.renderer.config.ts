@@ -1,5 +1,6 @@
 import { defineConfig } from 'vite'
-import { setupUnpluginAutoImport, setupUnpluginVueComonents, setupVue } from './.build/plugins'
+import vueJsx from '@vitejs/plugin-vue-jsx'
+import { setupUnpluginAutoImport, setupUnpluginVueComonents, setupUnpluginVueI18n, setupVue } from './.build/plugins'
 import { resolve } from 'path'
 
 function pathResolve(dir: string) {
@@ -13,5 +14,11 @@ export default defineConfig({
 			{ find: '@', replacement: pathResolve('src') + '/' },
 		],
 	},
-	plugins: [setupVue(), setupUnpluginAutoImport(), setupUnpluginVueComonents()],
+	plugins: [
+		setupVue(),
+		setupUnpluginAutoImport(),
+		setupUnpluginVueComonents(),
+		vueJsx(),
+		setupUnpluginVueI18n(),
+	],
 })

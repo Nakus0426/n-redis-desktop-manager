@@ -1,12 +1,12 @@
 import { app, BrowserWindow } from 'electron'
-import Store from 'electron-store'
 import { createMainWindow } from './windows'
 
 if (require('electron-squirrel-startup')) app.quit()
 
+console.log(app.getAppPath())
+
 app.on('ready', () => {
 	createMainWindow()
-	Store.initRenderer()
 })
 
 app.on('window-all-closed', () => {

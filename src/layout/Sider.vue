@@ -93,7 +93,6 @@ function handleExtraMenuClick(index: number) {
 	--ripple-color: var(--td-bg-color-secondarycontainer-active);
 
 	&.is-actived {
-		color: var(--td-brand-color);
 		background-color: var(--td-bg-color-secondarycontainer-active);
 
 		&:hover {

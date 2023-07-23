@@ -21,6 +21,52 @@ declare namespace ElectronAPI {
 		 */
 		close: () => void
 		/**
+		 * get app theme
+		 */
+		getAppTheme: () => 'light' | 'dark'
+		/**
+		 * storage
+		 */
+		store: {
+			/**
+			 * get storage size
+			 */
+			size: () => number
+			/**
+			 * set an storage item
+			 */
+			set: (key: string, value: string) => void
+			/**
+			 * get an storage item
+			 */
+			get: <T = any>(key: string, defaultValue?: T) => T
+			/**
+			 * remove an storage item
+			 */
+			remove: (key: string) => void
+			/**
+			 * clear all storage items
+			 */
+			clear: () => void
+			/**
+			 * get storage key by index
+			 */
+			key: (index: number) => string
+		}
+		/**
+		 * pinia
+		 */
+		pinia: {
+			/**
+			 * change pinia state
+			 */
+			change: (key: string, value: any, isResetVersion: boolean, storeVersion: string) => void
+			/**
+			 * handle pinia state change event
+			 */
+			onChange: (callback: (key: string, value: any, isResetVersion: boolean, storeVersion: string) => void) => void
+		}
+		/**
 		 * window minimize event
 		 */
 		onMinimize: (callback: () => void) => void

@@ -9,7 +9,7 @@
 		"sourceMap": true,
 		"resolveJsonModule": true,
 		"esModuleInterop": true,
-		"types": ["tdesign-vue-next/global"],
+		"types": ["tdesign-vue-next/global", "@intlify/unplugin-vue-i18n/messages"],
 		"lib": ["esnext", "dom"],
 		"baseUrl": ".",
 		"paths": {

@@ -17,8 +17,7 @@ declare module 'vue' {
     TDropdownItem: typeof import('tdesign-vue-next')['DropdownItem']
     TDropdownMenu: typeof import('tdesign-vue-next')['DropdownMenu']
     TInput: typeof import('tdesign-vue-next')['Input']
-    TMenu: typeof import('tdesign-vue-next')['Menu']
-    TMenuItem: typeof import('tdesign-vue-next')['MenuItem']
+    TSelect: typeof import('tdesign-vue-next')['Select']
     TTooltip: typeof import('tdesign-vue-next')['Tooltip']
     WindowActionsOverlay: typeof import('./components/WindowActionsOverlay.vue')['default']
   }
