@@ -11,8 +11,14 @@ export const useAppStore = defineStore('APP', () => {
 	 */
 	const theme = ref<Theme>('light')
 
+	/**
+	 * app locale
+	 */
+	const locale = ref<string>()
+
 	return {
 		theme,
+		locale,
 	}
 })
 

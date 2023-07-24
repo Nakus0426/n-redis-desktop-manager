@@ -7,6 +7,7 @@ export const channel = {
 		openSetting: 'main:openSetting',
 		close: 'main:close',
 		getAppTheme: 'main:getAppTheme',
+		getSystemLocale: 'main:getSystemLocale',
 		store: {
 			size: 'main:storage:size',
 			set: 'main:storage:set',

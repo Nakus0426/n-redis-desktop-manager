@@ -23,7 +23,7 @@
 		</div>
 		<div class="body">
 			<div class="body_header">{{ title }}</div>
-			<div class="body_content">
+			<div class="body_content" id="bodyContent">
 				<RouterView>
 					<template #default="{ Component }">
 						<Transition name="zoom-fade" mode="out-in" appear>
@@ -40,6 +40,7 @@
 import { CommonSettingRoute, AppearanceSettingRoute } from '@/router'
 import { useI18n } from 'vue-i18n'
 import { RouteRecordRaw } from 'vue-router'
+import { OverlayScrollbars } from 'overlayscrollbars'
 
 defineOptions({ name: 'Setting' })
 
@@ -47,6 +48,14 @@ const windowApi = window.settingWindow
 const router = useRouter()
 const route = useRoute()
 const { t } = useI18n()
+
+// scroll bar
+onMounted(() => {
+	OverlayScrollbars(document.getElementById('bodyContent'), {
+		overflow: { x: 'hidden', y: 'scroll' },
+		scrollbars: { autoHide: 'leave' },
+	})
+})
 
 // title
 const title = computed(() => t(route.meta.title as string))
@@ -124,6 +133,7 @@ function isMenuActived(path: string) {
 	&_content {
 		flex: 1;
 		border-top: 1px solid var(--td-component-border);
+		overflow: hidden;
 	}
 }
 </style>
@@ -155,6 +165,7 @@ function isMenuActived(path: string) {
 		}
 
 		&_item {
+			flex: 1;
 			display: flex;
 			align-items: center;
 			justify-content: space-between;
@@ -175,8 +186,24 @@ function isMenuActived(path: string) {
 				border-bottom: 1px solid var(--td-component-stroke);
 			}
 
+			&_label {
+				display: flex;
+				flex-direction: column;
+
+				&_title {
+					font: var(--td-font-body-medium);
+					color: var(--td-text-color-primary);
+				}
+
+				&_desc {
+					font: var(--td-font-body-small);
+					color: var(--td-text-color-secondary);
+				}
+			}
+
 			&_value {
 				display: flex;
+				justify-content: flex-end;
 			}
 		}
 	}

@@ -7,6 +7,7 @@
 <script setup lang="ts">
 import { tdesignConfig } from '@/config'
 import { Theme, useAppStore } from '@/store'
+import { useI18n } from 'vue-i18n'
 
 const appStore = useAppStore()
 
@@ -37,6 +38,11 @@ function setAppTheme(theme: Theme) {
 	const _ = window.getComputedStyle(css).opacity
 	document.head.removeChild(css)
 }
+
+// init app locale
+const { locale } = useI18n()
+const systemLocale = window.mainWindow.getSystemLocale()
+locale.value = appStore.locale ? appStore.locale : systemLocale
 </script>
 
 <style scoped lang="scss"></style>

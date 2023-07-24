@@ -14,26 +14,6 @@ body,
 	user-select: none;
 }
 
-::-webkit-scrollbar {
-	width: 12px;
-	height: 12px;
-}
-
-::-webkit-scrollbar-corner {
-	display: none;
-}
-
-::-webkit-scrollbar-thumb {
-	border-radius: 6px;
-	border: 3px solid transparent;
-	background-clip: content-box;
-	background-color: var(--td-scrollbar-color);
-
-	&:hover {
-		background-color: var(--td-scrollbar-hover-color);
-	}
-}
-
 .zoom-fade-enter-active,
 .zoom-fade-leave-active {
 	transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);

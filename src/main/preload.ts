@@ -13,6 +13,7 @@ contextBridge.exposeInMainWorld('mainWindow', {
 	openSettingWindow: () => ipcRenderer.send(channel.main.openSetting),
 	close: () => ipcRenderer.send(channel.main.close),
 	getAppTheme: () => ipcRenderer.sendSync(channel.main.getAppTheme),
+	getSystemLocale: () => ipcRenderer.sendSync(channel.main.getSystemLocale),
 	store: {
 		size: () => ipcRenderer.sendSync(channel.main.store.size),
 		set: (...args) => ipcRenderer.send(channel.main.store.set, ...args),

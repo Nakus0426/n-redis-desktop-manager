@@ -1,4 +1,4 @@
-import { ipcMain, BrowserWindow, nativeTheme } from 'electron'
+import { ipcMain, BrowserWindow, nativeTheme, app } from 'electron'
 import path from 'path'
 import Store from 'electron-store'
 import { SettingWindow } from './setting'
@@ -43,6 +43,9 @@ export function createMainWindow() {
 	ipcMain.on(channel.main.close, () => mainWindow.close())
 	ipcMain.on(channel.main.getAppTheme, event => {
 		event.returnValue = nativeTheme.shouldUseDarkColors ? 'dark' : 'light'
+	})
+	ipcMain.on(channel.main.getSystemLocale, event => {
+		event.returnValue = app.getSystemLocale()
 	})
 	// storage
 	ipcMain.on(channel.main.store.size, event => {
