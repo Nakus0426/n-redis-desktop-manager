@@ -52,7 +52,7 @@ function handleThemeClick(theme: Theme) {
 	display: flex;
 	flex-direction: column;
 	border-radius: var(--td-radius-medium);
-	padding: var(--td-comp-paddingTB-s) var(--td-comp-paddingTB-s) 0 var(--td-comp-paddingTB-s);
+	// padding: var(--td-comp-paddingTB-s) var(--td-comp-paddingTB-s) 0 var(--td-comp-paddingTB-s);
 
 	&_icon {
 		height: 80px;

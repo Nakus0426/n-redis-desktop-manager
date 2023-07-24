@@ -2,8 +2,8 @@
 	<ContainerWithSider class="links">
 		<template #sider>
 			<div class="links_header">
-				<TInput size="small"></TInput>
-				<TButton variant="dashed" theme="default" size="small" @click="handleAddClick()">
+				<TInput></TInput>
+				<TButton variant="dashed" theme="default" @click="handleAddClick()">
 					<template #icon><Icon height="16" width="16" icon="fluent:add-20-regular" /></template>
 				</TButton>
 			</div>

@@ -28,6 +28,7 @@ export const CommonSettingRoute: RouteRecordRaw = {
 	name: 'CommonSetting',
 	path: '/setting/common',
 	component: () => import('@/views/setting/Common.vue'),
+	meta: { title: 'setting.common.title' },
 }
 
 // appearance setting
@@ -35,6 +36,7 @@ export const AppearanceSettingRoute: RouteRecordRaw = {
 	name: 'AppearanceSetting',
 	path: '/setting/appearance',
 	component: () => import('@/views/setting/Appearance.vue'),
+	meta: { title: 'setting.appearance.title' },
 }
 
 // setting

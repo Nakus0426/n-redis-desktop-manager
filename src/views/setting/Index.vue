@@ -22,7 +22,7 @@
 			</div>
 		</div>
 		<div class="body">
-			<div class="body_header">11111</div>
+			<div class="body_header">{{ title }}</div>
 			<div class="body_content">
 				<RouterView>
 					<template #default="{ Component }">
@@ -38,6 +38,7 @@
 
 <script setup lang="ts">
 import { CommonSettingRoute, AppearanceSettingRoute } from '@/router'
+import { useI18n } from 'vue-i18n'
 import { RouteRecordRaw } from 'vue-router'
 
 defineOptions({ name: 'Setting' })
@@ -45,6 +46,10 @@ defineOptions({ name: 'Setting' })
 const windowApi = window.settingWindow
 const router = useRouter()
 const route = useRoute()
+const { t } = useI18n()
+
+// title
+const title = computed(() => t(route.meta.title as string))
 
 // handling menu click events
 function handleMenuClick(route: RouteRecordRaw) {
@@ -138,7 +143,7 @@ function isMenuActived(path: string) {
 		display: flex;
 		border-radius: var(--td-radius-medium);
 		background-color: var(--td-bg-color-container);
-		padding: var(--td-comp-paddingTB-s);
+		padding: var(--td-comp-paddingTB-m);
 
 		&-horizontal {
 			flex-direction: row;
@@ -156,7 +161,7 @@ function isMenuActived(path: string) {
 			gap: var(--td-comp-margin-m);
 			font: var(--td-font-body-medium);
 			color: var(--td-text-color-primary);
-			padding: var(--td-comp-paddingTB-s) 0;
+			padding: var(--td-comp-paddingTB-m) 0;
 
 			&:first-child {
 				padding-top: 0;
