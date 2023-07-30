@@ -11,3 +11,23 @@
 	--os-handle-bg-hover: var(--td-scrollbar-hover-color);
 	--os-handle-bg-active: var(--td-scrollbar-hover-color);
 }
+
+// dialog
+.t-dialog {
+	padding: 0;
+	overflow: hidden;
+
+	&__header {
+		padding: var(--td-comp-paddingLR-m);
+	}
+
+	&__body {
+		padding: 0;
+	}
+
+	&__footer {
+		border-top: 1px solid var(--td-component-stroke);
+		padding: var(--td-comp-paddingLR-m);
+		background-color: var(--td-bg-color-secondarycontainer);
+	}
+}

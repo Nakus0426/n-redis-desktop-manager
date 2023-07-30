@@ -19,7 +19,7 @@
 			</TTooltip>
 		</div>
 		<div class="footer">
-			<TDropdown placement="right-top" trigger="click">
+			<TDropdown placement="right-top">
 				<div v-ripple class="menu_item">
 					<Icon height="24" width="24" icon="fluent:text-align-justify-20-filled" />
 				</div>

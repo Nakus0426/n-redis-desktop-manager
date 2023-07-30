@@ -1,34 +1,12 @@
 <template>
 	<ContainerWithSider class="links">
-		<template #sider>
-			<div class="links_header">
-				<TInput></TInput>
-				<TButton variant="dashed" theme="default" @click="handleAddClick()">
-					<template #icon><Icon height="16" width="16" icon="fluent:add-20-regular" /></template>
-				</TButton>
-			</div>
-		</template>
+		<template #sider><Sider /></template>
 		<h1>Linkss</h1>
 	</ContainerWithSider>
 </template>
 
 <script setup lang="ts">
-function handleAddClick() {
-	window.mainWindow['openSettingWindow']()
-}
+import Sider from './modules/Sider.vue'
 </script>
 
-<style scoped lang="scss">
-.links_header {
-	display: flex;
-	gap: var(--td-comp-margin-s);
-	padding: var(--td-comp-paddingTB-m);
-	border-bottom: 1px solid var(--td-component-stroke);
-	-webkit-app-region: drag;
-
-	div,
-	button {
-		-webkit-app-region: no-drag;
-	}
-}
-</style>
+<style scoped lang="scss"></style>
