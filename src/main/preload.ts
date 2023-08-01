@@ -6,14 +6,19 @@ import { channel } from './windows/channels'
 
 // main window
 contextBridge.exposeInMainWorld('mainWindow', {
-	// functions
+	// window operations
 	minimize: () => ipcRenderer.send(channel.main.minimize),
 	maximize: () => ipcRenderer.send(channel.main.maximize),
 	unmaximize: () => ipcRenderer.send(channel.main.unmaximize),
 	openSettingWindow: () => ipcRenderer.send(channel.main.openSetting),
 	close: () => ipcRenderer.send(channel.main.close),
+	onMinimize: callback => ipcRenderer.on(channel.main.onMinimize, callback),
+	onMaximize: callback => ipcRenderer.on(channel.main.onMaximize, callback),
+	onUnMaximize: callback => ipcRenderer.on(channel.main.onUnmaximize, callback),
+	// app operations
 	getAppTheme: () => ipcRenderer.sendSync(channel.main.getAppTheme),
 	getSystemLocale: () => ipcRenderer.sendSync(channel.main.getSystemLocale),
+	// storage operations
 	store: {
 		size: () => ipcRenderer.sendSync(channel.main.store.size),
 		set: (...args) => ipcRenderer.send(channel.main.store.set, ...args),
@@ -22,19 +27,22 @@ contextBridge.exposeInMainWorld('mainWindow', {
 		clear: () => ipcRenderer.send(channel.main.store.clear),
 		key: (...args) => ipcRenderer.sendSync(channel.main.store.key, ...args),
 	},
+	// pinia operations
 	pinia: {
 		change: (...args) => ipcRenderer.send(channel.main.pinia.change, ...args),
 		onChange: callback => ipcRenderer.on(channel.main.pinia.onChange, (e, ...args) => callback(...args)),
 	},
-	// events
-	onMinimize: callback => ipcRenderer.on(channel.main.onMinimize, callback),
-	onMaximize: callback => ipcRenderer.on(channel.main.onMaximize, callback),
-	onUnMaximize: callback => ipcRenderer.on(channel.main.onUnmaximize, callback),
+	// redis operations
+	redis: {
+		create: (...args) => ipcRenderer.send(channel.main.redis.create, ...args),
+		connect: (...args) => ipcRenderer.send(channel.main.redis.connect, ...args),
+		set: (...args) => ipcRenderer.send(channel.main.redis.set, ...args),
+	},
 })
 
 // setting window
 contextBridge.exposeInMainWorld('settingWindow', {
-	// functions
+	// window operations
 	close: () => ipcRenderer.send(channel.setting.close),
 	minimize: () => ipcRenderer.send(channel.setting.minimize),
 })

@@ -25,9 +25,6 @@ declare module 'vue' {
     TFormItem: typeof import('tdesign-vue-next')['FormItem']
     TInput: typeof import('tdesign-vue-next')['Input']
     TRow: typeof import('tdesign-vue-next')['Row']
-    TSelect: typeof import('tdesign-vue-next')['Select']
-    TSpace: typeof import('tdesign-vue-next')['Space']
-    TSwitch: typeof import('tdesign-vue-next')['Switch']
     TTooltip: typeof import('tdesign-vue-next')['Tooltip']
     WindowActionsOverlay: typeof import('./components/WindowActionsOverlay.vue')['default']
   }

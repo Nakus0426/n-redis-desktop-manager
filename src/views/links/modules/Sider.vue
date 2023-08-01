@@ -11,7 +11,7 @@
 				<TCollapsePanel v-for="item in 50" :header="String(item)" class="link">
 					<template #headerRightContent>
 						<TDropdown>
-							<div class="link_action" v-ripple @click.stop>
+							<div class="link_action" @click.stop>
 								<Icon height="16" width="16" icon="fluent:more-vertical-20-regular" />
 							</div>
 							<TDropdownMenu>

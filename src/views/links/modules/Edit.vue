@@ -1,5 +1,11 @@
 <template>
-	<Dialog v-model:visible="visible" header="新增连接" :width="800" :close-on-overlay-click="false">
+	<Dialog
+		v-model:visible="visible"
+		header="新增连接"
+		:width="800"
+		:close-on-overlay-click="false"
+		@confirm="handleConfirmClick()"
+	>
 		<div class="edit">
 			<TForm label-align="top">
 				<TRow :gutter="[16, 12]">
@@ -43,8 +49,14 @@
 const visible = ref(false)
 
 // open
-function open() {
+async function open() {
 	visible.value = true
+	await window.mainWindow.redis.create({ id: '123', url: 'redis://:chinobot@123@mid1.ccbrain.cn:6379' })
+	await window.mainWindow.redis.connect('123')
+}
+
+async function handleConfirmClick() {
+	console.log(await window.mainWindow.redis.set('123', 'test', '456'))
 }
 
 defineExpose({

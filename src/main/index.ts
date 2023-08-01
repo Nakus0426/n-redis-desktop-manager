@@ -3,8 +3,6 @@ import { createMainWindow } from './windows'
 
 if (require('electron-squirrel-startup')) app.quit()
 
-console.log(app.getAppPath())
-
 app.on('ready', () => {
 	createMainWindow()
 })
