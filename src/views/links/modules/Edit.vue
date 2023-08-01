@@ -1,7 +1,8 @@
 <template>
 	<Dialog
 		v-model:visible="visible"
-		header="新增连接"
+		title="新增连接"
+		icon="fluent:add-circle-20-regular"
 		:width="800"
 		:close-on-overlay-click="false"
 		@confirm="handleConfirmClick()"
@@ -51,13 +52,9 @@ const visible = ref(false)
 // open
 async function open() {
 	visible.value = true
-	await window.mainWindow.redis.create({ id: '123', url: 'redis://:chinobot@123@mid1.ccbrain.cn:6379' })
-	await window.mainWindow.redis.connect('123')
 }
 
-async function handleConfirmClick() {
-	console.log(await window.mainWindow.redis.set('123', 'test', '456'))
-}
+async function handleConfirmClick() {}
 
 defineExpose({
 	open,
@@ -66,6 +63,6 @@ defineExpose({
 
 <style scoped lang="scss">
 .edit {
-	padding: 0 var(--td-comp-paddingLR-m) var(--td-comp-paddingTB-xl) var(--td-comp-paddingTB-m);
+	padding: var(--td-comp-paddingLR-l);
 }
 </style>

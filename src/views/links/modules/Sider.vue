@@ -6,7 +6,7 @@
 				<template #icon><Icon height="16" width="16" icon="fluent:add-20-regular" /></template>
 			</TButton>
 		</div>
-		<div class="body" id="body">
+		<div class="body" id="linkSiderBody">
 			<TCollapse borderless>
 				<TCollapsePanel v-for="item in 50" :header="String(item)" class="link">
 					<template #headerRightContent>
@@ -37,6 +37,7 @@
 					<div class="link_content">123</div>
 				</TCollapsePanel>
 			</TCollapse>
+			<TBackTop container="#linkSiderBody" />
 		</div>
 		<Edit ref="editRef" />
 	</div>
@@ -48,7 +49,7 @@ import Edit from './Edit.vue'
 
 // scroll bar
 onMounted(() => {
-	OverlayScrollbars(document.getElementById('body'), {
+	OverlayScrollbars(document.getElementById('linkSiderBody'), {
 		overflow: { x: 'hidden', y: 'scroll' },
 		scrollbars: { autoHide: 'leave' },
 	})
