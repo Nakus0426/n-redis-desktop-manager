@@ -28,6 +28,9 @@ dependencies:
   overlayscrollbars:
     specifier: ^2.2.1
     version: 2.2.1
+  overlayscrollbars-vue:
+    specifier: ^0.5.2
+    version: registry.npmmirror.com/overlayscrollbars-vue@0.5.2(overlayscrollbars@2.2.1)(vue@3.3.4)
   pinia:
     specifier: ^2.1.4
     version: 2.1.4(vue@3.3.4)
@@ -5197,6 +5200,19 @@ packages:
       strip-ansi: registry.npmmirror.com/strip-ansi@6.0.1
       wcwidth: registry.npmmirror.com/wcwidth@1.0.1
     dev: true
+
+  registry.npmmirror.com/overlayscrollbars-vue@0.5.2(overlayscrollbars@2.2.1)(vue@3.3.4):
+    resolution: {integrity: sha512-zypQxuOrBpFkXdQAOikA8CKPFRiBT4riwIAUFt77pvm+UDf2cStGDra80jOJQEKJdJml47GRJEDXLsMkNWkbhg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/overlayscrollbars-vue/-/overlayscrollbars-vue-0.5.2.tgz}
+    id: registry.npmmirror.com/overlayscrollbars-vue/0.5.2
+    name: overlayscrollbars-vue
+    version: 0.5.2
+    peerDependencies:
+      overlayscrollbars: ^2.0.0
+      vue: ^3.2.25
+    dependencies:
+      overlayscrollbars: 2.2.1
+      vue: registry.npmmirror.com/vue@3.3.4
+    dev: false
 
   registry.npmmirror.com/p-cancelable@2.1.1:
     resolution: {integrity: sha512-BZOr3nRQHOntUjTrH8+Lh54smKHoHyur8We1V8DSMVrl5A2malOOwuJRnKRDjSnkoeBh4at6BwEnb5I7Jl31wg==, registry: https://registry.npmjs.org/, tarball: https://registry.npmmirror.com/p-cancelable/-/p-cancelable-2.1.1.tgz}

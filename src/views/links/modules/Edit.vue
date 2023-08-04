@@ -9,38 +9,26 @@
 	>
 		<div class="edit">
 			<TForm label-align="top">
-				<TRow :gutter="[16, 12]">
-					<TCol :span="6">
-						<TFormItem label="名称">
-							<TInput />
-						</TFormItem>
-					</TCol>
-					<TCol :span="6">
-						<TFormItem label="地址">
-							<TInput placeholder="127.0.0.1" />
-						</TFormItem>
-					</TCol>
-					<TCol :span="6">
-						<TFormItem label="端口">
-							<TInput placeholder="6379" />
-						</TFormItem>
-					</TCol>
-					<TCol :span="6">
-						<TFormItem label="用户名">
-							<TInput />
-						</TFormItem>
-					</TCol>
-					<TCol :span="6">
-						<TFormItem label="密码">
-							<TInput />
-						</TFormItem>
-					</TCol>
-					<TCol :span="6">
-						<TFormItem label="分隔符" help="分隔符不为空则数据以树状显示，否则数据以列表显示">
-							<TInput />
-						</TFormItem>
-					</TCol>
-				</TRow>
+				<div class="body">
+					<TFormItem label="名称">
+						<TInput />
+					</TFormItem>
+					<TFormItem label="地址">
+						<TInput placeholder="127.0.0.1" />
+					</TFormItem>
+					<TFormItem label="端口">
+						<TInput placeholder="6379" />
+					</TFormItem>
+					<TFormItem label="用户名">
+						<TInput />
+					</TFormItem>
+					<TFormItem label="密码">
+						<TInput />
+					</TFormItem>
+					<TFormItem label="分隔符" help="分隔符不为空则数据以树状显示，否则数据以列表显示">
+						<TInput />
+					</TFormItem>
+				</div>
 			</TForm>
 		</div>
 	</Dialog>
@@ -63,6 +51,12 @@ defineExpose({
 
 <style scoped lang="scss">
 .edit {
-	padding: var(--td-comp-paddingLR-l);
+	padding: 0 var(--td-comp-paddingLR-xl) var(--td-comp-paddingLR-xl) var(--td-comp-paddingLR-xl);
+}
+
+.body {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	column-gap: var(--td-comp-margin-xl);
 }
 </style>

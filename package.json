@@ -27,6 +27,7 @@
     "lodash-es": "^4.17.21",
     "nanoid": "^4.0.2",
     "overlayscrollbars": "^2.2.1",
+    "overlayscrollbars-vue": "^0.5.2",
     "pinia": "^2.1.4",
     "pinia-plugin-persistedstate": "^3.1.0",
     "redis": "^4.6.7",
