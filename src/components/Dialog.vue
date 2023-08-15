@@ -1,5 +1,5 @@
 <template>
-	<TDialog v-bind="$props">
+	<TDialog v-bind="$props" title="" destroy-on-close>
 		<template #header>
 			<div class="header">
 				<Icon class="header_icon" height="24" width="24" :icon="icon" v-if="icon" />

@@ -18,15 +18,6 @@ contextBridge.exposeInMainWorld('mainWindow', {
 	// app operations
 	getAppTheme: () => ipcRenderer.sendSync(channel.main.getAppTheme),
 	getSystemLocale: () => ipcRenderer.sendSync(channel.main.getSystemLocale),
-	// storage operations
-	store: {
-		size: () => ipcRenderer.sendSync(channel.main.store.size),
-		set: (...args) => ipcRenderer.send(channel.main.store.set, ...args),
-		get: (...args) => ipcRenderer.sendSync(channel.main.store.get, ...args),
-		remove: (...args) => ipcRenderer.send(channel.main.store.remove, ...args),
-		clear: () => ipcRenderer.send(channel.main.store.clear),
-		key: (...args) => ipcRenderer.sendSync(channel.main.store.key, ...args),
-	},
 	// pinia operations
 	pinia: {
 		change: (...args) => ipcRenderer.send(channel.main.pinia.change, ...args),

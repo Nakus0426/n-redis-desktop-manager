@@ -10,14 +10,14 @@
 		</div>
 		<div class="body" ref="bodyRef">
 			<TCollapse borderless>
-				<TCollapsePanel v-for="item in 50" :header="String(item)" class="link">
+				<TCollapsePanel v-for="item in linksStore.links" :header="item.name" :key="item.id" class="link">
 					<template #headerRightContent>
 						<TDropdown>
 							<div class="link_action" @click.stop>
 								<Icon height="16" width="16" icon="fluent:more-vertical-20-regular" />
 							</div>
 							<TDropdownMenu>
-								<TDropdownItem :divider="true">
+								<TDropdownItem :divider="true" @click="handleLinkTopClick()">
 									<template #prefixIcon><Icon height="16" width="16" icon="fluent:padding-top-20-regular" /></template>
 									<span>置顶</span>
 								</TDropdownItem>
@@ -29,7 +29,7 @@
 									<template #prefixIcon><Icon height="16" width="16" icon="fluent:settings-20-regular" /></template>
 									<span>编辑</span>
 								</TDropdownItem>
-								<TDropdownItem theme="error">
+								<TDropdownItem theme="error" @click="handleLinkRemoveClick(item.id)">
 									<template #prefixIcon><Icon height="16" width="16" icon="fluent:delete-20-regular" /></template>
 									<span>删除</span>
 								</TDropdownItem>
@@ -39,6 +39,13 @@
 					<div class="link_content">123</div>
 				</TCollapsePanel>
 			</TCollapse>
+			<Empty
+				description="点击添加连接"
+				icon="addToInbox"
+				:clickable="emptyClickable"
+				v-if="isEmpty"
+				@click="handleEmptyClick()"
+			/>
 		</div>
 		<Edit ref="editRef" />
 	</div>
@@ -47,6 +54,13 @@
 <script setup lang="ts">
 import { useOverlayScrollbars } from 'overlayscrollbars-vue'
 import Edit from './Edit.vue'
+import { useLinksStore } from '@/store'
+import { DialogPlugin, MessagePlugin } from 'tdesign-vue-next'
+
+const linksStore = useLinksStore()
+
+// is links empty
+const isEmpty = computed(() => linksStore.links.length === 0)
 
 // scrollbar
 const bodyRef = ref()
@@ -55,8 +69,40 @@ onMounted(() => initScrollBar(bodyRef.value))
 
 // handle add or edit link event
 const editRef = ref<InstanceType<typeof Edit>>()
-function handleEditLinkClick() {
+function handleEditLinkClick(id?: string) {
 	editRef.value.open()
+}
+
+// handle top link event
+function handleLinkTopClick() {
+	console.log('top')
+}
+
+// handle remove link event
+function handleLinkRemoveClick(id: string) {
+	const loading = ref(false)
+	const dialogInstance = DialogPlugin.confirm({
+		header: '删除连接',
+		body: '确定要删除该连接吗？',
+		theme: 'danger',
+		confirmBtn: { loading: loading.value },
+		onConfirm: async () => {
+			try {
+				loading.value = true
+				await linksStore.removeLink(id)
+				MessagePlugin.success('删除成功')
+				dialogInstance.destroy()
+			} finally {
+				loading.value = false
+			}
+		},
+	})
+}
+
+// handle empty click event
+const emptyClickable = ref(true)
+function handleEmptyClick() {
+	handleEditLinkClick()
 }
 </script>
 
@@ -84,6 +130,11 @@ function handleEditLinkClick() {
 .body {
 	flex: 1;
 
+	&:has(.empty) {
+		display: flex;
+		align-items: center;
+	}
+
 	:deep(.t-collapse-panel__wrapper) {
 		overflow: visible;
 	}
@@ -93,7 +144,6 @@ function handleEditLinkClick() {
 		top: 0;
 		background-color: var(--td-bg-color-container);
 		transition: background-color var(--td-transition);
-		box-shadow: 0 1px 0 var(--td-component-stroke);
 
 		&:hover {
 			background-color: var(--td-bg-color-container-hover);
@@ -106,6 +156,7 @@ function handleEditLinkClick() {
 
 	:deep(.t-collapse-panel__body) {
 		background-color: var(--td-bg-color-secondarycontainer);
+		border-top: 1px solid var(--td-component-stroke);
 		border-bottom: 1px solid var(--td-component-stroke);
 	}
 }

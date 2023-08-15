@@ -6,7 +6,7 @@
 
 <script setup lang="ts">
 import { tdesignConfig } from '@/config'
-import { Theme, useAppStore } from '@/store'
+import { Theme, useAppStore, useLinksStore } from '@/store'
 import { useI18n } from 'vue-i18n'
 
 const appStore = useAppStore()
@@ -43,6 +43,9 @@ function setAppTheme(theme: Theme) {
 const { locale } = useI18n()
 const systemLocale = window.mainWindow.getSystemLocale()
 locale.value = appStore.locale ? appStore.locale : systemLocale
+
+// init links store
+useLinksStore().syncLinks()
 </script>
 
 <style scoped lang="scss"></style>

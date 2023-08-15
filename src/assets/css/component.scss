@@ -22,7 +22,12 @@
 	}
 
 	&__body {
-		padding: 0;
+		padding: 0 var(--td-comp-paddingLR-l) var(--td-comp-paddingLR-l) var(--td-comp-paddingLR-l);
+
+		&__icon,
+		&--icon {
+			padding: 0 var(--td-comp-paddingLR-l) var(--td-comp-paddingLR-l) var(--td-comp-paddingLR-l);
+		}
 	}
 
 	&__footer {
@@ -30,4 +35,10 @@
 		padding: var(--td-comp-paddingLR-l);
 		background-color: var(--td-bg-color-secondarycontainer);
 	}
+}
+
+// animate.css
+.animate__animated.animate__faster {
+	-webkit-animation-duration: calc(0.3s / 2) !important;
+	animation-duration: calc(0.3s / 2) !important;
 }

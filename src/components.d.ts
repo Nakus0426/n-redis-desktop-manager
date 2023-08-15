@@ -9,6 +9,8 @@ declare module 'vue' {
   export interface GlobalComponents {
     ContainerWithSider: typeof import('./components/ContainerWithSider.vue')['default']
     Dialog: typeof import('./components/Dialog.vue')['default']
+    Empty: typeof import('./components/Empty.vue')['default']
+    HelpTooltip: typeof import('./components/HelpTooltip.vue')['default']
     Icon: typeof import('@iconify/vue')['Icon']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
@@ -25,7 +27,12 @@ declare module 'vue' {
     TForm: typeof import('tdesign-vue-next')['Form']
     TFormItem: typeof import('tdesign-vue-next')['FormItem']
     TInput: typeof import('tdesign-vue-next')['Input']
+    TInputAdornment: typeof import('tdesign-vue-next')['InputAdornment']
+    TInputNumber: typeof import('tdesign-vue-next')['InputNumber']
+    TOption: typeof import('tdesign-vue-next')['Option']
     TRow: typeof import('tdesign-vue-next')['Row']
+    TSelect: typeof import('tdesign-vue-next')['Select']
+    TSwitch: typeof import('tdesign-vue-next')['Switch']
     TTooltip: typeof import('tdesign-vue-next')['Tooltip']
     WindowActionsOverlay: typeof import('./components/WindowActionsOverlay.vue')['default']
   }

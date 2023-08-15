@@ -12,15 +12,6 @@ export const channel = {
 		// app operations
 		getAppTheme: 'main:getAppTheme',
 		getSystemLocale: 'main:getSystemLocale',
-		// storage operations
-		store: {
-			size: 'main:storage:size',
-			set: 'main:storage:set',
-			get: 'main:storage:get',
-			remove: 'main:storage:remove',
-			clear: 'main:storage:clear',
-			key: 'main:storage:key',
-		},
 		// pinia operations
 		pinia: {
 			change: 'main:pinia:change',

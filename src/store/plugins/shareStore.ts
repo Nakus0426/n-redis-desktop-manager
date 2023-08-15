@@ -5,6 +5,9 @@ declare module 'pinia' {
 	export interface PiniaCustomProperties {
 		storeVersion: string
 	}
+	export interface DefineStoreOptionsBase<S, Store> {
+		persist?: boolean
+	}
 }
 
 /** store cache prefix */
@@ -27,7 +30,8 @@ function getStoreVersion(key: string) {
 }
 
 /** share store plugin */
-export function shareStorePlugin({ store }: PiniaPluginContext) {
+export function shareStorePlugin({ store, options }: PiniaPluginContext) {
+	if (!options?.persist) return
 	const storeName = store.$id
 	const storeVersionKey = STORE_CACHE_VERSION_KEY_PREFIX + storeName
 	let currentStoreVersion = getStoreVersion(storeVersionKey)

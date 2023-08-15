@@ -4,7 +4,7 @@
 		<div class="body">
 			<RouterView>
 				<template #default="{ Component }">
-					<Transition name="zoom-fade" mode="out-in" appear>
+					<Transition enter-active-class="animate__animated animate__fadeInUp animate__faster" mode="out-in" appear>
 						<component :is="Component" />
 					</Transition>
 				</template>

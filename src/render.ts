@@ -8,6 +8,7 @@ import { setupI18n } from '@/locales'
 
 import 'overlayscrollbars/overlayscrollbars.css'
 import '@/assets/css/index.scss'
+import 'animate.css'
 
 setupIconify()
 

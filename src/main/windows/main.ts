@@ -1,6 +1,5 @@
 import { ipcMain, BrowserWindow, nativeTheme, app } from 'electron'
 import path from 'path'
-import Store from 'electron-store'
 import { SettingWindow } from './setting'
 import { channel } from './channels'
 import { RedisUtil } from '@/utils'
@@ -19,8 +18,6 @@ export function createMainWindow() {
 			nodeIntegration: true,
 		},
 	})
-
-	const store = new Store()
 
 	mainWindow.on('ready-to-show', () => {
 		mainWindow.show()
@@ -53,20 +50,6 @@ export function createMainWindow() {
 	})
 	ipcMain.on(channel.main.getSystemLocale, event => {
 		event.returnValue = app.getSystemLocale()
-	})
-
-	// storage operations
-	ipcMain.on(channel.main.store.size, event => {
-		event.returnValue = store.size
-	})
-	ipcMain.on(channel.main.store.set, (event, key, value) => store.set(key, value))
-	ipcMain.on(channel.main.store.get, (event, key, defaultValue) => {
-		event.returnValue = store.get(key, defaultValue)
-	})
-	ipcMain.on(channel.main.store.remove, (event, key) => store.delete(key))
-	ipcMain.on(channel.main.store.clear, () => store.clear())
-	ipcMain.on(channel.main.store.key, (event, index) => {
-		event.returnValue = Object.keys(store.store)[index]
 	})
 
 	// pinia operations

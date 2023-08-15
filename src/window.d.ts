@@ -37,41 +37,6 @@ export interface MainWindow {
 	getSystemLocale: () => string
 
 	/**
-	 * storage
-	 */
-	store: {
-		/**
-		 * get storage size
-		 */
-		size: () => number
-
-		/**
-		 * set an storage item
-		 */
-		set: (key: string, value: string) => void
-
-		/**
-		 * get an storage item
-		 */
-		get: <T = any>(key: string, defaultValue?: T) => T
-
-		/**
-		 * remove an storage item
-		 */
-		remove: (key: string) => void
-
-		/**
-		 * clear all storage items
-		 */
-		clear: () => void
-
-		/**
-		 * get storage key by index
-		 */
-		key: (index: number) => string
-	}
-
-	/**
 	 * pinia
 	 */
 	pinia: {
