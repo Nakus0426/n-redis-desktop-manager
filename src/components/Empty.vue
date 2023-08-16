@@ -12,7 +12,7 @@ type Icon = 'emptyInbox' | 'nothingHere' | 'addToInbox'
 type Size = 'medium' | 'large'
 const props = withDefaults(
 	defineProps<{
-		icon?: Icon
+		icon?: Icon | string
 		size?: Size
 		description?: string
 		clickable?: boolean

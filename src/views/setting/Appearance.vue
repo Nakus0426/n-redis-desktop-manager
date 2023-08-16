@@ -34,7 +34,7 @@ function isThemeActived(theme: Theme) {
 }
 
 function handleThemeClick(theme: Theme) {
-	appStore.theme = theme
+	appStore.setTheme(theme)
 }
 </script>
 

@@ -1,8 +1,8 @@
 <template>
 	<Dialog
 		v-model:visible="visible"
-		title="新增连接"
-		icon="fluent:add-circle-20-regular"
+		:title="title.text"
+		:icon="title.icon"
 		:width="800"
 		:close-on-overlay-click="false"
 		:confirm-btn="confirmButtonProps"
@@ -66,12 +66,28 @@
 import { type FormRules, type FormInstanceFunctions, ButtonProps, MessagePlugin } from 'tdesign-vue-next'
 import { type Link, useLinksStore } from '@/store'
 import { nanoid } from 'nanoid'
+import { cloneDeep } from 'lodash-es'
+
+const emit = defineEmits<{ (event: 'update', id: string) }>()
+
+const linksStore = useLinksStore()
 
 // open
+const isEdit = ref(false)
 const visible = ref(false)
-async function open() {
+async function open(id?: string) {
+	isEdit.value = !!id
+	if (isEdit.value) {
+		data.value = cloneDeep(linksStore.links.find(link => link.id === id))
+	}
 	visible.value = true
 }
+
+// dialog title
+const title = computed(() => ({
+	text: isEdit.value ? '编辑连接' : '新增连接',
+	icon: isEdit.value ? 'fluent:settings-20-regular' : 'fluent:add-circle-20-regular',
+}))
 
 // form rules
 const rules = computed<FormRules>(() => ({
@@ -109,8 +125,13 @@ async function handleConfirmClick() {
 		loading.value = true
 		const validate = await formRef.value.validate()
 		if (validate !== true) return
-		await useLinksStore().addLinks(data.value)
-		MessagePlugin.success('新增成功')
+		if (isEdit.value) {
+			await linksStore.updateLink(data.value)
+			emit('update', data.value.id)
+		} else {
+			await linksStore.addLinks(data.value)
+		}
+		MessagePlugin.success('保存成功')
 		visible.value = false
 	} finally {
 		loading.value = false

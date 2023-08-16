@@ -1,7 +1,7 @@
 <template>
 	<div class="sider">
 		<div class="header">
-			<TInput>
+			<TInput placeholder="搜索" v-model="keyword">
 				<template #prefixIcon><Icon height="16" width="16" icon="fluent:search-20-regular" /></template>
 			</TInput>
 			<TButton variant="dashed" theme="default" @click="handleEditLinkClick()">
@@ -9,23 +9,31 @@
 			</TButton>
 		</div>
 		<div class="body" ref="bodyRef">
-			<TCollapse borderless>
-				<TCollapsePanel v-for="item in linksStore.links" :header="item.name" :key="item.id" class="link">
+			<TCollapse borderless expand-mutex @change="handleLinkCollapseChange">
+				<TCollapsePanel
+					v-for="item in filteredLinks"
+					:key="item.id"
+					:header="item.name"
+					class="link"
+					:class="{ 'is-top': item.top }"
+				>
 					<template #headerRightContent>
 						<TDropdown>
 							<div class="link_action" @click.stop>
 								<Icon height="16" width="16" icon="fluent:more-vertical-20-regular" />
 							</div>
 							<TDropdownMenu>
-								<TDropdownItem :divider="true" @click="handleLinkTopClick()">
-									<template #prefixIcon><Icon height="16" width="16" icon="fluent:padding-top-20-regular" /></template>
-									<span>置顶</span>
+								<TDropdownItem :divider="true" @click="handleLinkTopClick(item.id, item.top)">
+									<template #prefixIcon>
+										<Icon height="16" width="16" :icon="generateTopDropdownItem(item.top).icon" />
+									</template>
+									<span>{{ generateTopDropdownItem(item.top).text }}</span>
 								</TDropdownItem>
 								<TDropdownItem theme="warning">
 									<template #prefixIcon><Icon height="16" width="16" icon="fluent:power-20-regular" /></template>
 									<span>关闭</span>
 								</TDropdownItem>
-								<TDropdownItem>
+								<TDropdownItem @click="handleEditLinkClick(item.id)">
 									<template #prefixIcon><Icon height="16" width="16" icon="fluent:settings-20-regular" /></template>
 									<span>编辑</span>
 								</TDropdownItem>
@@ -36,18 +44,20 @@
 							</TDropdownMenu>
 						</TDropdown>
 					</template>
-					<div class="link_content">123</div>
+					<TLoading class="link_content" :loading="linkLoadingMap.get(item.id) ?? false">
+						<TTree :data="tree" expand-mutex expand-on-click-node hover line check-strictly></TTree>
+					</TLoading>
 				</TCollapsePanel>
 			</TCollapse>
 			<Empty
-				description="点击添加连接"
-				icon="addToInbox"
-				:clickable="emptyClickable"
-				v-if="isEmpty"
+				:description="emptyStatus.description"
+				:icon="emptyStatus.icon"
+				:clickable="emptyStatus.clickable"
+				v-if="emptyStatus.visible"
 				@click="handleEmptyClick()"
 			/>
 		</div>
-		<Edit ref="editRef" />
+		<Edit ref="editRef" @update="handleLinkUpdate" />
 	</div>
 </template>
 
@@ -55,12 +65,30 @@
 import { useOverlayScrollbars } from 'overlayscrollbars-vue'
 import Edit from './Edit.vue'
 import { useLinksStore } from '@/store'
-import { DialogPlugin, MessagePlugin } from 'tdesign-vue-next'
+import { type CollapseValue, DialogPlugin, MessagePlugin } from 'tdesign-vue-next'
 
 const linksStore = useLinksStore()
 
+// keyword filter
+const keyword = ref<string>()
+const filteredLinks = computed(() => {
+	if (!keyword.value) return linksStore.links
+	return linksStore.links.filter(item => item.name.includes(keyword.value))
+})
+
 // is links empty
-const isEmpty = computed(() => linksStore.links.length === 0)
+const emptyStatus = computed(() => {
+	const visible = filteredLinks.value.length === 0
+	const clickable = !keyword.value
+	const description = clickable ? '点击添加连接' : '没有找到相关连接'
+	const icon = clickable ? 'addToInbox' : 'nothingHere'
+	return { visible, clickable, description, icon }
+})
+
+// handle empty click event
+function handleEmptyClick() {
+	handleEditLinkClick()
+}
 
 // scrollbar
 const bodyRef = ref()
@@ -70,12 +98,21 @@ onMounted(() => initScrollBar(bodyRef.value))
 // handle add or edit link event
 const editRef = ref<InstanceType<typeof Edit>>()
 function handleEditLinkClick(id?: string) {
-	editRef.value.open()
+	editRef.value.open(id)
 }
 
+// handle link update event
+function handleLinkUpdate() {}
+
 // handle top link event
-function handleLinkTopClick() {
-	console.log('top')
+function generateTopDropdownItem(top: boolean) {
+	return {
+		text: top ? '取消置顶' : '置顶',
+		icon: top ? 'fluent:pin-off-20-regular' : 'fluent:pin-20-regular',
+	}
+}
+function handleLinkTopClick(id: string, top: boolean) {
+	top ? linksStore.cancelTopLink(id) : linksStore.topLink(id)
 }
 
 // handle remove link event
@@ -99,11 +136,60 @@ function handleLinkRemoveClick(id: string) {
 	})
 }
 
-// handle empty click event
-const emptyClickable = ref(true)
-function handleEmptyClick() {
-	handleEditLinkClick()
+// handle collapse change
+const linkLoadingMap = ref(new Map<string, boolean>())
+function handleLinkCollapseChange(value: CollapseValue) {
+	if (!value || value.length === 0) return
+	const link = filteredLinks.value[value[0]]
+	// linkLoadingMap.value.set(link.id, true)
 }
+
+const tree = [
+	{
+		label: '第一段',
+		children: [
+			{
+				label: '第一段',
+			},
+			{
+				label: '第二段',
+			},
+		],
+	},
+	{
+		label: '第二段',
+		children: [
+			{
+				label: '第一段',
+			},
+			{
+				label: '第二段',
+			},
+		],
+	},
+	{
+		label: '第三段',
+		children: [
+			{
+				label: '第一段',
+			},
+			{
+				label: '第二段',
+			},
+		],
+	},
+	{
+		label: '第四段',
+		children: [
+			{
+				label: '第一段',
+			},
+			{
+				label: '第二段',
+			},
+		],
+	},
+]
 </script>
 
 <style scoped lang="scss">
@@ -118,7 +204,6 @@ function handleEmptyClick() {
 	display: flex;
 	gap: var(--td-comp-margin-s);
 	padding: var(--td-comp-paddingTB-m);
-	border-bottom: 1px solid var(--td-component-stroke);
 	-webkit-app-region: drag;
 
 	div,
@@ -142,6 +227,7 @@ function handleEmptyClick() {
 	:deep(.t-collapse-panel__header) {
 		position: sticky;
 		top: 0;
+		z-index: 1;
 		background-color: var(--td-bg-color-container);
 		transition: background-color var(--td-transition);
 
@@ -155,13 +241,29 @@ function handleEmptyClick() {
 	}
 
 	:deep(.t-collapse-panel__body) {
-		background-color: var(--td-bg-color-secondarycontainer);
-		border-top: 1px solid var(--td-component-stroke);
+		background-color: var(--td-bg-color-page);
 		border-bottom: 1px solid var(--td-component-stroke);
+	}
+
+	:deep(.t-collapse-panel__content) {
+		padding: 0;
 	}
 }
 
 .link {
+	&.is-top {
+		:deep(.t-collapse-panel__header::before) {
+			content: '';
+			position: absolute;
+			left: 0;
+			top: 0;
+			background-color: var(--td-brand-color);
+			width: 14px;
+			height: 14px;
+			clip-path: polygon(0 0, 0% 100%, 100% 0);
+		}
+	}
+
 	&_action {
 		display: flex;
 		align-items: center;
@@ -171,6 +273,19 @@ function handleEmptyClick() {
 		padding: var(--td-comp-paddingLR-xxs);
 		transition: opacity var(--td-transition);
 		opacity: 0;
+	}
+
+	&_content {
+		padding: var(--td-comp-paddingLR-s) var(--td-comp-paddingLR-m);
+
+		:deep(.t-is-active .t-tree__label) {
+			background-color: var(--td-brand-color);
+			color: #ffffff;
+		}
+
+		:deep(.t-tree--hoverable .t-tree__label:not(.t-is-active):not(.t-is-checked):hover) {
+			background-color: var(--td-bg-color-container-active);
+		}
 	}
 }
 </style>

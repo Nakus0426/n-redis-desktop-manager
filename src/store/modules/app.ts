@@ -18,9 +18,17 @@ export const useAppStore = defineStore(
 		 */
 		const locale = ref<string>()
 
+		/**
+		 * toggle theme
+		 */
+		function setTheme(_theme: Theme) {
+			theme.value = _theme
+		}
+
 		return {
 			theme,
 			locale,
+			setTheme,
 		}
 	},
 	{ persist: true }

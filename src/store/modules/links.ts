@@ -10,6 +10,7 @@ export interface Link {
 	username: string
 	password: string
 	separator: string
+	top?: boolean
 }
 
 enum LinkKeys {
@@ -50,22 +51,52 @@ export const useLinksStore = defineStore('Links', () => {
 		if (res) normalLinks.value = clonedLinks
 	}
 
+	/** update link */
+	async function updateLink(link: Link) {
+		const clonedLinks = cloneDeep(link.top ? topLinks.value : normalLinks.value)
+		const linkIndex = clonedLinks.findIndex(item => item.id === link.id)
+		clonedLinks.splice(linkIndex, 1, link)
+		const res = await localForage.setItem(
+			link.top ? LinkKeys.TopLinks : LinkKeys.NormalLinks,
+			JSON.stringify(clonedLinks)
+		)
+		if (res) {
+			if (link.top) topLinks.value = clonedLinks
+			else normalLinks.value = clonedLinks
+		}
+	}
+
 	/** placing link on top */
 	async function topLink(id: string) {
+		const clonedTopLinks = cloneDeep(topLinks.value)
 		const clonedNormalLinks = cloneDeep(normalLinks.value)
 		const linkIndex = clonedNormalLinks.findIndex(link => link.id === id)
-		clonedNormalLinks.splice(linkIndex, 1)
-		const removeNormalLinkRes = await localForage.setItem(LinkKeys.NormalLinks, JSON.stringify(clonedNormalLinks))
-		if (removeNormalLinkRes) normalLinks.value.splice(linkIndex, 1)
-
-		const clonedTopLinks = cloneDeep(topLinks.value)
 		const link = normalLinks.value[linkIndex]
+		link.top = true
 		clonedTopLinks.push(link)
 		const addTopLinkRes = await localForage.setItem(LinkKeys.TopLinks, JSON.stringify(clonedTopLinks))
 		if (addTopLinkRes) topLinks.value = clonedTopLinks
+		clonedNormalLinks.splice(linkIndex, 1)
+		const removeNormalLinkRes = await localForage.setItem(LinkKeys.NormalLinks, JSON.stringify(clonedNormalLinks))
+		if (removeNormalLinkRes) normalLinks.value.splice(linkIndex, 1)
 	}
 
-	return { links, syncLinks, addLinks, removeLink, topLink }
+	/** cancel placing link on top */
+	async function cancelTopLink(id: string) {
+		const clonedTopLinks = cloneDeep(topLinks.value)
+		const clonedNormalLinks = cloneDeep(normalLinks.value)
+		const linkIndex = clonedTopLinks.findIndex(link => link.id === id)
+		const link = topLinks.value[linkIndex]
+		link.top = false
+		clonedNormalLinks.push(link)
+		const addNormalLinkRes = await localForage.setItem(LinkKeys.NormalLinks, JSON.stringify(clonedNormalLinks))
+		if (addNormalLinkRes) normalLinks.value = clonedNormalLinks
+		clonedTopLinks.splice(linkIndex, 1)
+		const removeTopLinkRes = await localForage.setItem(LinkKeys.TopLinks, JSON.stringify(clonedTopLinks))
+		if (removeTopLinkRes) topLinks.value.splice(linkIndex, 1)
+	}
+
+	return { links, syncLinks, addLinks, removeLink, updateLink, topLink, cancelTopLink }
 })
 
 if (import.meta.hot) import.meta.hot.accept(acceptHMRUpdate(useLinksStore, import.meta.hot))

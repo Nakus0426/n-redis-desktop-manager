@@ -29,11 +29,13 @@ declare module 'vue' {
     TInput: typeof import('tdesign-vue-next')['Input']
     TInputAdornment: typeof import('tdesign-vue-next')['InputAdornment']
     TInputNumber: typeof import('tdesign-vue-next')['InputNumber']
+    TLoading: typeof import('tdesign-vue-next')['Loading']
     TOption: typeof import('tdesign-vue-next')['Option']
     TRow: typeof import('tdesign-vue-next')['Row']
     TSelect: typeof import('tdesign-vue-next')['Select']
     TSwitch: typeof import('tdesign-vue-next')['Switch']
     TTooltip: typeof import('tdesign-vue-next')['Tooltip']
+    TTree: typeof import('tdesign-vue-next')['Tree']
     WindowActionsOverlay: typeof import('./components/WindowActionsOverlay.vue')['default']
   }
 }
