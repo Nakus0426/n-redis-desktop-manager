@@ -22,11 +22,24 @@ enum LinkKeys {
  * links store
  */
 export const useLinksStore = defineStore('Links', () => {
+	/**
+	 * array of links
+	 */
 	const links = computed<Link[]>(() => topLinks.value.concat(normalLinks.value))
+
+	/**
+	 * array of top links
+	 */
 	const topLinks = ref<Link[]>([])
+
+	/**
+	 * array of normal links
+	 */
 	const normalLinks = ref<Link[]>([])
 
-	/** sync stored links data */
+	/**
+	 *  sync stored links data
+	 */
 	async function syncLinks() {
 		const storedNormalLiks = await localForage.getItem<string>(LinkKeys.NormalLinks)
 		const storedTopLiks = await localForage.getItem<string>(LinkKeys.TopLinks)
@@ -34,7 +47,9 @@ export const useLinksStore = defineStore('Links', () => {
 		topLinks.value = storedTopLiks ? JSON.parse(storedTopLiks) : []
 	}
 
-	/** add links */
+	/**
+	 * add links
+	 */
 	async function addLinks(link: Link) {
 		const clonedLinks = cloneDeep(normalLinks.value)
 		clonedLinks.push(link)
@@ -42,7 +57,9 @@ export const useLinksStore = defineStore('Links', () => {
 		if (res) normalLinks.value = clonedLinks
 	}
 
-	/** remove link */
+	/**
+	 * remove link
+	 */
 	async function removeLink(id: string) {
 		const clonedLinks = cloneDeep(normalLinks.value)
 		const linkIndex = clonedLinks.findIndex(link => link.id === id)
@@ -51,7 +68,9 @@ export const useLinksStore = defineStore('Links', () => {
 		if (res) normalLinks.value = clonedLinks
 	}
 
-	/** update link */
+	/**
+	 * update link
+	 */
 	async function updateLink(link: Link) {
 		const clonedLinks = cloneDeep(link.top ? topLinks.value : normalLinks.value)
 		const linkIndex = clonedLinks.findIndex(item => item.id === link.id)
@@ -66,7 +85,9 @@ export const useLinksStore = defineStore('Links', () => {
 		}
 	}
 
-	/** placing link on top */
+	/**
+	 * placing link on top
+	 */
 	async function topLink(id: string) {
 		const clonedTopLinks = cloneDeep(topLinks.value)
 		const clonedNormalLinks = cloneDeep(normalLinks.value)
@@ -81,7 +102,9 @@ export const useLinksStore = defineStore('Links', () => {
 		if (removeNormalLinkRes) normalLinks.value.splice(linkIndex, 1)
 	}
 
-	/** cancel placing link on top */
+	/**
+	 * cancel placing link on top
+	 */
 	async function cancelTopLink(id: string) {
 		const clonedTopLinks = cloneDeep(topLinks.value)
 		const clonedNormalLinks = cloneDeep(normalLinks.value)

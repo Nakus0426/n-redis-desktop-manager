@@ -18,7 +18,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@iconify/json": "^2.2.100",
+    "@iconify/json": "^2.2.102",
     "@iconify/vue": "^4.1.1",
     "@intlify/unplugin-vue-i18n": "^0.12.2",
     "@vitejs/plugin-vue-jsx": "^3.0.1",
@@ -32,7 +32,7 @@
     "pinia": "^2.1.6",
     "pinia-plugin-persistedstate": "^3.2.0",
     "redis": "^4.6.7",
-    "tdesign-vue-next": "^1.4.2",
+    "tdesign-vue-next": "^1.5.1",
     "vue-i18n": "^9.2.2",
     "vue-router": "^4.2.4"
   },
@@ -46,7 +46,7 @@
     "@electron-forge/plugin-vite": "^6.3.0",
     "@types/lodash-es": "^4.17.8",
     "@vitejs/plugin-vue": "^4.2.3",
-    "electron": "^25.5.0",
+    "electron": "^26.0.0",
     "sass": "^1.65.1",
     "unplugin-auto-import": "^0.16.6",
     "unplugin-vue-components": "^0.25.1",

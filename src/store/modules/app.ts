@@ -19,7 +19,7 @@ export const useAppStore = defineStore(
 		const locale = ref<string>()
 
 		/**
-		 * toggle theme
+		 * change theme
 		 */
 		function setTheme(_theme: Theme) {
 			theme.value = _theme

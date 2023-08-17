@@ -2,8 +2,8 @@ lockfileVersion: '6.0'
 
 dependencies:
   '@iconify/json':
-    specifier: ^2.2.100
-    version: registry.npmmirror.com/@iconify/json@2.2.100
+    specifier: ^2.2.102
+    version: registry.npmmirror.com/@iconify/json@2.2.102
   '@iconify/vue':
     specifier: ^4.1.1
     version: registry.npmmirror.com/@iconify/vue@4.1.1(vue@3.3.4)
@@ -44,8 +44,8 @@ dependencies:
     specifier: ^4.6.7
     version: registry.npmmirror.com/redis@4.6.7
   tdesign-vue-next:
-    specifier: ^1.4.2
-    version: registry.npmmirror.com/tdesign-vue-next@1.4.2(vue@3.3.4)
+    specifier: ^1.5.1
+    version: registry.npmmirror.com/tdesign-vue-next@1.5.1(vue@3.3.4)
   vue-i18n:
     specifier: ^9.2.2
     version: 9.2.2(vue@3.3.4)
@@ -82,8 +82,8 @@ devDependencies:
     specifier: ^4.2.3
     version: registry.npmmirror.com/@vitejs/plugin-vue@4.2.3(vite@4.4.9)(vue@3.3.4)
   electron:
-    specifier: ^25.5.0
-    version: registry.npmmirror.com/electron@25.5.0
+    specifier: ^26.0.0
+    version: registry.npmmirror.com/electron@26.0.0
   sass:
     specifier: ^1.65.1
     version: registry.npmmirror.com/sass@1.65.1
@@ -1771,17 +1771,17 @@ packages:
     requiresBuild: true
     optional: true
 
-  registry.npmmirror.com/@iconify/json@2.2.100:
-    resolution: {integrity: sha512-tJM8AI5ktJFf5BKSgwkvfwq2WFD44X+jVsReevVS10yKny3+tbdrL5IfkG5kQ8KdSXpkeKjPBu2LDU0Bmd7DoA==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@iconify/json/-/json-2.2.100.tgz}
+  registry.npmmirror.com/@iconify/json@2.2.102:
+    resolution: {integrity: sha512-GzTbgFxu5KF17HYj1i4gCr6qpIeEOuFsVEuuePy33vH1vs2IA0a0ox/ZVQDBWhNZHYAIZHL6XBC4m/vsr0J+qA==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@iconify/json/-/json-2.2.102.tgz}
     name: '@iconify/json'
-    version: 2.2.100
+    version: 2.2.102
     dependencies:
       '@iconify/types': registry.npmmirror.com/@iconify/types@2.0.0
       pathe: registry.npmmirror.com/pathe@1.1.1
     dev: false
 
   registry.npmmirror.com/@iconify/types@2.0.0:
-    resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==, registry: https://registry.npmjs.org/, tarball: https://registry.npmmirror.com/@iconify/types/-/types-2.0.0.tgz}
+    resolution: {integrity: sha512-+wluvCrRhXrhyOmRDJ3q8mux9JkKy5SJ/v8ol2tu4FVjyYvtEzkc/3pK15ET6RKg4b4w4BmTk1+gsCUhf21Ykg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/@iconify/types/-/types-2.0.0.tgz}
     name: '@iconify/types'
     version: 2.0.0
     dev: false
@@ -3167,10 +3167,10 @@ packages:
     dev: true
     optional: true
 
-  registry.npmmirror.com/electron@25.5.0:
-    resolution: {integrity: sha512-w1DNj1LuAk0Vaas1rQ0pAkTe2gZ5YG75J27mC2m88y0G6Do5b5YoFDaF84fOGQHeQ4j8tC5LngSgWhbwmqDlrw==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/electron/-/electron-25.5.0.tgz}
+  registry.npmmirror.com/electron@26.0.0:
+    resolution: {integrity: sha512-x57bdCaDvgnlc41VOm/UWihJCCiI3OxJKiBgB/e5F7Zd6avo+61mO6IzQS7Bu/k/a1KPjou25EUORR6UPKznBQ==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/electron/-/electron-26.0.0.tgz}
     name: electron
-    version: 25.5.0
+    version: 26.0.0
     engines: {node: '>= 12.20.55'}
     hasBin: true
     requiresBuild: true
@@ -6033,11 +6033,11 @@ packages:
       yallist: registry.npmmirror.com/yallist@4.0.0
     dev: true
 
-  registry.npmmirror.com/tdesign-icons-vue-next@0.1.12(vue@3.3.4):
-    resolution: {integrity: sha512-i+hkCeq+qjI+Gau9TeSmdrvzopQZtZWb/AxFaLyKH4mmnItiiU9lpjIg9wYcLYhFONeuGhHgG0n4YhVxgW8eHA==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/tdesign-icons-vue-next/-/tdesign-icons-vue-next-0.1.12.tgz}
-    id: registry.npmmirror.com/tdesign-icons-vue-next/0.1.12
+  registry.npmmirror.com/tdesign-icons-vue-next@0.2.0(vue@3.3.4):
+    resolution: {integrity: sha512-T5M3VzplRsawyd4hFnLDAZS6xJHyJTavFdSwVXRWC1kN9BIxkxAupExbHUJWoT0fuxWjrMB7VJyxMQ8Nj5OofQ==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/tdesign-icons-vue-next/-/tdesign-icons-vue-next-0.2.0.tgz}
+    id: registry.npmmirror.com/tdesign-icons-vue-next/0.2.0
     name: tdesign-icons-vue-next
-    version: 0.1.12
+    version: 0.2.0
     peerDependencies:
       vue: ^3.0.0
     dependencies:
@@ -6045,11 +6045,11 @@ packages:
       vue: registry.npmmirror.com/vue@3.3.4
     dev: false
 
-  registry.npmmirror.com/tdesign-vue-next@1.4.2(vue@3.3.4):
-    resolution: {integrity: sha512-3c6aImb6/ygil56wYrSkHu2NK4O/RylsxwoFLspYVXM6Mq2YX7/XMxt1duY/3VfllryNwAe751z0kB27BEydIg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/tdesign-vue-next/-/tdesign-vue-next-1.4.2.tgz}
-    id: registry.npmmirror.com/tdesign-vue-next/1.4.2
+  registry.npmmirror.com/tdesign-vue-next@1.5.1(vue@3.3.4):
+    resolution: {integrity: sha512-A51Vzd2RCq11GCtl02H+U6JNQQo5am4xl2gumkVs0gSTY3Im+4z3w++uyLX6Yhv7BfCP+pFlqm2ObeIYGBDaUg==, registry: https://registry.npm.taobao.org/, tarball: https://registry.npmmirror.com/tdesign-vue-next/-/tdesign-vue-next-1.5.1.tgz}
+    id: registry.npmmirror.com/tdesign-vue-next/1.5.1
     name: tdesign-vue-next
-    version: 1.4.2
+    version: 1.5.1
     peerDependencies:
       vue: '>=3.1.0'
     dependencies:
@@ -6063,7 +6063,7 @@ packages:
       lodash: registry.npmmirror.com/lodash@4.17.21
       mitt: registry.npmmirror.com/mitt@3.0.1
       sortablejs: registry.npmmirror.com/sortablejs@1.15.0
-      tdesign-icons-vue-next: registry.npmmirror.com/tdesign-icons-vue-next@0.1.12(vue@3.3.4)
+      tdesign-icons-vue-next: registry.npmmirror.com/tdesign-icons-vue-next@0.2.0(vue@3.3.4)
       tinycolor2: registry.npmmirror.com/tinycolor2@1.6.0
       validator: registry.npmmirror.com/validator@13.9.0
       vue: registry.npmmirror.com/vue@3.3.4
