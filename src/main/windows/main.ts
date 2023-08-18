@@ -63,7 +63,17 @@ export function createMainWindow() {
 	})
 
 	// redis operations
-	ipcMain.on(channel.main.redis.create, (event, value) => redis.create(value))
-	ipcMain.on(channel.main.redis.connect, (event, value) => redis.connect(value))
-	ipcMain.on(channel.main.redis.set, (event, id, key, value, expire) => redis.set(id, key, value, expire))
+	ipcMain.handle(channel.main.redis.create, (event, value) =>
+		redis.create({
+			...value,
+			error: error => mainWindow.webContents.send(channel.main.onError, error.message),
+			ready: id => mainWindow.webContents.send(channel.main.redis.onReady, id),
+		})
+	)
+	ipcMain.handle(channel.main.redis.connect, (event, value) => redis.connect(value))
+	ipcMain.handle(channel.main.redis.disconnect, (event, value) => redis.disconnect(value))
+	ipcMain.on(channel.main.redis.isConnected, (event, value) => {
+		event.returnValue = redis.isConnected(value)
+	})
+	ipcMain.handle(channel.main.redis.set, (event, id, key, value, expire) => redis.set(id, key, value, expire))
 }

@@ -27,6 +27,26 @@ export interface MainWindow {
 	close: () => void
 
 	/**
+	 * window minimize event
+	 */
+	onMinimize: (callback: () => void) => void
+
+	/**
+	 * window maximize event
+	 */
+	onMaximize: (callback: () => void) => void
+
+	/**
+	 * window unmaximize event
+	 */
+	onUnMaximize: (callback: () => void) => void
+
+	/**
+	 * on error
+	 */
+	onError: (callback: (error: any) => void) => void
+
+	/**
 	 * get app theme
 	 */
 	getAppTheme: () => 'light' | 'dark'
@@ -57,23 +77,11 @@ export interface MainWindow {
 	redis: {
 		create: typeof import('./utils')['RedisUtil']['prototype']['create']
 		connect: typeof import('./utils')['RedisUtil']['prototype']['connect']
+		disconnect: typeof import('./utils')['RedisUtil']['prototype']['disconnect']
+		isConnected: typeof import('./utils')['RedisUtil']['prototype']['isConnected']
 		set: typeof import('./utils')['RedisUtil']['prototype']['set']
+		onReady: (callback: (id: string) => void) => void
 	}
-
-	/**
-	 * window minimize event
-	 */
-	onMinimize: (callback: () => void) => void
-
-	/**
-	 * window maximize event
-	 */
-	onMaximize: (callback: () => void) => void
-
-	/**
-	 * window unmaximize event
-	 */
-	onUnMaximize: (callback: () => void) => void
 }
 
 export interface SettingWindow {

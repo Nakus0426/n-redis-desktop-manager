@@ -9,6 +9,7 @@ export const channel = {
 		onMinimize: 'main:onMinimize',
 		onMaximize: 'main:onMaximize',
 		onUnmaximize: 'main:onUnmaximize',
+		onError: 'main:onError',
 		// app operations
 		getAppTheme: 'main:getAppTheme',
 		getSystemLocale: 'main:getSystemLocale',
@@ -21,7 +22,10 @@ export const channel = {
 		redis: {
 			create: 'main:redis:create',
 			connect: 'main:redis:connect',
+			disconnect: 'main:redis:disconnect',
+			isConnected: 'main:redis:isConnected',
 			set: 'main:redis:set',
+			onReady: 'main:redis:onReady',
 		},
 	},
 	setting: {

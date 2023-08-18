@@ -11,6 +11,7 @@ export interface Link {
 	password: string
 	separator: string
 	top?: boolean
+	connected?: boolean
 }
 
 enum LinkKeys {
@@ -119,7 +120,41 @@ export const useLinksStore = defineStore('Links', () => {
 		if (removeTopLinkRes) topLinks.value.splice(linkIndex, 1)
 	}
 
-	return { links, syncLinks, addLinks, removeLink, updateLink, topLink, cancelTopLink }
+	/**
+	 * connect link
+	 */
+	async function connectLink(id: string) {
+		const link = links.value.find(link => link.id === id)
+		const { host, port, username, password } = cloneDeep(link)
+		const url = `redis://${host}:${String(port)}`
+		await window.mainWindow.redis.create({
+			id,
+			url,
+			username,
+			password,
+			socket: { reconnectStrategy: retries => (retries > 20 ? false : 500) },
+		})
+		await window.mainWindow.redis.connect(id)
+	}
+
+	/**
+	 * disconnect link
+	 */
+	async function disconnectLink(id: string) {
+		await window.mainWindow.redis.disconnect(id)
+		const link = links.value.find(link => link.id === id)
+		link.connected = false
+	}
+
+	/**
+	 * handle redis ready event
+	 */
+	window.mainWindow.redis.onReady(id => {
+		const link = links.value.find(link => link.id === id)
+		link.connected = true
+	})
+
+	return { links, syncLinks, addLinks, removeLink, updateLink, topLink, cancelTopLink, connectLink, disconnectLink }
 })
 
 if (import.meta.hot) import.meta.hot.accept(acceptHMRUpdate(useLinksStore, import.meta.hot))

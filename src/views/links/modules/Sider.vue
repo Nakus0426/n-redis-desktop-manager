@@ -9,43 +9,63 @@
 			</TButton>
 		</div>
 		<div class="body" ref="bodyRef">
-			<TCollapse borderless expand-mutex @change="handleLinkCollapseChange">
+			<TCollapse v-model="expandedLinks" borderless expand-mutex @change="handleLinkCollapseChange">
 				<TCollapsePanel
-					v-for="item in filteredLinks"
+					v-for="(item, index) in filteredLinks"
 					:key="item.id"
 					:header="item.name"
 					class="link"
-					:class="{ 'is-top': item.top }"
+					:class="{ 'is-top': item.top, 'is-connected': item.connected }"
 				>
 					<template #headerRightContent>
-						<TDropdown>
-							<div class="link_action" @click.stop>
-								<Icon height="16" width="16" icon="fluent:more-vertical-20-regular" />
-							</div>
-							<TDropdownMenu>
-								<TDropdownItem :divider="true" @click="handleLinkTopClick(item.id, item.top)">
-									<template #prefixIcon>
-										<Icon height="16" width="16" :icon="generateTopDropdownItem(item.top).icon" />
-									</template>
-									<span>{{ generateTopDropdownItem(item.top).text }}</span>
-								</TDropdownItem>
-								<TDropdownItem theme="warning">
-									<template #prefixIcon><Icon height="16" width="16" icon="fluent:power-20-regular" /></template>
-									<span>关闭</span>
-								</TDropdownItem>
-								<TDropdownItem @click="handleEditLinkClick(item.id)">
-									<template #prefixIcon><Icon height="16" width="16" icon="fluent:settings-20-regular" /></template>
-									<span>编辑</span>
-								</TDropdownItem>
-								<TDropdownItem theme="error" @click="handleLinkRemoveClick(item.id)">
-									<template #prefixIcon><Icon height="16" width="16" icon="fluent:delete-20-regular" /></template>
-									<span>删除</span>
-								</TDropdownItem>
-							</TDropdownMenu>
-						</TDropdown>
+						<div class="link_actions" @click.stop>
+							<TDropdown>
+								<Icon class="link_actions_item is-hide" height="16" width="16" icon="fluent:more-vertical-20-regular" />
+								<TDropdownMenu>
+									<TDropdownItem :divider="true" @click="handleLinkTopClick(item.id, item.top)">
+										<template #prefixIcon>
+											<Icon height="16" width="16" :icon="generateTopDropdownItem(item.top).icon" />
+										</template>
+										<span>{{ generateTopDropdownItem(item.top).text }}</span>
+									</TDropdownItem>
+									<TDropdownItem
+										theme="warning"
+										v-if="item.connected"
+										@click="handleLinkDisconnectClick(item.id, index)"
+									>
+										<template #prefixIcon><Icon height="16" width="16" icon="fluent:power-20-regular" /></template>
+										<span>关闭</span>
+									</TDropdownItem>
+									<TDropdownItem @click="handleEditLinkClick(item.id)">
+										<template #prefixIcon><Icon height="16" width="16" icon="fluent:settings-20-regular" /></template>
+										<span>编辑</span>
+									</TDropdownItem>
+									<TDropdownItem theme="error" @click="handleLinkRemoveClick(item.id)">
+										<template #prefixIcon><Icon height="16" width="16" icon="fluent:delete-20-regular" /></template>
+										<span>删除</span>
+									</TDropdownItem>
+								</TDropdownMenu>
+							</TDropdown>
+						</div>
 					</template>
-					<TLoading class="link_content" :loading="linkLoadingMap.get(item.id) ?? false">
-						<TTree :data="tree" expand-mutex expand-on-click-node hover line check-strictly></TTree>
+					<TLoading
+						class="link_content"
+						:loading="linkLoadingMap.get(item.id) ?? false"
+						text="正在连接..."
+						size="small"
+					>
+						<div class="link_content_actions">
+							<TInput size="small" placeholder="搜索">
+								<template #prefixIcon><Icon height="14" width="14" icon="fluent:search-20-regular" /></template>
+							</TInput>
+							<TButton size="small" theme="default" variant="outline">
+								<template #icon><Icon height="15" width="15" icon="fluent:add-20-regular" /></template>
+							</TButton>
+							<TButton size="small" theme="default" variant="outline">
+								<template #icon><Icon height="15" width="15" icon="fluent:add-20-regular" /></template>
+							</TButton>
+						</div>
+						<!-- <TTree :data="tree" expand-mutex expand-on-click-node hover line check-strictly></TTree> -->
 					</TLoading>
 				</TCollapsePanel>
 			</TCollapse>
@@ -136,12 +156,26 @@ function handleLinkRemoveClick(id: string) {
 	})
 }
 
+// handle disconnect link event
+async function handleLinkDisconnectClick(id: string, index: number) {
+	await linksStore.disconnectLink(id)
+	expandedLinks.value.splice(index, 1)
+}
+
 // handle collapse change
+const expandedLinks = ref<number[]>([])
 const linkLoadingMap = ref(new Map<string, boolean>())
-function handleLinkCollapseChange(value: CollapseValue) {
+async function handleLinkCollapseChange(value: CollapseValue) {
 	if (!value || value.length === 0) return
 	const link = filteredLinks.value[value[0]]
-	// linkLoadingMap.value.set(link.id, true)
+	try {
+		linkLoadingMap.value.set(link.id, true)
+		await linksStore.connectLink(link.id)
+	} catch (error) {
+		MessagePlugin.error(error.message)
+	} finally {
+		linkLoadingMap.value.set(link.id, false)
+	}
 }
 
 const tree = [
@@ -234,7 +268,7 @@ const tree = [
 		&:hover {
 			background-color: var(--td-bg-color-container-hover);
 
-			.link_action {
+			.link_actions_item {
 				opacity: 1;
 			}
 		}
@@ -264,18 +298,43 @@ const tree = [
 		}
 	}
 
-	&_action {
+	&.is-connected {
+		:deep(.t-collapse-panel__header::after) {
+			content: '';
+			position: absolute;
+			right: var(--td-comp-paddingLR-s);
+			top: var(--td-comp-paddingLR-s);
+			background-color: var(--td-success-color);
+			width: 5px;
+			height: 5px;
+			border-radius: 50%;
+		}
+	}
+
+	&_actions {
 		display: flex;
-		align-items: center;
-		justify-content: center;
-		color: var(--td-text-color-primary);
-		border-radius: var(--td-radius-default);
-		padding: var(--td-comp-paddingLR-xxs);
-		transition: opacity var(--td-transition);
-		opacity: 0;
+		gap: var(--td-comp-margin-s);
+
+		&_item {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			color: var(--td-text-color-primary);
+			padding: var(--td-comp-paddingLR-xxs);
+			transition: all var(--td-transition);
+
+			&.is-hide {
+				opacity: 0;
+			}
+
+			&:hover {
+				color: var(--td-brand-color);
+			}
+		}
 	}
 
 	&_content {
+		min-height: 60px;
 		padding: var(--td-comp-paddingLR-s) var(--td-comp-paddingLR-m);
 
 		:deep(.t-is-active .t-tree__label) {
@@ -285,6 +344,11 @@ const tree = [
 
 		:deep(.t-tree--hoverable .t-tree__label:not(.t-is-active):not(.t-is-checked):hover) {
 			background-color: var(--td-bg-color-container-active);
+		}
+
+		&_actions {
+			display: flex;
+			gap: var(--td-comp-margin-s);
 		}
 	}
 }

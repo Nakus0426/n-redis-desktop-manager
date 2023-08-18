@@ -7,6 +7,7 @@
 <script setup lang="ts">
 import { tdesignConfig } from '@/config'
 import { Theme, useAppStore, useLinksStore } from '@/store'
+import { MessagePlugin } from 'tdesign-vue-next'
 import { useI18n } from 'vue-i18n'
 
 const appStore = useAppStore()
@@ -46,6 +47,11 @@ locale.value = appStore.locale ? appStore.locale : systemLocale
 
 // init links store
 useLinksStore().syncLinks()
+
+// app message handler
+window.mainWindow.onError(error => {
+	if (error) MessagePlugin.error(error)
+})
 </script>
 
 <style scoped lang="scss"></style>

@@ -15,6 +15,7 @@ contextBridge.exposeInMainWorld('mainWindow', {
 	onMinimize: callback => ipcRenderer.on(channel.main.onMinimize, callback),
 	onMaximize: callback => ipcRenderer.on(channel.main.onMaximize, callback),
 	onUnMaximize: callback => ipcRenderer.on(channel.main.onUnmaximize, callback),
+	onError: callback => ipcRenderer.on(channel.main.onError, (e, ...args) => callback(...args)),
 	// app operations
 	getAppTheme: () => ipcRenderer.sendSync(channel.main.getAppTheme),
 	getSystemLocale: () => ipcRenderer.sendSync(channel.main.getSystemLocale),
@@ -25,9 +26,12 @@ contextBridge.exposeInMainWorld('mainWindow', {
 	},
 	// redis operations
 	redis: {
-		create: (...args) => ipcRenderer.send(channel.main.redis.create, ...args),
-		connect: (...args) => ipcRenderer.send(channel.main.redis.connect, ...args),
-		set: (...args) => ipcRenderer.send(channel.main.redis.set, ...args),
+		create: (...args) => ipcRenderer.invoke(channel.main.redis.create, ...args),
+		connect: (...args) => ipcRenderer.invoke(channel.main.redis.connect, ...args),
+		disconnect: (...args) => ipcRenderer.invoke(channel.main.redis.disconnect, ...args),
+		isConnected: (...args) => ipcRenderer.sendSync(channel.main.redis.isConnected, ...args),
+		set: (...args) => ipcRenderer.invoke(channel.main.redis.set, ...args),
+		onReady: callback => ipcRenderer.on(channel.main.redis.onReady, (e, ...args) => callback(...args)),
 	},
 })
 
