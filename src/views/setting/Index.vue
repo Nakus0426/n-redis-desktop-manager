@@ -9,7 +9,7 @@
 				@click="handleMenuClick(CommonSettingRoute)"
 			>
 				<Icon height="16" width="16" icon="fluent:options-20-regular" />
-				<div>通用</div>
+				<div>{{ t('setting.common.title') }}</div>
 			</div>
 			<div
 				v-ripple
@@ -18,7 +18,7 @@
 				@click="handleMenuClick(AppearanceSettingRoute)"
 			>
 				<Icon height="16" width="16" icon="fluent:color-20-regular" />
-				<div>外观</div>
+				<div>{{ t('setting.appearance.title') }}</div>
 			</div>
 		</div>
 		<div class="body">

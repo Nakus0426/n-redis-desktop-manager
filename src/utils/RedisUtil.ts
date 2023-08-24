@@ -4,6 +4,9 @@ export type CreateClientOptions = {
 	id: string
 	error?: (error: any) => void
 	ready?: (id: string) => void
+	end?: (id: string) => void
+	connect?: (id: string) => void
+	reconnect?: (id: string) => void
 } & RedisClientOptions
 
 /**
@@ -24,9 +27,13 @@ export class RedisUtil {
 			await this.clients.get(options.id).disconnect()
 			this.clients.delete(options.id)
 		}
+		options.socket = { reconnectStrategy: retries => (retries > 20 ? false : 5000) }
 		const client = createClient(options)
 		client.on('error', error => options.error(error))
 		client.on('ready', () => options.ready(options.id))
+		client.on('end', () => options.end(options.id))
+		client.on('connect', () => options.connect(options.id))
+		client.on('reconnecting', () => options.reconnect(options.id))
 		this.clients.set(options.id, client)
 	}
 
@@ -49,7 +56,9 @@ export class RedisUtil {
 		this.clients.delete(id)
 	}
 
-	/** is client connected */
+	/**
+	 * is client connected
+	 */
 	isConnected(id: string) {
 		const client = this.clients.get(id)
 		if (!client) return false
@@ -57,8 +66,34 @@ export class RedisUtil {
 	}
 
 	/**
-	 * redis SET command
-	 * @param expire expire time in seconds
+	 * config get
+	 */
+	configGet(id: string, parameter: string) {
+		const client = this.clients.get(id)
+		if (!client && !client.isReady) return
+		return client.configGet(parameter)
+	}
+
+	/**
+	 * select
+	 */
+	select(id: string, db: number) {
+		const client = this.clients.get(id)
+		if (!client && !client.isReady) return
+		return client.select(db)
+	}
+
+	/**
+	 * keys
+	 */
+	keys(id: string, pattern?: string) {
+		const client = this.clients.get(id)
+		if (!client && !client.isReady) return
+		return client.keys(pattern)
+	}
+
+	/**
+	 * set
 	 */
 	set(id: string, key: string, value: string | number, expire?: number) {
 		const client = this.clients.get(id)

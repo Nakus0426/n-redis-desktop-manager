@@ -11,7 +11,7 @@ export interface Link {
 	password: string
 	separator: string
 	top?: boolean
-	connected?: boolean
+	connected?: 'connecting' | 'connected' | 'disconnected'
 }
 
 enum LinkKeys {
@@ -44,8 +44,16 @@ export const useLinksStore = defineStore('Links', () => {
 	async function syncLinks() {
 		const storedNormalLiks = await localForage.getItem<string>(LinkKeys.NormalLinks)
 		const storedTopLiks = await localForage.getItem<string>(LinkKeys.TopLinks)
-		normalLinks.value = storedNormalLiks ? JSON.parse(storedNormalLiks) : []
-		topLinks.value = storedTopLiks ? JSON.parse(storedTopLiks) : []
+		const normalLinksArr = storedNormalLiks ? JSON.parse(storedNormalLiks) : []
+		const topLinksArr = storedTopLiks ? JSON.parse(storedTopLiks) : []
+		normalLinksArr.forEach(link => {
+			link.connected = window.mainWindow.redis.isConnected(link.id) ? 'connected' : 'disconnected'
+		})
+		topLinksArr.forEach(link => {
+			link.connected = window.mainWindow.redis.isConnected(link.id) ? 'connected' : 'disconnected'
+		})
+		normalLinks.value = normalLinksArr
+		topLinks.value = topLinksArr
 	}
 
 	/**
@@ -124,16 +132,11 @@ export const useLinksStore = defineStore('Links', () => {
 	 * connect link
 	 */
 	async function connectLink(id: string) {
+		if (window.mainWindow.redis.isConnected(id)) return
 		const link = links.value.find(link => link.id === id)
 		const { host, port, username, password } = cloneDeep(link)
 		const url = `redis://${host}:${String(port)}`
-		await window.mainWindow.redis.create({
-			id,
-			url,
-			username,
-			password,
-			socket: { reconnectStrategy: retries => (retries > 20 ? false : 500) },
-		})
+		await window.mainWindow.redis.create({ id, url, username, password })
 		await window.mainWindow.redis.connect(id)
 	}
 
@@ -142,8 +145,6 @@ export const useLinksStore = defineStore('Links', () => {
 	 */
 	async function disconnectLink(id: string) {
 		await window.mainWindow.redis.disconnect(id)
-		const link = links.value.find(link => link.id === id)
-		link.connected = false
 	}
 
 	/**
@@ -151,8 +152,26 @@ export const useLinksStore = defineStore('Links', () => {
 	 */
 	window.mainWindow.redis.onReady(id => {
 		const link = links.value.find(link => link.id === id)
-		link.connected = true
+		link.connected = 'connected'
 	})
+
+	/**
+	 * handle redis end event
+	 */
+	window.mainWindow.redis.onEnd(id => {
+		const link = links.value.find(link => link.id === id)
+		link.connected = 'disconnected'
+	})
+
+	/**
+	 * handle redis connect event
+	 */
+	function handleLinkConnect(id: string) {
+		const link = links.value.find(link => link.id === id)
+		link.connected = 'connecting'
+	}
+	window.mainWindow.redis.onConnect(handleLinkConnect)
+	window.mainWindow.redis.onReconnect(handleLinkConnect)
 
 	return { links, syncLinks, addLinks, removeLink, updateLink, topLink, cancelTopLink, connectLink, disconnectLink }
 })

@@ -12,19 +12,19 @@
 		<div class="edit">
 			<TForm label-align="top" :rules="rules" :data="data" ref="formRef">
 				<div class="body">
-					<TFormItem label="名称" name="name">
+					<TFormItem :label="t('links.edit.name')" name="name">
 						<TInput v-model="data.name" clearable />
 					</TFormItem>
-					<TFormItem label="地址" name="host">
+					<TFormItem :label="t('links.edit.host')" name="host">
 						<TInput v-model="data.host" clearable />
 					</TFormItem>
-					<TFormItem label="端口" name="port">
+					<TFormItem :label="t('links.edit.port')" name="port">
 						<TInputNumber v-model="data.port" name="port" theme="column" min="0" :input-props="{ clearable: true }" />
 					</TFormItem>
-					<TFormItem label="用户名" name="username">
+					<TFormItem :label="t('links.edit.username')" name="username">
 						<TInput v-model="data.username" clearable />
 					</TFormItem>
-					<TFormItem label="密码" name="password">
+					<TFormItem :label="t('links.edit.password')" name="password">
 						<TInput v-model="data.password" clearable type="password" />
 					</TFormItem>
 					<TFormItem class="display-type" label="数据展示形式" name="separator">
@@ -64,12 +64,14 @@
 
 <script setup lang="ts">
 import { type FormRules, type FormInstanceFunctions, ButtonProps, MessagePlugin } from 'tdesign-vue-next'
-import { type Link, useLinksStore } from '@/store'
 import { nanoid } from 'nanoid'
 import { cloneDeep } from 'lodash-es'
+import { useLocale } from '@/hooks'
+import { type Link, useLinksStore } from '@/store'
 
 const emit = defineEmits<{ (event: 'update', id: string) }>()
 
+const { t } = useLocale()
 const linksStore = useLinksStore()
 
 // open
@@ -84,10 +86,12 @@ async function open(id?: string) {
 }
 
 // dialog title
-const title = computed(() => ({
-	text: isEdit.value ? '编辑连接' : '新增连接',
-	icon: isEdit.value ? 'fluent:settings-20-regular' : 'fluent:add-circle-20-regular',
-}))
+const title = computed(() => {
+	return {
+		text: isEdit.value ? t('links.edit.title.edit') : t('links.edit.title.add'),
+		icon: isEdit.value ? 'fluent:settings-20-regular' : 'fluent:add-circle-20-regular',
+	}
+})
 
 // form rules
 const rules = computed<FormRules>(() => ({

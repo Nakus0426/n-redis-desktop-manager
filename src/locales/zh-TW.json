@@ -2,10 +2,42 @@
 	"language": "繁體中文",
 	"setting": {
 		"common": {
-			"title": "通用1"
+			"title": "通用",
+			"language": {
+				"title": "語言",
+				"displayLanguage": {
+					"label": "顯示語言"
+				}
+			},
+			"appUpdate": {
+				"title": "軟體更新",
+				"autoUpdate": {
+					"label": "自動更新",
+					"desc": "開啟後將自動下載並安裝軟體更新"
+				}
+			}
 		},
 		"appearance": {
-			"title": "外觀"
+			"title": "外觀",
+			"theme": {
+				"title": "主題",
+				"light": "淺色",
+				"dark": "深色",
+				"system": "跟隨系統"
+			}
+		}
+	},
+	"links": {
+		"edit": {
+			"title": {
+				"edit": "編輯連接",
+				"add": "新增連接"
+			},
+			"name": "名稱",
+			"host": "地址",
+			"port": "端口",
+			"username": "用戶名",
+			"password": "密碼"
 		}
 	}
 }

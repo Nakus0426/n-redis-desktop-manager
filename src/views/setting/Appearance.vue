@@ -1,38 +1,36 @@
 <template>
 	<div class="appearance">
-		<Cell title="主题设置">
+		<Cell :title="t('setting.appearance.theme.title')">
 			<div class="theme" :class="isThemeActived('system')" v-ripple>
 				<div class="theme_icon system" v-ripple @click="handleThemeClick('system')"></div>
-				<div class="theme_title">跟随系统</div>
+				<div class="theme_title">{{ t('setting.appearance.theme.system') }}</div>
 			</div>
 			<div class="theme" :class="isThemeActived('light')">
 				<div class="theme_icon light" v-ripple @click="handleThemeClick('light')"></div>
-				<div class="theme_title">日间模式</div>
+				<div class="theme_title">{{ t('setting.appearance.theme.light') }}</div>
 			</div>
 			<div class="theme" :class="isThemeActived('dark')">
 				<div class="theme_icon dark" v-ripple @click="handleThemeClick('dark')"></div>
-				<div class="theme_title">夜间模式</div>
+				<div class="theme_title">{{ t('setting.appearance.theme.dark') }}</div>
 			</div>
 		</Cell>
-		<!-- <div class="cell">
-			<div class="cell_title">主题设置</div>
-			<div class="cell_content cell_content-horizontal">
-				
-			</div>
-		</div> -->
 	</div>
 </template>
 
 <script setup lang="ts">
-import Cell from './modules/Cell'
+import { useLocale } from '@/hooks'
 import { Theme, useAppStore } from '@/store'
+import Cell from './modules/Cell'
 
 const appStore = useAppStore()
+const { t } = useLocale(false)
 
+// is theme actived
 function isThemeActived(theme: Theme) {
 	return appStore.theme === theme ? 'is-actived' : ''
 }
 
+// theme switch
 function handleThemeClick(theme: Theme) {
 	appStore.setTheme(theme)
 }
@@ -52,7 +50,6 @@ function handleThemeClick(theme: Theme) {
 	display: flex;
 	flex-direction: column;
 	border-radius: var(--td-radius-medium);
-	// padding: var(--td-comp-paddingTB-s) var(--td-comp-paddingTB-s) 0 var(--td-comp-paddingTB-s);
 
 	&_icon {
 		height: 80px;

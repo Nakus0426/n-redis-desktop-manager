@@ -1,16 +1,17 @@
 <template>
-	<TConfigProvider :global-config="tdesignConfig">
+	<TConfigProvider :global-config="config">
 		<RouterView />
 	</TConfigProvider>
 </template>
 
 <script setup lang="ts">
-import { tdesignConfig } from '@/config'
-import { Theme, useAppStore, useLinksStore } from '@/store'
 import { MessagePlugin } from 'tdesign-vue-next'
 import { useI18n } from 'vue-i18n'
+import { Theme, useAppStore, useLinksStore } from '@/store'
+import { useTdesignConfig } from '@/hooks'
 
 const appStore = useAppStore()
+const { config } = useTdesignConfig()
 
 // watch app theme change and set the theme
 watch(
@@ -41,9 +42,8 @@ function setAppTheme(theme: Theme) {
 }
 
 // init app locale
-const { locale } = useI18n()
 const systemLocale = window.mainWindow.getSystemLocale()
-locale.value = appStore.locale ? appStore.locale : systemLocale
+appStore.locale = appStore.locale ? appStore.locale : systemLocale
 
 // init links store
 useLinksStore().syncLinks()

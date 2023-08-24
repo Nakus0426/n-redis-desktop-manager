@@ -30,8 +30,14 @@ contextBridge.exposeInMainWorld('mainWindow', {
 		connect: (...args) => ipcRenderer.invoke(channel.main.redis.connect, ...args),
 		disconnect: (...args) => ipcRenderer.invoke(channel.main.redis.disconnect, ...args),
 		isConnected: (...args) => ipcRenderer.sendSync(channel.main.redis.isConnected, ...args),
+		configGet: (...args) => ipcRenderer.invoke(channel.main.redis.configGet, ...args),
+		select: (...args) => ipcRenderer.invoke(channel.main.redis.select, ...args),
+		keys: (...args) => ipcRenderer.invoke(channel.main.redis.keys, ...args),
 		set: (...args) => ipcRenderer.invoke(channel.main.redis.set, ...args),
 		onReady: callback => ipcRenderer.on(channel.main.redis.onReady, (e, ...args) => callback(...args)),
+		onEnd: callback => ipcRenderer.on(channel.main.redis.onEnd, (e, ...args) => callback(...args)),
+		onConnect: callback => ipcRenderer.on(channel.main.redis.onConnect, (e, ...args) => callback(...args)),
+		onReconnect: callback => ipcRenderer.on(channel.main.redis.onReconnect, (e, ...args) => callback(...args)),
 	},
 })
 

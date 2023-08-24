@@ -4,9 +4,11 @@
 			<TInput placeholder="搜索" v-model="keyword">
 				<template #prefixIcon><Icon height="16" width="16" icon="fluent:search-20-regular" /></template>
 			</TInput>
-			<TButton variant="dashed" theme="default" @click="handleEditLinkClick()">
-				<template #icon><Icon height="16" width="16" icon="fluent:add-20-regular" /></template>
-			</TButton>
+			<TTooltip content="新增连接" :show-arrow="false" placement="right">
+				<TButton variant="dashed" theme="default" @click="handleEditLinkClick()">
+					<template #icon><Icon height="16" width="16" icon="fluent:add-20-regular" /></template>
+				</TButton>
+			</TTooltip>
 		</div>
 		<div class="body" ref="bodyRef">
 			<TCollapse v-model="expandedLinks" borderless expand-mutex @change="handleLinkCollapseChange">
@@ -15,7 +17,7 @@
 					:key="item.id"
 					:header="item.name"
 					class="link"
-					:class="{ 'is-top': item.top, 'is-connected': item.connected }"
+					:class="{ 'is-top': item.top, 'is-connected': item.connected === 'connected' }"
 				>
 					<template #headerRightContent>
 						<div class="link_actions" @click.stop>
@@ -30,7 +32,7 @@
 									</TDropdownItem>
 									<TDropdownItem
 										theme="warning"
-										v-if="item.connected"
+										v-if="['connected', 'connecting'].includes(item.connected)"
 										@click="handleLinkDisconnectClick(item.id, index)"
 									>
 										<template #prefixIcon><Icon height="16" width="16" icon="fluent:power-20-regular" /></template>
@@ -48,28 +50,59 @@
 							</TDropdown>
 						</div>
 					</template>
-					<TLoading
-						class="link_content"
-						:loading="linkLoadingMap.get(item.id) ?? false"
-						text="正在连接..."
-						size="small"
-					>
-						<div class="link_content_actions">
-							<TInput size="small" placeholder="搜索">
-								<template #prefixIcon><Icon height="14" width="14" icon="fluent:search-20-regular" /></template>
-							</TInput>
-							<TButton size="small" theme="default" variant="outline">
-								<template #icon><Icon height="15" width="15" icon="fluent:add-20-regular" /></template>
-							</TButton>
-							<TButton size="small" theme="default" variant="outline">
-								<template #icon><Icon height="15" width="15" icon="fluent:add-20-regular" /></template>
-							</TButton>
-						</div>
-						<!-- <TTree :data="tree" expand-mutex expand-on-click-node hover line check-strictly></TTree> -->
+					<TLoading :delay="500" :loading="linkLoadingMap.get(item.id) ?? false" text="正在连接..." size="small">
+						<OverlayScrollbarsComponent :options="{ scrollbars: { autoHide: 'leave' } }" defer>
+							<div class="link_content" ref="linkContentRef">
+								<div class="link_content_actions">
+									<TInputAdornment>
+										<template #prepend>
+											<TSelect
+												v-model="databaseMap[item.id]"
+												:options="databaseOptions.get(item.id)"
+												auto-width
+												size="small"
+											></TSelect>
+										</template>
+										<TInput
+											size="small"
+											placeholder="搜索"
+											@change="value => handleLinkKeysTreeFilterChange(item.id, value)"
+										>
+											<template #prefixIcon><Icon height="14" width="14" icon="fluent:search-20-regular" /></template>
+										</TInput>
+									</TInputAdornment>
+									<TTooltip content="刷新" :show-arrow="false">
+										<TButton size="small" theme="default" variant="outline">
+											<template #icon><Icon height="16" width="16" icon="fluent:arrow-sync-20-regular" /></template>
+										</TButton>
+									</TTooltip>
+									<TTooltip content="新增" :show-arrow="false">
+										<TButton size="small" theme="default" variant="outline">
+											<template #icon><Icon height="16" width="16" icon="fluent:add-20-regular" /></template>
+										</TButton>
+									</TTooltip>
+								</div>
+								<TTree
+									:data="linkKeysTreeMap.get(item.id)"
+									:filter="linkKeysTreeFilterMap.get(item.id)"
+									allow-fold-node-on-filter
+									expand-mutex
+									expand-on-click-node
+									hover
+									line
+									check-strictly
+								>
+									<template #empty>
+										<Empty class="link_content_empty" icon="nothingHere" description="暂无数据" />
+									</template>
+								</TTree>
+							</div>
+						</OverlayScrollbarsComponent>
 					</TLoading>
 				</TCollapsePanel>
 			</TCollapse>
 			<Empty
+				class="body_empty"
 				:description="emptyStatus.description"
 				:icon="emptyStatus.icon"
 				:clickable="emptyStatus.clickable"
@@ -82,10 +115,17 @@
 </template>
 
 <script setup lang="ts">
-import { useOverlayScrollbars } from 'overlayscrollbars-vue'
-import Edit from './Edit.vue'
+import { useOverlayScrollbars, OverlayScrollbarsComponent } from 'overlayscrollbars-vue'
+import {
+	type CollapseValue,
+	type TreeNodeModel,
+	type SelectOption,
+	DialogPlugin,
+	MessagePlugin,
+} from 'tdesign-vue-next'
 import { useLinksStore } from '@/store'
-import { type CollapseValue, DialogPlugin, MessagePlugin } from 'tdesign-vue-next'
+import { useKeyTree } from '../hooks'
+import Edit from './Edit.vue'
 
 const linksStore = useLinksStore()
 
@@ -110,10 +150,10 @@ function handleEmptyClick() {
 	handleEditLinkClick()
 }
 
-// scrollbar
+// sider scrollbar
 const bodyRef = ref()
-const [initScrollBar] = useOverlayScrollbars({ options: { scrollbars: { autoHide: 'leave' } }, defer: true })
-onMounted(() => initScrollBar(bodyRef.value))
+const [initSiderScrollBar] = useOverlayScrollbars({ options: { scrollbars: { autoHide: 'leave' } }, defer: true })
+onMounted(() => initSiderScrollBar(bodyRef.value))
 
 // handle add or edit link event
 const editRef = ref<InstanceType<typeof Edit>>()
@@ -167,10 +207,12 @@ const expandedLinks = ref<number[]>([])
 const linkLoadingMap = ref(new Map<string, boolean>())
 async function handleLinkCollapseChange(value: CollapseValue) {
 	if (!value || value.length === 0) return
-	const link = filteredLinks.value[value[0]]
+	const link = filteredLinks.value[value[0] as number]
 	try {
 		linkLoadingMap.value.set(link.id, true)
 		await linksStore.connectLink(link.id)
+		await initDatabaseOptions(link.id)
+		await initLinkKeysTree(link.id, link.separator)
 	} catch (error) {
 		MessagePlugin.error(error.message)
 	} finally {
@@ -178,52 +220,34 @@ async function handleLinkCollapseChange(value: CollapseValue) {
 	}
 }
 
-const tree = [
-	{
-		label: '第一段',
-		children: [
-			{
-				label: '第一段',
-			},
-			{
-				label: '第二段',
-			},
-		],
-	},
-	{
-		label: '第二段',
-		children: [
-			{
-				label: '第一段',
-			},
-			{
-				label: '第二段',
-			},
-		],
-	},
-	{
-		label: '第三段',
-		children: [
-			{
-				label: '第一段',
-			},
-			{
-				label: '第二段',
-			},
-		],
-	},
-	{
-		label: '第四段',
-		children: [
-			{
-				label: '第一段',
-			},
-			{
-				label: '第二段',
-			},
-		],
-	},
-]
+// init database select
+const databaseOptions = ref<Map<string, SelectOption[]>>(new Map())
+const databaseMap = ref<Record<string, number>>({})
+async function initDatabaseOptions(id: string) {
+	const databases = await window.mainWindow.redis.configGet(id, 'databases')
+	const options = Array.from({ length: Number(databases.databases) }, (_, index) => ({
+		label: `db${index}`,
+		value: index,
+	}))
+	databaseOptions.value.set(id, options)
+	databaseMap.value[id] = 0
+}
+
+// init keys tree
+const linkKeysTreeMap = ref<Map<string, any[]>>(new Map())
+async function initLinkKeysTree(id: string, separator: string) {
+	await window.mainWindow.redis.select(id, databaseMap.value[id])
+	const keys = await window.mainWindow.redis.keys(id, '*')
+	const tree = useKeyTree(keys, separator)
+	linkKeysTreeMap.value.set(id, [])
+	nextTick(() => linkKeysTreeMap.value.set(id, tree))
+}
+
+// handle link keys tree keyword filter change event
+const linkKeysTreeFilterMap = ref<Map<string, (node: TreeNodeModel) => boolean>>(new Map())
+function handleLinkKeysTreeFilterChange(id: string, value: string) {
+	linkKeysTreeFilterMap.value.set(id, node => node.label.includes(value))
+}
 </script>
 
 <style scoped lang="scss">
@@ -249,7 +273,7 @@ const tree = [
 .body {
 	flex: 1;
 
-	&:has(.empty) {
+	&:has(.body_empty) {
 		display: flex;
 		align-items: center;
 	}
@@ -261,7 +285,7 @@ const tree = [
 	:deep(.t-collapse-panel__header) {
 		position: sticky;
 		top: 0;
-		z-index: 1;
+		z-index: 3;
 		background-color: var(--td-bg-color-container);
 		transition: background-color var(--td-transition);
 
@@ -334,21 +358,40 @@ const tree = [
 	}
 
 	&_content {
-		min-height: 60px;
+		display: flex;
+		flex-direction: column;
+		gap: var(--td-comp-margin-xs);
 		padding: var(--td-comp-paddingLR-s) var(--td-comp-paddingLR-m);
+		min-height: 60px;
+		max-height: calc(100vh - 150px);
+
+		&_actions {
+			display: flex;
+			gap: var(--td-comp-margin-s);
+
+			:deep(.t-input-adornment__prepend),
+			:deep(.t-input),
+			:deep(.t-button) {
+				background-color: transparent;
+			}
+		}
+
+		&_empty {
+			padding: var(--td-comp-paddingTB-m) 0;
+		}
 
 		:deep(.t-is-active .t-tree__label) {
 			background-color: var(--td-brand-color);
 			color: #ffffff;
 		}
 
-		:deep(.t-tree--hoverable .t-tree__label:not(.t-is-active):not(.t-is-checked):hover) {
+		:deep(.t-tree--hoverable .t-tree__label:not(.t-is-active):not(.t-is-checked):hover),
+		:deep(.t-tree__icon:not(:empty):hover) {
 			background-color: var(--td-bg-color-container-active);
 		}
 
-		&_actions {
-			display: flex;
-			gap: var(--td-comp-margin-s);
+		:deep(.t-tree__line) {
+			--color: var(--td-component-border);
 		}
 	}
 }
