@@ -34,6 +34,7 @@ declare module 'vue' {
     TRow: typeof import('tdesign-vue-next')['Row']
     TSelect: typeof import('tdesign-vue-next')['Select']
     TSwitch: typeof import('tdesign-vue-next')['Switch']
+    TTag: typeof import('tdesign-vue-next')['Tag']
     TTooltip: typeof import('tdesign-vue-next')['Tooltip']
     TTree: typeof import('tdesign-vue-next')['Tree']
     WindowActionsOverlay: typeof import('./components/WindowActionsOverlay.vue')['default']

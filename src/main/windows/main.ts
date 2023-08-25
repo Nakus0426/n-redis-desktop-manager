@@ -80,6 +80,7 @@ export function createMainWindow() {
 	})
 	ipcMain.handle(channel.main.redis.configGet, (event, id, value) => redis.configGet(id, value))
 	ipcMain.handle(channel.main.redis.select, (event, id, value) => redis.select(id, value))
+	ipcMain.handle(channel.main.redis.info, (event, id, value) => redis.info(id, value))
 	ipcMain.handle(channel.main.redis.keys, (event, id, value) => redis.keys(id, value))
 	ipcMain.handle(channel.main.redis.set, (event, id, key, value, expire) => redis.set(id, key, value, expire))
 }

@@ -12,6 +12,11 @@
 	--os-handle-bg-active: var(--td-scrollbar-hover-color);
 }
 
+// button
+.t-button.t-size-full-width {
+	gap: var(--td-comp-margin-s);
+}
+
 // dialog
 .t-dialog {
 	padding: 0;

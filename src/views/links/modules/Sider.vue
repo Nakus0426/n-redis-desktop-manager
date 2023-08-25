@@ -10,7 +10,7 @@
 				</TButton>
 			</TTooltip>
 		</div>
-		<div class="body" ref="bodyRef">
+		<div class="body">
 			<TCollapse v-model="expandedLinks" borderless expand-mutex @change="handleLinkCollapseChange">
 				<TCollapsePanel
 					v-for="(item, index) in filteredLinks"
@@ -51,18 +51,56 @@
 						</div>
 					</template>
 					<TLoading :delay="500" :loading="linkLoadingMap.get(item.id) ?? false" text="正在连接..." size="small">
-						<OverlayScrollbarsComponent :options="{ scrollbars: { autoHide: 'leave' } }" defer>
+						<OverlayScrollbarsComponent :options="{ scrollbars: { autoHide: 'leave', clickScroll: true } }" defer>
 							<div class="link_content" ref="linkContentRef">
 								<div class="link_content_actions">
-									<TInputAdornment>
-										<template #prepend>
-											<TSelect
-												v-model="databaseMap[item.id]"
-												:options="databaseOptions.get(item.id)"
-												auto-width
+									<div class="link_content_actions_row">
+										<TSelect
+											v-model="databaseMap[item.id]"
+											:options="databaseOptions.get(item.id)"
+											:loading="databaseLoadingMap.get(item.id)"
+											size="small"
+											@popup-visible-change="visible => visible && initDatabaseOptions(item.id)"
+											@change="initLinkKeysTree(item.id, item.separator)"
+										>
+											<template #prefixIcon>
+												<Icon height="14" width="14" icon="fluent:database-multiple-20-regular" />
+											</template>
+											<template #panelTopContent>
+												<div class="database_panel_top">
+													<TButton
+														size="small"
+														block
+														theme="default"
+														variant="text"
+														:loading="databaseLoadingMap.get(item.id)"
+														@click="initDatabaseOptions(item.id)"
+													>
+														<template #icon>
+															<Icon height="14" width="14" icon="fluent:arrow-sync-20-regular" />
+														</template>
+														<span>刷新</span>
+													</TButton>
+												</div>
+											</template>
+										</TSelect>
+										<TTooltip content="刷新" :show-arrow="false">
+											<TButton
 												size="small"
-											></TSelect>
-										</template>
+												theme="default"
+												variant="outline"
+												@click="initLinkKeysTree(item.id, item.separator)"
+											>
+												<template #icon><Icon height="16" width="16" icon="fluent:arrow-sync-20-regular" /></template>
+											</TButton>
+										</TTooltip>
+										<TTooltip content="新增" :show-arrow="false">
+											<TButton size="small" theme="default" variant="outline">
+												<template #icon><Icon height="16" width="16" icon="fluent:add-20-regular" /></template>
+											</TButton>
+										</TTooltip>
+									</div>
+									<div class="link_content_actions_row">
 										<TInput
 											size="small"
 											placeholder="搜索"
@@ -70,17 +108,7 @@
 										>
 											<template #prefixIcon><Icon height="14" width="14" icon="fluent:search-20-regular" /></template>
 										</TInput>
-									</TInputAdornment>
-									<TTooltip content="刷新" :show-arrow="false">
-										<TButton size="small" theme="default" variant="outline">
-											<template #icon><Icon height="16" width="16" icon="fluent:arrow-sync-20-regular" /></template>
-										</TButton>
-									</TTooltip>
-									<TTooltip content="新增" :show-arrow="false">
-										<TButton size="small" theme="default" variant="outline">
-											<template #icon><Icon height="16" width="16" icon="fluent:add-20-regular" /></template>
-										</TButton>
-									</TTooltip>
+									</div>
 								</div>
 								<TTree
 									:data="linkKeysTreeMap.get(item.id)"
@@ -115,7 +143,7 @@
 </template>
 
 <script setup lang="ts">
-import { useOverlayScrollbars, OverlayScrollbarsComponent } from 'overlayscrollbars-vue'
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue'
 import {
 	type CollapseValue,
 	type TreeNodeModel,
@@ -149,11 +177,6 @@ const emptyStatus = computed(() => {
 function handleEmptyClick() {
 	handleEditLinkClick()
 }
-
-// sider scrollbar
-const bodyRef = ref()
-const [initSiderScrollBar] = useOverlayScrollbars({ options: { scrollbars: { autoHide: 'leave' } }, defer: true })
-onMounted(() => initSiderScrollBar(bodyRef.value))
 
 // handle add or edit link event
 const editRef = ref<InstanceType<typeof Edit>>()
@@ -212,6 +235,7 @@ async function handleLinkCollapseChange(value: CollapseValue) {
 		linkLoadingMap.value.set(link.id, true)
 		await linksStore.connectLink(link.id)
 		await initDatabaseOptions(link.id)
+		databaseMap.value[link.id] = 0
 		await initLinkKeysTree(link.id, link.separator)
 	} catch (error) {
 		MessagePlugin.error(error.message)
@@ -221,26 +245,45 @@ async function handleLinkCollapseChange(value: CollapseValue) {
 }
 
 // init database select
+const databaseLoadingMap = ref<Map<string, boolean>>(new Map())
 const databaseOptions = ref<Map<string, SelectOption[]>>(new Map())
 const databaseMap = ref<Record<string, number>>({})
 async function initDatabaseOptions(id: string) {
-	const databases = await window.mainWindow.redis.configGet(id, 'databases')
-	const options = Array.from({ length: Number(databases.databases) }, (_, index) => ({
-		label: `db${index}`,
-		value: index,
-	}))
-	databaseOptions.value.set(id, options)
-	databaseMap.value[id] = 0
+	try {
+		databaseLoadingMap.value.set(id, true)
+		const databases = await window.mainWindow.redis.configGet(id, 'databases')
+		const keyspaceStr = await window.mainWindow.redis.info(id, 'keyspace')
+		const keyspace = keyspaceStr.split('\n')
+		keyspace.shift()
+		keyspace.pop()
+		const keyCountMap = keyspace.map(item => {
+			const [db, count] = item.split(':')
+			return { key: Number(db.split('db')[1]), count: Number(count.split('=')[1].split(',')[0]) }
+		})
+		const options = Array.from({ length: Number(databases.databases) }, (_, index) => ({
+			label: `db${index} (${keyCountMap.find(item => item.key === index)?.count ?? 0})`,
+			value: index,
+		}))
+		databaseOptions.value.set(id, options)
+	} finally {
+		databaseLoadingMap.value.set(id, false)
+	}
 }
 
 // init keys tree
 const linkKeysTreeMap = ref<Map<string, any[]>>(new Map())
 async function initLinkKeysTree(id: string, separator: string) {
-	await window.mainWindow.redis.select(id, databaseMap.value[id])
-	const keys = await window.mainWindow.redis.keys(id, '*')
-	const tree = useKeyTree(keys, separator)
-	linkKeysTreeMap.value.set(id, [])
-	nextTick(() => linkKeysTreeMap.value.set(id, tree))
+	console.log('initLinkKeysTree')
+	try {
+		linkLoadingMap.value.set(id, true)
+		await window.mainWindow.redis.select(id, databaseMap.value[id])
+		const keys = await window.mainWindow.redis.keys(id, '*')
+		const tree = useKeyTree(keys, separator)
+		linkKeysTreeMap.value.set(id, [])
+		nextTick(() => linkKeysTreeMap.value.set(id, tree))
+	} finally {
+		linkLoadingMap.value.set(id, false)
+	}
 }
 
 // handle link keys tree keyword filter change event
@@ -272,6 +315,7 @@ function handleLinkKeysTreeFilterChange(id: string, value: string) {
 
 .body {
 	flex: 1;
+	overflow-y: auto;
 
 	&:has(.body_empty) {
 		display: flex;
@@ -367,12 +411,27 @@ function handleLinkKeysTreeFilterChange(id: string, value: string) {
 
 		&_actions {
 			display: flex;
+			flex-direction: column;
 			gap: var(--td-comp-margin-s);
+
+			&_row {
+				display: flex;
+				gap: var(--td-comp-margin-s);
+			}
 
 			:deep(.t-input-adornment__prepend),
 			:deep(.t-input),
 			:deep(.t-button) {
-				background-color: transparent;
+				background-color: var(--td-bg-color-specialcomponent);
+			}
+
+			:global(.database_panel_top) {
+				position: sticky;
+				top: 0;
+				padding: var(--td-comp-paddingLR-xs);
+				border-bottom: 1px solid var(--td-component-stroke);
+				background-color: var(--td-bg-color-container);
+				z-index: 1;
 			}
 		}
 

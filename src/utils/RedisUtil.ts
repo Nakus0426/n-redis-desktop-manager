@@ -84,6 +84,15 @@ export class RedisUtil {
 	}
 
 	/**
+	 * info
+	 */
+	info(id: string, section?: string) {
+		const client = this.clients.get(id)
+		if (!client && !client.isReady) return
+		return client.info(section)
+	}
+
+	/**
 	 * keys
 	 */
 	keys(id: string, pattern?: string) {

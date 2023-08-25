@@ -26,6 +26,7 @@ export const channel = {
 			isConnected: 'main:redis:isConnected',
 			configGet: 'main:redis:configGet',
 			select: 'main:redis:select',
+			info: 'main:redis:info',
 			keys: 'main:redis:keys',
 			set: 'main:redis:set',
 			onReady: 'main:redis:onReady',

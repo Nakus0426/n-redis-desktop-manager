@@ -70,7 +70,7 @@ function handleExtraMenuClick(index: number) {
 <style scoped lang="scss">
 .sider {
 	height: 100%;
-	width: 50px;
+	width: 60px;
 	display: flex;
 	flex-direction: column;
 	background-color: var(--td-bg-color-secondarycontainer);

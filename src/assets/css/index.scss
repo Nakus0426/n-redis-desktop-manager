@@ -14,17 +14,6 @@ body,
 	user-select: none;
 }
 
-.zoom-fade-enter-active,
-.zoom-fade-leave-active {
-	transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.zoom-fade-enter-from {
-	opacity: 0;
-	transform: scale(0.97);
-}
-
-.zoom-fade-leave-to {
-	opacity: 0;
-	transform: scale(1.03);
+::-webkit-scrollbar {
+	display: none;
 }

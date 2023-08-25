@@ -25,6 +25,7 @@ export interface MainWindow {
 		isConnected: typeof import('./utils')['RedisUtil']['prototype']['isConnected']
 		configGet: typeof import('./utils')['RedisUtil']['prototype']['configGet']
 		select: typeof import('./utils')['RedisUtil']['prototype']['select']
+		info: typeof import('./utils')['RedisUtil']['prototype']['info']
 		keys: typeof import('./utils')['RedisUtil']['prototype']['keys']
 		set: typeof import('./utils')['RedisUtil']['prototype']['set']
 		onReady: (callback: (id: string) => void) => void
