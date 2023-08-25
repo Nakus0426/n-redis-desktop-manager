@@ -8,7 +8,6 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     BackTop: typeof import('./components/BackTop.vue')['default']
-    BackToTop: typeof import('./components/BackToTop.vue')['default']
     ContainerWithSider: typeof import('./components/ContainerWithSider.vue')['default']
     Dialog: typeof import('./components/Dialog.vue')['default']
     Empty: typeof import('./components/Empty.vue')['default']
@@ -16,9 +15,7 @@ declare module 'vue' {
     Icon: typeof import('@iconify/vue')['Icon']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    TBackTop: typeof import('tdesign-vue-next')['BackTop']
     TButton: typeof import('tdesign-vue-next')['Button']
-    TCol: typeof import('tdesign-vue-next')['Col']
     TCollapse: typeof import('tdesign-vue-next')['Collapse']
     TCollapsePanel: typeof import('tdesign-vue-next')['CollapsePanel']
     TConfigProvider: typeof import('tdesign-vue-next')['ConfigProvider']
@@ -33,10 +30,8 @@ declare module 'vue' {
     TInputNumber: typeof import('tdesign-vue-next')['InputNumber']
     TLoading: typeof import('tdesign-vue-next')['Loading']
     TOption: typeof import('tdesign-vue-next')['Option']
-    TRow: typeof import('tdesign-vue-next')['Row']
     TSelect: typeof import('tdesign-vue-next')['Select']
     TSwitch: typeof import('tdesign-vue-next')['Switch']
-    TTag: typeof import('tdesign-vue-next')['Tag']
     TTooltip: typeof import('tdesign-vue-next')['Tooltip']
     TTree: typeof import('tdesign-vue-next')['Tree']
     WindowActionsOverlay: typeof import('./components/WindowActionsOverlay.vue')['default']

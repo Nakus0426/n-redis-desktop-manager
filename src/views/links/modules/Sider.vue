@@ -322,6 +322,7 @@ function handleLinkKeysTreeFilterChange(id: string, value: string) {
 	&:has(.body_empty) {
 		display: flex;
 		align-items: center;
+		justify-content: center;
 	}
 
 	:deep(.t-collapse-panel__wrapper) {

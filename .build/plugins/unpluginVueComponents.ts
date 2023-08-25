@@ -5,7 +5,7 @@ import { ComponentResolver } from 'unplugin-vue-components/types'
 /**
  * setup unplugin-vue-components plugin
  */
-export function setupUnpluginVueComonents() {
+export function setupUnpluginVueComponents() {
 	return Components({
 		dts: 'src/components.d.ts',
 		globs: ['src/components/**!(modules)/*.vue', 'src/components/*.vue'],

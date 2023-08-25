@@ -41,7 +41,7 @@ export class SettingWindow {
 		if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
 			this.settingWindow.loadURL(`${MAIN_WINDOW_VITE_DEV_SERVER_URL}/#/setting`)
 		} else {
-			this.settingWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html/#/setting`))
+			this.settingWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/#/setting`))
 		}
 
 		if (import.meta.env.DEV) this.settingWindow.webContents.openDevTools()

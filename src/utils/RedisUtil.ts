@@ -70,7 +70,7 @@ export class RedisUtil {
 	 */
 	configGet(id: string, parameter: string) {
 		const client = this.clients.get(id)
-		if (!client && !client.isReady) return
+		if (!client || !client?.isReady) return
 		return client.configGet(parameter)
 	}
 
@@ -79,7 +79,7 @@ export class RedisUtil {
 	 */
 	select(id: string, db: number) {
 		const client = this.clients.get(id)
-		if (!client && !client.isReady) return
+		if (!client || !client?.isReady) return
 		return client.select(db)
 	}
 
@@ -88,7 +88,7 @@ export class RedisUtil {
 	 */
 	info(id: string, section?: string) {
 		const client = this.clients.get(id)
-		if (!client && !client.isReady) return
+		if (!client || !client?.isReady) return
 		return client.info(section)
 	}
 
@@ -97,7 +97,7 @@ export class RedisUtil {
 	 */
 	keys(id: string, pattern?: string) {
 		const client = this.clients.get(id)
-		if (!client && !client.isReady) return
+		if (!client || !client?.isReady) return
 		return client.keys(pattern)
 	}
 
@@ -106,7 +106,7 @@ export class RedisUtil {
 	 */
 	set(id: string, key: string, value: string | number, expire?: number) {
 		const client = this.clients.get(id)
-		if (!client && !client.isReady) return
+		if (!client || !client?.isReady) return
 		return client.SET(key, value, { EX: expire, GET: true })
 	}
 }
