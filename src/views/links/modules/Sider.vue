@@ -1,11 +1,11 @@
 <template>
 	<div class="sider">
 		<div class="header">
-			<TInput placeholder="搜索" v-model="keyword">
+			<TInput v-model="keyword" placeholder="搜索" clearable>
 				<template #prefixIcon><Icon height="16" width="16" icon="fluent:search-20-regular" /></template>
 			</TInput>
 			<TTooltip content="新增连接" :show-arrow="false" placement="right">
-				<TButton variant="dashed" theme="default" @click="handleEditLinkClick()">
+				<TButton variant="dashed" theme="default" shape="square" @click="handleEditLinkClick()">
 					<template #icon><Icon height="16" width="16" icon="fluent:add-20-regular" /></template>
 				</TButton>
 			</TTooltip>
@@ -15,6 +15,7 @@
 				<TCollapsePanel
 					v-for="(item, index) in filteredLinks"
 					:key="item.id"
+					:value="item.id"
 					:header="item.name"
 					class="link"
 					:class="{ 'is-top': item.top, 'is-connected': item.connected === 'connected' }"
@@ -104,6 +105,7 @@
 										<TInput
 											size="small"
 											placeholder="搜索"
+											clearable
 											@change="value => handleLinkKeysTreeFilterChange(item.id, value)"
 										>
 											<template #prefixIcon><Icon height="14" width="14" icon="fluent:search-20-regular" /></template>
@@ -125,6 +127,7 @@
 									</template>
 								</TTree>
 							</div>
+							<BackTop size="small" offset="large" />
 						</OverlayScrollbarsComponent>
 					</TLoading>
 				</TCollapsePanel>
@@ -230,7 +233,7 @@ const expandedLinks = ref<number[]>([])
 const linkLoadingMap = ref(new Map<string, boolean>())
 async function handleLinkCollapseChange(value: CollapseValue) {
 	if (!value || value.length === 0) return
-	const link = filteredLinks.value[value[0] as number]
+	const link = filteredLinks.value.find(item => item.id === value[0])
 	try {
 		linkLoadingMap.value.set(link.id, true)
 		await linksStore.connectLink(link.id)
@@ -273,7 +276,6 @@ async function initDatabaseOptions(id: string) {
 // init keys tree
 const linkKeysTreeMap = ref<Map<string, any[]>>(new Map())
 async function initLinkKeysTree(id: string, separator: string) {
-	console.log('initLinkKeysTree')
 	try {
 		linkLoadingMap.value.set(id, true)
 		await window.mainWindow.redis.select(id, databaseMap.value[id])
@@ -304,7 +306,7 @@ function handleLinkKeysTreeFilterChange(id: string, value: string) {
 .header {
 	display: flex;
 	gap: var(--td-comp-margin-s);
-	padding: var(--td-comp-paddingTB-m);
+	padding: var(--window-action-height) var(--td-comp-paddingTB-m) var(--td-comp-paddingTB-m) var(--td-comp-paddingTB-m);
 	-webkit-app-region: drag;
 
 	div,

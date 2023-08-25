@@ -6,15 +6,15 @@
 				<div
 					v-ripple
 					class="menu_item"
-					:class="isMenuActived(LinksIndexRoute.path)"
+					:class="menuClass(LinksIndexRoute.path)"
 					@click="handleMenuClick(LinksIndexRoute)"
 				>
-					<Icon height="24" width="24" icon="fluent:link-square-20-regular" />
+					<Icon height="24" width="24" :icon="linkIcon" />
 				</div>
 			</TTooltip>
-			<TTooltip content="终端" :class="isMenuActived(TerminalIndexRoute.path)" placement="right" :show-arrow="false">
+			<TTooltip content="终端" :class="menuClass(TerminalIndexRoute.path)" placement="right" :show-arrow="false">
 				<div v-ripple class="menu_item" @click="handleMenuClick(TerminalIndexRoute)">
-					<Icon height="24" width="24" icon="fluent:code-block-20-regular" />
+					<Icon height="24" width="24" :icon="terminalIcon" />
 				</div>
 			</TTooltip>
 		</div>
@@ -56,9 +56,22 @@ function handleMenuClick(route: RouteRecordRaw) {
 	router.push(route)
 }
 
-// determine if the menu is activated
+//  is menu activated
 function isMenuActived(path: string) {
-	return route.path === path ? 'is-actived' : ''
+	return route.path === path
+}
+
+// generate menu icon
+const linkIcon = computed(() =>
+	isMenuActived(LinksIndexRoute.path) ? 'fluent:link-square-20-filled' : 'fluent:link-square-20-regular'
+)
+const terminalIcon = computed(() =>
+	isMenuActived(TerminalIndexRoute.path) ? 'fluent:code-block-20-filled' : 'fluent:code-block-20-regular'
+)
+
+// generate menu class
+function menuClass(path: string) {
+	return isMenuActived(path) ? 'is-actived' : ''
 }
 
 // handling extra menu click events
@@ -75,7 +88,7 @@ function handleExtraMenuClick(index: number) {
 	flex-direction: column;
 	background-color: var(--td-bg-color-secondarycontainer);
 	border-right: 1px solid var(--td-component-stroke);
-	padding: var(--td-comp-paddingTB-m) 0;
+	padding: var(--window-action-height) 0 var(--td-comp-paddingTB-m) 0;
 	-webkit-app-region: drag;
 }
 
@@ -87,16 +100,17 @@ function handleExtraMenuClick(index: number) {
 	width: 40px;
 	color: var(--td-text-color-primary);
 	border-radius: var(--td-radius-medium);
-	transition: all var(--td-transition);
+	transition: background-color var(--td-transition);
 	cursor: pointer;
 	-webkit-app-region: no-drag;
 	--ripple-color: var(--td-bg-color-secondarycontainer-active);
 
 	&.is-actived {
-		background-color: var(--td-bg-color-secondarycontainer-active);
+		background-color: var(--td-bg-color-container-active);
+		color: var(--td-brand-color);
 
 		&:hover {
-			background-color: var(--td-bg-color-secondarycontainer-active);
+			background-color: var(--td-bg-color-container-active);
 		}
 	}
 

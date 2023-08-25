@@ -18,7 +18,7 @@ const props = withDefaults(
 		siderWidth?: number
 	}>(),
 	{
-		siderWidth: 300,
+		siderWidth: 350,
 	}
 )
 

@@ -5,19 +5,19 @@
 			<div
 				v-ripple
 				class="sider_item"
-				:class="isMenuActived(CommonSettingRoute.path)"
+				:class="menuClass(CommonSettingRoute.path)"
 				@click="handleMenuClick(CommonSettingRoute)"
 			>
-				<Icon height="16" width="16" icon="fluent:options-20-regular" />
+				<Icon height="16" width="16" :icon="commonIcon" />
 				<div>{{ t('setting.common.title') }}</div>
 			</div>
 			<div
 				v-ripple
 				class="sider_item"
-				:class="isMenuActived(AppearanceSettingRoute.path)"
+				:class="menuClass(AppearanceSettingRoute.path)"
 				@click="handleMenuClick(AppearanceSettingRoute)"
 			>
-				<Icon height="16" width="16" icon="fluent:color-20-regular" />
+				<Icon height="16" width="16" :icon="appearanceIcon" />
 				<div>{{ t('setting.appearance.title') }}</div>
 			</div>
 		</div>
@@ -67,8 +67,21 @@ function handleMenuClick(route: RouteRecordRaw) {
 
 // determine if the menu is activated
 function isMenuActived(path: string) {
-	return route.path === path ? 'is-actived' : ''
+	return route.path === path
 }
+
+// generate menu class
+function menuClass(path: string) {
+	return isMenuActived(path) ? 'is-actived' : ''
+}
+
+// generate menu icon
+const commonIcon = computed(() =>
+	isMenuActived(CommonSettingRoute.path) ? 'fluent:options-20-filled' : 'fluent:options-20-regular'
+)
+const appearanceIcon = computed(() =>
+	isMenuActived(AppearanceSettingRoute.path) ? 'fluent:color-20-filled' : 'fluent:color-20-regular'
+)
 </script>
 
 <style scoped lang="scss">
@@ -97,7 +110,7 @@ function isMenuActived(path: string) {
 		color: var(--td-text-color-primary);
 		padding: var(--td-comp-paddingTB-xs) var(--td-comp-paddingTB-s);
 		border-radius: var(--td-radius-medium);
-		transition: all var(--td-transition);
+		transition: background-color var(--td-transition);
 		cursor: pointer;
 		-webkit-app-region: no-drag;
 		--ripple-color: var(--td-bg-color-secondarycontainer-active);
@@ -107,10 +120,11 @@ function isMenuActived(path: string) {
 		}
 
 		&.is-actived {
-			background-color: var(--td-bg-color-secondarycontainer-active);
+			background-color: var(--td-bg-color-container-active);
+			color: var(--td-brand-color);
 
 			&:hover {
-				background-color: var(--td-bg-color-secondarycontainer-active);
+				background-color: var(--td-bg-color-container-active);
 			}
 		}
 	}

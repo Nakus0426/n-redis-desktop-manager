@@ -11,6 +11,7 @@
 </template>
 
 <script setup lang="ts">
+defineOptions({ name: 'Dialog' })
 const props = defineProps<{ title: string; icon?: string }>()
 </script>
 

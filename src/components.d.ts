@@ -7,6 +7,8 @@ export {}
 
 declare module 'vue' {
   export interface GlobalComponents {
+    BackTop: typeof import('./components/BackTop.vue')['default']
+    BackToTop: typeof import('./components/BackToTop.vue')['default']
     ContainerWithSider: typeof import('./components/ContainerWithSider.vue')['default']
     Dialog: typeof import('./components/Dialog.vue')['default']
     Empty: typeof import('./components/Empty.vue')['default']

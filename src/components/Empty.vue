@@ -8,6 +8,8 @@
 <script setup lang="ts">
 import { kebabCase } from 'lodash-es'
 
+defineOptions({ name: 'Empty' })
+
 type Icon = 'emptyInbox' | 'nothingHere' | 'addToInbox'
 type Size = 'medium' | 'large'
 const props = withDefaults(
