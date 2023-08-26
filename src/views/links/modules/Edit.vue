@@ -112,7 +112,7 @@ function createData() {
 		id: nanoid(),
 		name: null,
 		host: '127.0.0.1',
-		port: 6739,
+		port: 6379,
 		username: null,
 		password: null,
 		separator: null,

@@ -116,11 +116,13 @@
 									:data="linkKeysTreeMap.get(item.id)"
 									:filter="linkKeysTreeFilterMap.get(item.id)"
 									allow-fold-node-on-filter
+									activable
 									expand-mutex
 									expand-on-click-node
 									hover
 									line
 									check-strictly
+									@active="handleKeyTreeChange"
 								>
 									<template #empty>
 										<Empty class="link_content_empty" icon="nothingHere" description="暂无数据" />
@@ -151,12 +153,15 @@ import {
 	type CollapseValue,
 	type TreeNodeModel,
 	type SelectOption,
+	type TreeNodeValue,
 	DialogPlugin,
 	MessagePlugin,
 } from 'tdesign-vue-next'
 import { useLinksStore } from '@/store'
-import { useKeyTree } from '../hooks'
-import Edit from './Edit.vue'
+import { useKeyTree } from './hooks'
+import Edit from './modules/Edit.vue'
+
+const emit = defineEmits<{ (event: 'linkChange', id: string); (event: 'keyChange', key: string) }>()
 
 const linksStore = useLinksStore()
 
@@ -237,6 +242,7 @@ async function handleLinkCollapseChange(value: CollapseValue) {
 	try {
 		linkLoadingMap.value.set(link.id, true)
 		await linksStore.connectLink(link.id)
+		emit('linkChange', link.id)
 		await initDatabaseOptions(link.id)
 		databaseMap.value[link.id] = 0
 		await initLinkKeysTree(link.id, link.separator)
@@ -292,6 +298,11 @@ async function initLinkKeysTree(id: string, separator: string) {
 const linkKeysTreeFilterMap = ref<Map<string, (node: TreeNodeModel) => boolean>>(new Map())
 function handleLinkKeysTreeFilterChange(id: string, value: string) {
 	linkKeysTreeFilterMap.value.set(id, node => node.label.includes(value))
+}
+
+// handle link keys tree change
+function handleKeyTreeChange(value, context) {
+	console.log('handleKeyTreeChange', context.node.value)
 }
 </script>
 

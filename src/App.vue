@@ -6,7 +6,6 @@
 
 <script setup lang="ts">
 import { MessagePlugin } from 'tdesign-vue-next'
-import { useI18n } from 'vue-i18n'
 import { Theme, useAppStore, useLinksStore } from '@/store'
 import { useTdesignConfig } from '@/hooks'
 

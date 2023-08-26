@@ -6,11 +6,21 @@
 </template>
 
 <script setup lang="ts">
-import { kebabCase } from 'lodash-es'
+import emptyInbox from '@/assets/icons/nothing-here.svg'
+import nothingHere from '@/assets/icons/empty-inbox.svg'
+import addToInbox from '@/assets/icons/add-to-inbox.svg'
+import noContent from '@/assets/icons/no-content.svg'
+import emptyInboxDark from '@/assets/icons/nothing-here-dark.svg'
+import nothingHereDark from '@/assets/icons/empty-inbox-dark.svg'
+import addToInboxDark from '@/assets/icons/add-to-inbox-dark.svg'
+import noContentDark from '@/assets/icons/no-content-dark.svg'
+import { useAppStore } from '@/store'
 
 defineOptions({ name: 'Empty' })
 
-type Icon = 'emptyInbox' | 'nothingHere' | 'addToInbox'
+const appStore = useAppStore()
+
+type Icon = 'emptyInbox' | 'nothingHere' | 'addToInbox' | 'noContent'
 type Size = 'medium' | 'large'
 const props = withDefaults(
 	defineProps<{
@@ -20,14 +30,21 @@ const props = withDefaults(
 		clickable?: boolean
 	}>(),
 	{
-		icon: 'emptyInbox',
+		icon: 'noContent',
 		size: 'medium',
 		description: '暂无数据',
 		clickable: false,
 	}
 )
 
-const iconSrc = computed(() => `./src/assets/icons/${kebabCase(props.icon)}.svg`)
+const iconLightSrcMap = { emptyInbox, nothingHere, addToInbox, noContent }
+const iconDarkSrcMap = {
+	emptyInbox: emptyInboxDark,
+	nothingHere: nothingHereDark,
+	addToInbox: addToInboxDark,
+	noContent: noContentDark,
+}
+const iconSrc = computed(() => (appStore.theme === 'light' ? iconLightSrcMap : iconDarkSrcMap)[props.icon])
 const clazz = computed(() => `empty-${props.size} ${props.clickable ? 'empty-clickable' : ''}`)
 </script>
 

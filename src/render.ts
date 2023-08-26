@@ -7,8 +7,8 @@ import { setupDirective } from '@/directives'
 import { setupI18n } from '@/locales'
 import { setupOverlayScrollbars } from './config/overlayScrollbarConfig'
 
-import 'overlayscrollbars/overlayscrollbars.css'
 import '@/assets/css/index.scss'
+import 'overlayscrollbars/overlayscrollbars.css'
 import 'animate.css'
 
 setupIconify()
