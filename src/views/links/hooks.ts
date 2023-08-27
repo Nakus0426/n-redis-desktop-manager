@@ -11,8 +11,7 @@ export function useKeyTree(keys: string[], separator: string) {
 				const label = splitKey === '' ? '[Empty]' : splitKey
 				const isLeaf = index === splitKeys.length - 1
 				const value = isLeaf ? key : splitKeys.slice(0, index + 1).join(separator)
-				let parent = splitKeys[index - 1]
-				parent = parent === '' ? '[Empty]' : parent
+				const parent = index === 0 ? undefined : splitKeys.slice(0, index).join(separator)
 				return { label, parent, isLeaf, value }
 			})
 		})
@@ -22,7 +21,6 @@ export function useKeyTree(keys: string[], separator: string) {
 		(a, b) => a.label === b.label && a.parent === undefined && b.parent === undefined && a.value === b.value
 	)
 	const keysMap = new Map(uniqKeys.map(item => [item.value, { ...item, children: [] }]))
-	console.log(keysMap)
 	const tree = []
 	for (const item of keysMap.values()) {
 		if (item.parent) {

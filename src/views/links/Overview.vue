@@ -1,6 +1,6 @@
 <template>
 	<div class="overview">
-		<h1>Overview</h1>
+		<div class="header"></div>
 	</div>
 </template>
 
@@ -8,4 +8,10 @@
 defineOptions({ name: 'Overview' })
 </script>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.overview {
+	display: flex;
+	flex-direction: column;
+	padding: var(--td-comp-paddingLR-m);
+}
+</style>
