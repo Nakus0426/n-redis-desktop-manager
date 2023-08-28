@@ -23,6 +23,7 @@ const windowApi = window.mainWindow
 .content {
 	flex: 1;
 	background-color: var(--td-bg-color-page);
+	overflow: hidden
 }
 
 .body {

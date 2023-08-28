@@ -4,12 +4,12 @@
 }
 
 .os-theme-dark {
-	--os-size: var(--td-comp-paddingLR-m);
-	--os-padding-perpendicular: 3px;
-	--os-padding-axis: 3px;
-	--os-handle-bg: var(--td-scrollbar-color);
-	--os-handle-bg-hover: var(--td-scrollbar-hover-color);
-	--os-handle-bg-active: var(--td-scrollbar-hover-color);
+	--os-size: var(--td-comp-paddingLR-m) !important;
+	--os-padding-perpendicular: 3px !important;
+	--os-padding-axis: 3px !important;
+	--os-handle-bg: var(--td-scrollbar-color) !important;
+	--os-handle-bg-hover: var(--td-scrollbar-hover-color) !important;
+	--os-handle-bg-active: var(--td-scrollbar-hover-color) !important;
 }
 
 // button

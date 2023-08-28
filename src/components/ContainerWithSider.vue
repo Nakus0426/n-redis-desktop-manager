@@ -86,5 +86,6 @@ function handleResize(e: MouseEvent) {
 
 .body {
 	flex: 1;
+	overflow: hidden;
 }
 </style>

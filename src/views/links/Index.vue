@@ -1,23 +1,23 @@
 <template>
 	<ContainerWithSider class="links">
-		<template #sider><Sider @link-change="handleLinkChange" @key-change="handleKeyChange" /></template>
-		<div class="content" :class="contentEmptyClass">
-			<div class="content_header" v-show="!isEmpty">
-				<TButton variant="text" theme="default" size="small" v-show="backVisible" @click="handleBackClick()">
-					<template #icon><Icon height="16" width="16" icon="fluent:chevron-left-20-regular" /></template>
-					<div>概览</div>
-				</TButton>
-				<div>{{ activedLink?.name }}</div>
-			</div>
-			<div class="content_body" v-show="!isEmpty">
-				<OverlayScrollbarsComponent :options="{ scrollbars: { autoHide: 'leave', clickScroll: true } }" defer>
-					<Transition enter-active-class="animate__animated animate__fadeInUp animate__faster" mode="out-in" appear>
-						<component :is="component" />
-					</Transition>
-				</OverlayScrollbarsComponent>
-			</div>
-			<Empty description="请先选择一个连接" size="large" v-show="isEmpty" />
-		</div>
+		<template #sider>
+			<Sider @link-change="handleLinkChange" @key-change="handleKeyChange" />
+		</template>
+		<div class="window-header" />
+		<Transition enter-active-class="animate__animated animate__fadeInUp animate__faster" mode="out-in" appear>
+			<TTabs class="content" v-model="activedTabPanel" v-show="!isEmpty" @remove="handleTabRemove">
+				<TTabPanel :value="item.key" removable v-for="item in tabPanels">
+					<template #label>
+						<div class="tab-panel_label" :title="item.label">
+							<Icon height="16" width="16" :icon="item.icon" />
+							<div class="tab-panel_label_title">{{ item.label }}</div>
+						</div>
+					</template>
+					<component :is="item.type === 'Overview' ? Overview : KeyEdit" />
+				</TTabPanel>
+			</TTabs>
+		</Transition>
+		<Empty description="请先选择一个连接或键" size="large" v-show="isEmpty" />
 	</ContainerWithSider>
 </template>
 
@@ -28,77 +28,124 @@ import Overview from './Overview.vue'
 import KeyEdit from './KeyEdit.vue'
 import { type Link } from '@/store'
 
-const activedComponent = ref<'Overview' | 'KeyEdit'>('Overview')
-const componentsMap = { Overview, KeyEdit }
-const component = computed(() => componentsMap[activedComponent.value])
+// tabs
+interface TabPanel {
+	key: string
+	label: string
+	type: 'Overview' | 'KeyEdit'
+	icon: string
+}
+const tabPanels = ref<TabPanel[]>([])
+const activedTabPanel = ref<string>()
 
-// is empty
-const isEmpty = computed(() => !activedLink.value)
-const contentEmptyClass = computed(() => (isEmpty.value ? 'is-empty' : ''))
-
-// back to overview
-const backVisible = computed(() => activedComponent.value === 'KeyEdit')
-function handleBackClick() {
-	activedComponent.value = 'Overview'
+// handle tab remove
+function handleTabRemove({ index }: { index: number }) {
+	tabPanels.value.splice(index, 1)
+	if (tabPanels.value.length === 0) activedTabPanel.value = null
 }
 
+// is empty
+const isEmpty = computed(() => tabPanels.value.length === 0)
+
 // handle link change
-const activedLink = ref<Link>()
 function handleLinkChange(link: Link) {
-	activedLink.value = link
-	activedComponent.value = 'Overview'
+	activedTabPanel.value = link.id
+	if (tabPanels.value.findIndex(item => item.key === link.id) >= 0) return
+	tabPanels.value.push({
+		key: link.id,
+		label: link.name,
+		type: 'Overview',
+		icon: 'fluent:database-multiple-20-regular',
+	})
 }
 
 // handle key change
 function handleKeyChange(key: string) {
-	activedComponent.value = 'KeyEdit'
+	activedTabPanel.value = key
+	if (tabPanels.value.findIndex(item => item.key === key) >= 0) return
+	tabPanels.value.push({
+		key,
+		label: key,
+		type: 'KeyEdit',
+		icon: 'fluent:key-20-regular',
+	})
 }
 </script>
 
 <style scoped lang="scss">
-.content {
-	display: flex;
-	flex-direction: column;
-	height: 100%;
+.window-header {
+	height: var(--window-action-height);
+	width: calc(100% - 120px);
+	-webkit-app-region: drag;
+}
 
-	&.is-empty {
-		align-items: center;
-		justify-content: center;
+.content {
+	height: calc(100% - var(--window-action-height));
+	background-color: transparent;
+	width: 100%;
+
+	:deep(.t-tabs__nav) {
+		-webkit-app-region: drag;
 	}
 
-	&_header {
+	:deep(.t-tabs__nav-container) {
+		&::after {
+			background-color: var(--td-component-border);
+		}
+	}
+
+	:deep(.t-tabs__nav-scroll) {
+		padding: 0 var(--td-comp-paddingLR-m);
+	}
+
+	:deep(.t-tabs__nav-wrap) {
+		-webkit-app-region: no-drag;
+	}
+
+	:deep(.t-tabs__nav-item.t-size-m) {
+		height: var(--td-comp-size-xl);
+		line-height: var(--td-comp-size-xl);
+	}
+
+	:deep(.t-tabs__btn.t-size-m) {
+		height: calc(var(--td-comp-size-xl) - 1px);
+		line-height: calc(var(--td-comp-size-xl) - 1px);
+		border: none;
+		background-color: var(--td-bg-color-page);
+
+		&:hover {
+			background-color: var(--td-bg-color-container-active);
+		}
+	}
+
+	:deep(.t-tabs__nav-item:not(.t-is-disabled):not(.t-is-active):hover .t-tabs__nav-item-wrapper) {
+		background-color: var(--td-bg-color-container-active);
+		--ripple-color: var(--td-bg-color-secondarycontainer-active);
+	}
+
+	:deep(.t-is-active .tab-panel_label) {
+		color: var(--td-brand-color);
+	}
+
+	.tab-panel_label {
 		display: flex;
 		align-items: center;
-		gap: var(--td-comp-margin-m);
-		margin-right: 120px;
-		padding: var(--window-action-height) var(--td-comp-paddingLR-m) var(--td-comp-paddingLR-s)
-			var(--td-comp-paddingLR-m);
-		font: var(--td-font-title-medium);
-		color: var(--td-text-color-primary);
-		-webkit-app-region: drag;
+		gap: var(--td-comp-margin-s);
+		color: var(--td-text-color-secondary);
+		max-width: 120px;
 
-		button {
-			-webkit-app-region: no-drag;
-		}
-
-		:deep(.t-button--variant-text) {
-			--ripple-color: var(--td-bg-color-secondarycontainer-active);
-
-			&:hover {
-				background-color: var(--td-bg-color-container-active);
-				border-color: var(--td-bg-color-container-active);
-			}
+		&_title {
+			font: var(--td-font-body-medium);
+			flex: 1;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
 		}
 	}
+}
 
-	&_body {
-		flex: 1;
-		border-top: 1px solid var(--td-component-border);
-		overflow: hidden;
-
-		> div {
-			height: 100%;
-		}
-	}
+:deep(.empty) {
+	height: 100%;
+	-webkit-app-region: drag;
 }
 </style>
