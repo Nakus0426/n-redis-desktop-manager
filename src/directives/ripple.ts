@@ -12,22 +12,23 @@ const defaultRippleColor = 'rgba(0, 0, 0, 0.1)'
 const directive: Directive = {
 	mounted(el: HTMLElement, binding) {
 		if (!el) return
-		el.addEventListener('pointerdown', e => handleAddRipple(e, el, binding.value), false)
+		el.addEventListener('pointerdown', e => handleAddRipple(e, el), false)
 	},
 	unmounted(el: HTMLElement, binding) {
-		el.removeEventListener('pointerdown', e => handleAddRipple(e, el, binding.value), false)
+		el.removeEventListener('pointerdown', e => handleAddRipple(e, el), false)
 	},
 }
 
 /** 为元素添加水波纹动画 */
-function handleAddRipple(e: MouseEvent, el: HTMLElement, color: string) {
+function handleAddRipple(e: MouseEvent, el: HTMLElement) {
 	const dom = el
 	const rippleContainer = document.createElement('div')
-	const rippleColor = color ?? getComputedStyle(el).getPropertyValue('--ripple-color') ?? defaultRippleColor
+	const rippleColor = getComputedStyle(el).getPropertyValue('--ripple-color') ?? defaultRippleColor
+	
 	if (e.button !== 0 || !el) return
 
 	if (
-		dom.classList.contains('is-active') ||
+		dom.classList.contains('is-actived') ||
 		dom.classList.contains('is-disabled') ||
 		dom.classList.contains('is-checked') ||
 		dom.classList.contains('is-loading')
