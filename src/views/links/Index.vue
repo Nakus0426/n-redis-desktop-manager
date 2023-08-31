@@ -4,9 +4,9 @@
 			<Sider @link-change="handleLinkChange" @key-change="handleKeyChange" />
 		</template>
 		<Transition enter-active-class="animate__animated animate__fadeInUp animate__faster" mode="out-in" appear>
-			<div class="content" v-show="!isEmpty">
+			<div class="content">
 				<div class="window-header" />
-				<div class="content_header">
+				<div class="content_header" v-show="!isEmpty">
 					<div
 						class="content_header_prefix"
 						:class="tabsOverflowButtonVisibleClass"
@@ -19,7 +19,7 @@
 					<div class="content_header_center" ref="tabsRef">
 						<TransitionGroup
 							enter-active-class="animate__animated animate__fadeInLeft animate__faster"
-							leave-active-class="animate__animated animate__fadeOutDown animate__faster tabs-leave-animate"
+							leave-active-class="animate__animated animate__fadeOut animate__faster tabs-leave-animate"
 							appear
 						>
 							<div
@@ -36,7 +36,7 @@
 									<Icon height="16" width="16" :icon="item.icon" />
 									<div class="content_header_center_item_label_text">{{ item.label }}</div>
 								</div>
-								<div class="content_header_center_item_close" @click.stop="handleTabRemove(index)">
+								<div class="content_header_center_item_close" @click.stop="handleTabRemove(index, item.key)">
 									<Icon height="14" width="14" icon="fluent:dismiss-20-regular" />
 								</div>
 							</div>
@@ -57,9 +57,9 @@
 						<component :is="activedTabPanel?.type === 'KeyEdit' ? KeyEdit : Overview" :key="activedTabPanel?.key" />
 					</Transition>
 				</div>
+				<Empty description="请先选择一个连接或键" size="large" v-show="isEmpty" />
 			</div>
 		</Transition>
-		<Empty description="请先选择一个连接或键" size="large" v-show="isEmpty" />
 	</ContainerWithSider>
 </template>
 
@@ -69,6 +69,7 @@ import Overview from './Overview.vue'
 import KeyEdit from './KeyEdit.vue'
 import { type Link } from '@/store'
 import { useResizeObserver } from '@vueuse/core'
+import { cloneDeep } from 'lodash-es'
 
 // handle link change
 function handleLinkChange(link: Link) {
@@ -139,15 +140,18 @@ watch(
 )
 
 // handle tab remove
-function handleTabRemove(index: number) {
-	const prefixTabPanel = tabPanels.value?.[index - 1]
-	const suffixTabPanel = tabPanels.value?.[index + 1]
+function handleTabRemove(index: number, key: string) {
+	const length = tabPanels.value.length
 	tabPanels.value.splice(index, 1)
-	if (tabPanels.value.length === 0) {
-		activedTabPanel.value = null
-		return
+	const oldTabPanels = cloneDeep(tabPanels.value)
+	if (activedTabPanel.value.key === key && length > 1) {
+		const prefixTabPanel = oldTabPanels?.[index - 1]
+		const suffixTabPanel = oldTabPanels?.[index + 1]
+		activedTabPanel.value = prefixTabPanel ?? suffixTabPanel
 	}
-	activedTabPanel.value = prefixTabPanel ?? suffixTabPanel
+	if (length === 1) {
+		activedTabPanel.value = null
+	}
 }
 
 // is empty
@@ -183,6 +187,7 @@ function handleTabClick(value: TabPanel) {
 		align-items: center;
 		padding: 0 var(--td-comp-margin-m) var(--td-comp-margin-m) var(--td-comp-margin-m);
 		border-bottom: 1px solid var(--td-component-border);
+		-webkit-app-region: drag;
 
 		&_prefix,
 		&_suffix {
@@ -196,6 +201,7 @@ function handleTabClick(value: TabPanel) {
 			cursor: pointer;
 			transition: all var(--td-transition);
 			--ripple-color: var(--td-bg-color-secondarycontainer-active);
+			-webkit-app-region: no-drag;
 
 			&:hover {
 				background-color: var(--td-bg-color-container-active);
@@ -211,6 +217,7 @@ function handleTabClick(value: TabPanel) {
 			height: 24px;
 			background-color: var(--td-component-border);
 			margin: 0 calc(var(--td-comp-margin-s) / 2);
+			-webkit-app-region: no-drag;
 		}
 
 		&_center {
@@ -234,6 +241,7 @@ function handleTabClick(value: TabPanel) {
 				cursor: pointer;
 				transition: all var(--td-transition);
 				--ripple-color: var(--td-bg-color-secondarycontainer-active);
+				-webkit-app-region: no-drag;
 
 				&:hover {
 					background-color: var(--td-bg-color-container-active);
@@ -299,6 +307,7 @@ function handleTabClick(value: TabPanel) {
 }
 
 .tabs-leave-animate {
+	transition: all var(--td-transition);
 	position: absolute !important;
 }
 </style>
