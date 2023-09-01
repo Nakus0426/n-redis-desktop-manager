@@ -132,12 +132,17 @@ export const useLinksStore = defineStore('Links', () => {
 	 * connect link
 	 */
 	async function connectLink(id: string) {
-		if (window.mainWindow.redis.isConnected(id)) return
-		const link = links.value.find(link => link.id === id)
-		const { host, port, username, password } = cloneDeep(link)
-		const url = `redis://${host}:${String(port)}`
-		await window.mainWindow.redis.create({ id, url, username, password })
-		await window.mainWindow.redis.connect(id)
+		try {
+			if (window.mainWindow.redis.isConnected(id)) return
+			const link = links.value.find(link => link.id === id)
+			const { host, port, username, password } = cloneDeep(link)
+			const url = `redis://${host}:${String(port)}`
+			await window.mainWindow.redis.create({ id, url, username, password })
+			await window.mainWindow.redis.connect(id)
+		} catch (e) {
+			window.mainWindow.redis.destory(id)
+			throw e
+		}
 	}
 
 	/**
@@ -145,6 +150,7 @@ export const useLinksStore = defineStore('Links', () => {
 	 */
 	async function disconnectLink(id: string) {
 		await window.mainWindow.redis.disconnect(id)
+		handleLinkDisconnected(id)
 	}
 
 	/**
@@ -158,10 +164,11 @@ export const useLinksStore = defineStore('Links', () => {
 	/**
 	 * handle redis end event
 	 */
-	window.mainWindow.redis.onEnd(id => {
+	function handleLinkDisconnected(id: string) {
 		const link = links.value.find(link => link.id === id)
 		link.connected = 'disconnected'
-	})
+	}
+	window.mainWindow.redis.onEnd(handleLinkDisconnected)
 
 	/**
 	 * handle redis connect event

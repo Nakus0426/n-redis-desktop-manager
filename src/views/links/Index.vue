@@ -1,7 +1,7 @@
 <template>
 	<ContainerWithSider class="links">
 		<template #sider>
-			<Sider @link-change="handleLinkChange" @key-change="handleKeyChange" />
+			<Sider />
 		</template>
 		<Transition enter-active-class="animate__animated animate__fadeInUp animate__faster" mode="out-in" appear>
 			<div class="content">
@@ -64,15 +64,16 @@
 </template>
 
 <script setup lang="ts">
+import { useResizeObserver } from '@vueuse/core'
+import { cloneDeep } from 'lodash-es'
+import { useEventBus } from '@vueuse/core'
+import { linkConnectedEventKey, linkDisconnectedEventKey, keyActivedEventKey } from './events'
 import Sider from './Sider.vue'
 import Overview from './Overview.vue'
 import KeyEdit from './KeyEdit.vue'
-import { type Link } from '@/store'
-import { useResizeObserver } from '@vueuse/core'
-import { cloneDeep } from 'lodash-es'
 
-// handle link change
-function handleLinkChange(link: Link) {
+// handle link connected
+useEventBus(linkConnectedEventKey).on(link => {
 	const tabPanel: TabPanel = {
 		key: link.id,
 		label: link.name,
@@ -82,10 +83,16 @@ function handleLinkChange(link: Link) {
 	activedTabPanel.value = tabPanel
 	if (tabPanels.value.findIndex(item => item.key === link.id) >= 0) return
 	tabPanels.value.push(tabPanel)
-}
+})
 
-// handle key change
-function handleKeyChange(key: string) {
+// handle link disconnected
+useEventBus(linkDisconnectedEventKey).on(link => {
+	const index = tabPanels.value.findIndex(item => item.key === link.id)
+	if (index >= 0) handleTabRemove(index, link.id)
+})
+
+// handle key actived
+useEventBus(keyActivedEventKey).on(key => {
 	const tabPanel: TabPanel = {
 		key,
 		label: key,
@@ -95,7 +102,7 @@ function handleKeyChange(key: string) {
 	activedTabPanel.value = tabPanel
 	if (tabPanels.value.findIndex(item => item.key === key) >= 0) return
 	tabPanels.value.push(tabPanel)
-}
+})
 
 // generate tab ref
 const tabRefs: Map<string, Element> = new Map()

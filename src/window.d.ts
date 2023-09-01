@@ -22,12 +22,14 @@ export interface MainWindow {
 		create: typeof import('./utils')['RedisUtil']['prototype']['create']
 		connect: typeof import('./utils')['RedisUtil']['prototype']['connect']
 		disconnect: typeof import('./utils')['RedisUtil']['prototype']['disconnect']
+		destory: typeof import('./utils')['RedisUtil']['prototype']['destory']
 		isConnected: typeof import('./utils')['RedisUtil']['prototype']['isConnected']
 		configGet: typeof import('./utils')['RedisUtil']['prototype']['configGet']
 		select: typeof import('./utils')['RedisUtil']['prototype']['select']
 		info: typeof import('./utils')['RedisUtil']['prototype']['info']
 		keys: typeof import('./utils')['RedisUtil']['prototype']['keys']
 		set: typeof import('./utils')['RedisUtil']['prototype']['set']
+		onError: (callback: (id: string, error: Error) => void) => void
 		onReady: (callback: (id: string) => void) => void
 		onEnd: (callback: (id: string) => void) => void
 		onConnect: (callback: (id: string) => void) => void

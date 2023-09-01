@@ -2,7 +2,7 @@ import { createClient, type RedisClientType, type RedisClientOptions } from 'red
 
 export type CreateClientOptions = {
 	id: string
-	error?: (error: any) => void
+	error?: (id: string, error: Error) => void
 	ready?: (id: string) => void
 	end?: (id: string) => void
 	connect?: (id: string) => void
@@ -25,11 +25,12 @@ export class RedisUtil {
 	async create(options: CreateClientOptions) {
 		if (this.clients.has(options.id)) {
 			await this.clients.get(options.id).disconnect()
-			this.clients.delete(options.id)
+			this.destory(options.id)
 		}
-		options.socket = { reconnectStrategy: retries => (retries > 20 ? false : 5000) }
+		// options.socket = { reconnectStrategy: retries => (retries > 5 ? false : 5000) }
+		options.socket = { reconnectStrategy: false }
 		const client = createClient(options)
-		client.on('error', error => options.error(error))
+		client.on('error', error => options.error(options.id, error))
 		client.on('ready', () => options.ready(options.id))
 		client.on('end', () => options.end(options.id))
 		client.on('connect', () => options.connect(options.id))
@@ -53,6 +54,13 @@ export class RedisUtil {
 		const client = this.clients.get(id)
 		if (!client) return
 		await this.clients.get(id).disconnect()
+		this.destory(id)
+	}
+
+	/**
+	 * destory redis client
+	 */
+	destory(id: string) {
 		this.clients.delete(id)
 	}
 

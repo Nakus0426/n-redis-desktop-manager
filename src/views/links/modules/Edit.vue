@@ -45,7 +45,7 @@
 											<span>树形</span>
 										</div>
 									</TOption>
-									<TOption value="list" label="平铺" title="平铺">
+									<TOption value="list" label="平铺" title="平铺" disabled>
 										<div class="display-type-item">
 											<Icon height="16" width="16" icon="fluent:text-bullet-list-ltr-20-regular" />
 											<span>平铺</span>

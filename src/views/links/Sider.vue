@@ -4,7 +4,7 @@
 			<TInput v-model="keyword" placeholder="搜索" clearable>
 				<template #prefixIcon><Icon height="16" width="16" icon="fluent:search-20-regular" /></template>
 			</TInput>
-			<TTooltip content="新增连接" :show-arrow="false" placement="right">
+			<TTooltip content="添加连接" :show-arrow="false" placement="right">
 				<TButton variant="dashed" theme="default" shape="square" @click="handleEditLinkClick()">
 					<template #icon><Icon height="16" width="16" icon="fluent:add-20-regular" /></template>
 				</TButton>
@@ -34,7 +34,7 @@
 									<TDropdownItem
 										theme="warning"
 										v-if="['connected', 'connecting'].includes(item.connected)"
-										@click="handleLinkDisconnectClick(item.id, index)"
+										@click="handleLinkDisconnectClick(item.id)"
 									>
 										<template #prefixIcon><Icon height="16" width="16" icon="fluent:power-20-regular" /></template>
 										<span>关闭</span>
@@ -158,11 +158,12 @@ import {
 	DialogPlugin,
 	MessagePlugin,
 } from 'tdesign-vue-next'
-import { type Link, useLinksStore } from '@/store'
+import { useEventBus } from '@vueuse/core'
+import { pull } from 'lodash-es'
+import { useLinksStore } from '@/store'
 import { useKeyTree } from './hooks'
 import Edit from './modules/Edit.vue'
-
-const emit = defineEmits<{ (event: 'linkChange', link: Link); (event: 'keyChange', key: string) }>()
+import { keyActivedEventKey, linkConnectedEventKey, linkDisconnectedEventKey } from './events'
 
 const linksStore = useLinksStore()
 
@@ -229,13 +230,15 @@ function handleLinkRemoveClick(id: string) {
 }
 
 // handle disconnect link event
-async function handleLinkDisconnectClick(id: string, index: number) {
+const linkDisconnectedEventBus = useEventBus(linkDisconnectedEventKey)
+async function handleLinkDisconnectClick(id: string) {
 	await linksStore.disconnectLink(id)
-	expandedLinks.value.splice(index, 1)
+	pull(expandedLinks.value, id)
+	linkDisconnectedEventBus.emit(filteredLinks.value.find(item => item.id === id))
 }
 
 // handle collapse change
-const expandedLinks = ref<number[]>([])
+const expandedLinks = ref<string[]>([])
 const linkLoadingMap = ref(new Map<string, boolean>())
 async function handleLinkCollapseChange(value: CollapseValue) {
 	if (!value || value.length === 0) return
@@ -243,12 +246,13 @@ async function handleLinkCollapseChange(value: CollapseValue) {
 	try {
 		linkLoadingMap.value.set(link.id, true)
 		await linksStore.connectLink(link.id)
-		emit('linkChange', link)
+		useEventBus(linkConnectedEventKey).emit(link)
 		await initDatabaseOptions(link.id)
 		databaseMap.value[link.id] = 0
 		await initLinkKeysTree(link.id, link.separator)
 	} catch (error) {
-		MessagePlugin.error(error.message)
+		pull(expandedLinks.value, link.id)
+		linkDisconnectedEventBus.emit(link)
 	} finally {
 		linkLoadingMap.value.set(link.id, false)
 	}
@@ -306,7 +310,7 @@ const activedKey = ref<TreeNodeValue[]>()
 function handleKeyTreeChange(value: TreeNodeValue[], { node }: { node: TreeNodeModel }) {
 	if (!node.data.isLeaf) return
 	if (value.length !== 0) activedKey.value = value
-	emit('keyChange', node.value as string)
+	useEventBus(keyActivedEventKey).emit(node.value as string)
 }
 </script>
 
@@ -334,10 +338,8 @@ function handleKeyTreeChange(value: TreeNodeValue[], { node }: { node: TreeNodeM
 	flex: 1;
 	overflow-y: auto;
 
-	&:has(.body_empty) {
-		display: flex;
-		align-items: center;
-		justify-content: center;
+	&_empty {
+		height: 100%;
 	}
 
 	:deep(.t-collapse-panel__wrapper) {
