@@ -21,6 +21,7 @@ export class SettingWindow {
 			return
 		}
 		this.settingWindow = new BrowserWindow({
+			icon: './src/assets/icons/logo.ico',
 			show: false,
 			width: 800,
 			height: 500,
