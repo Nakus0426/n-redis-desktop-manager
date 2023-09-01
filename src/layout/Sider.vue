@@ -1,6 +1,8 @@
 <template>
 	<div class="sider">
-		<div class="header"></div>
+		<div class="header">
+			<img class="header_logo" src="@/assets/icons/logo.svg" />
+		</div>
 		<div class="body">
 			<TTooltip content="连接" placement="right" :show-arrow="false">
 				<div
@@ -86,10 +88,21 @@ function handleExtraMenuClick(index: number) {
 	width: 60px;
 	display: flex;
 	flex-direction: column;
+	gap: var(--td-comp-margin-m);
 	background-color: var(--td-bg-color-secondarycontainer);
 	border-right: 1px solid var(--td-component-stroke);
 	padding: var(--window-action-height) 0 var(--td-comp-paddingTB-m) 0;
 	-webkit-app-region: drag;
+}
+
+.header {
+	display: flex;
+	justify-content: center;
+
+	&_logo {
+		height: 30px;
+		width: 30px;
+	}
 }
 
 .menu_item {

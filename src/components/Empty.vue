@@ -6,10 +6,12 @@
 </template>
 
 <script setup lang="ts">
+import logo from '@/assets/icons/logo-solid.svg'
 import emptyInbox from '@/assets/icons/nothing-here.svg'
 import nothingHere from '@/assets/icons/empty-inbox.svg'
 import addToInbox from '@/assets/icons/add-to-inbox.svg'
 import noContent from '@/assets/icons/no-content.svg'
+import logoDark from '@/assets/icons/logo-solid-dark.svg'
 import emptyInboxDark from '@/assets/icons/nothing-here-dark.svg'
 import nothingHereDark from '@/assets/icons/empty-inbox-dark.svg'
 import addToInboxDark from '@/assets/icons/add-to-inbox-dark.svg'
@@ -20,7 +22,7 @@ defineOptions({ name: 'Empty' })
 
 const appStore = useAppStore()
 
-type Icon = 'emptyInbox' | 'nothingHere' | 'addToInbox' | 'noContent'
+type Icon = 'emptyInbox' | 'nothingHere' | 'addToInbox' | 'noContent' | 'logo'
 type Size = 'medium' | 'large'
 const props = withDefaults(
 	defineProps<{
@@ -37,12 +39,13 @@ const props = withDefaults(
 	}
 )
 
-const iconLightSrcMap = { emptyInbox, nothingHere, addToInbox, noContent }
+const iconLightSrcMap = { emptyInbox, nothingHere, addToInbox, noContent, logo }
 const iconDarkSrcMap = {
 	emptyInbox: emptyInboxDark,
 	nothingHere: nothingHereDark,
 	addToInbox: addToInboxDark,
 	noContent: noContentDark,
+	logo: logoDark,
 }
 const iconSrc = computed(() => (appStore.theme === 'light' ? iconLightSrcMap : iconDarkSrcMap)[props.icon])
 const clazz = computed(() => `empty-${props.size} ${props.clickable ? 'empty-clickable' : ''}`)

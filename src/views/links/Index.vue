@@ -57,7 +57,7 @@
 						<component :is="activedTabPanel?.type === 'KeyEdit' ? KeyEdit : Overview" :key="activedTabPanel?.key" />
 					</Transition>
 				</div>
-				<Empty description="请先选择一个连接或键" size="large" v-show="isEmpty" />
+				<Empty class="content-empty" description="" icon="logo" size="large" v-show="isEmpty" />
 			</div>
 		</Transition>
 	</ContainerWithSider>
@@ -170,9 +170,8 @@ function handleTabClick(value: TabPanel) {
 </script>
 
 <style scoped lang="scss">
-:deep(.empty) {
+.content-empty {
 	height: 100%;
-	-webkit-app-region: drag;
 }
 
 .content {
