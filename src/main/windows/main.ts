@@ -6,6 +6,7 @@ import { RedisUtil } from '@/utils'
 
 export function createMainWindow() {
 	const mainWindow = new BrowserWindow({
+		icon: './src/assets/icons/logo.ico',
 		show: false,
 		width: 1440,
 		height: 900,
