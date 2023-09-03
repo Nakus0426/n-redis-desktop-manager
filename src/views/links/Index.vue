@@ -239,7 +239,7 @@ function handleTabClick(value: TabPanel) {
 				gap: var(--td-comp-margin-s);
 				flex-shrink: 0;
 				height: 32px;
-				max-width: 120px;
+				max-width: 180px;
 				overflow: hidden;
 				border-radius: var(--td-radius-default);
 				color: var(--td-text-color-secondary);
