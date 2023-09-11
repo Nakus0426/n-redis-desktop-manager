@@ -27,7 +27,7 @@
 			}
 		}
 	},
-	"links": {
+	"connections": {
 		"edit": {
 			"title": {
 				"edit": "编辑连接",

@@ -1,10 +1,10 @@
 import { RouteRecordRaw } from 'vue-router'
 
-// links
-export const LinksIndexRoute: RouteRecordRaw = {
-	name: 'LinksIndex',
-	path: '/links',
-	component: () => import('@/views/links/Index.vue'),
+// connections
+export const ConnectionsIndexRoute: RouteRecordRaw = {
+	name: 'ConnectionsIndex',
+	path: '/connections',
+	component: () => import('@/views/connections/Index.vue'),
 }
 
 // terminal
@@ -18,9 +18,9 @@ export const TerminalIndexRoute: RouteRecordRaw = {
 export const IndexRoute: RouteRecordRaw = {
 	name: 'Index',
 	path: '/',
-	redirect: LinksIndexRoute,
+	redirect: ConnectionsIndexRoute,
 	component: () => import('@/layout/Layout.vue'),
-	children: [LinksIndexRoute, TerminalIndexRoute],
+	children: [ConnectionsIndexRoute, TerminalIndexRoute],
 }
 
 // common setting

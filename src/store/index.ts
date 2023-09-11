@@ -13,4 +13,4 @@ export function setupStore(app: App<Element>) {
 }
 
 export * from './modules/app'
-export * from './modules/links'
+export * from './modules/connections'

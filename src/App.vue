@@ -6,7 +6,7 @@
 
 <script setup lang="ts">
 import { MessagePlugin } from 'tdesign-vue-next'
-import { Theme, useAppStore, useLinksStore } from '@/store'
+import { Theme, useAppStore, useConnectionsStore } from '@/store'
 import { useTdesignConfig } from '@/hooks'
 
 const appStore = useAppStore()
@@ -44,8 +44,8 @@ function setAppTheme(theme: Theme) {
 const systemLocale = window.mainWindow.getSystemLocale()
 appStore.locale = appStore.locale ? appStore.locale : systemLocale
 
-// init links store
-useLinksStore().syncLinks()
+// init connections store
+useConnectionsStore().syncConnections()
 
 // app message handler
 window.mainWindow.onError(error => {

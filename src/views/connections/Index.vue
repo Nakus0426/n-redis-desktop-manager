@@ -1,5 +1,5 @@
 <template>
-	<ContainerWithSider class="links">
+	<ContainerWithSider class="connections">
 		<template #sider>
 			<Sider />
 		</template>
@@ -67,28 +67,28 @@
 import { useResizeObserver } from '@vueuse/core'
 import { cloneDeep } from 'lodash-es'
 import { useEventBus } from '@vueuse/core'
-import { linkConnectedEventKey, linkDisconnectedEventKey, keyActivedEventKey } from './events'
+import { connectionConnectedEventKey, connectionDisconnectedEventKey, keyActivedEventKey } from './events'
 import Sider from './Sider.vue'
 import Overview from './Overview.vue'
 import KeyEdit from './KeyEdit.vue'
 
-// handle link connected
-useEventBus(linkConnectedEventKey).on(link => {
+// handle connection connected
+useEventBus(connectionConnectedEventKey).on(connection => {
 	const tabPanel: TabPanel = {
-		key: link.id,
-		label: link.name,
+		key: connection.id,
+		label: connection.name,
 		type: 'Overview',
 		icon: 'fluent:database-multiple-20-regular',
 	}
 	activedTabPanel.value = tabPanel
-	if (tabPanels.value.findIndex(item => item.key === link.id) >= 0) return
+	if (tabPanels.value.findIndex(item => item.key === connection.id) >= 0) return
 	tabPanels.value.push(tabPanel)
 })
 
-// handle link disconnected
-useEventBus(linkDisconnectedEventKey).on(link => {
-	const index = tabPanels.value.findIndex(item => item.key === link.id)
-	if (index >= 0) handleTabRemove(index, link.id)
+// handle connection disconnected
+useEventBus(connectionDisconnectedEventKey).on(connection => {
+	const index = tabPanels.value.findIndex(item => item.key === connection.id)
+	if (index >= 0) handleTabRemove(index, connection.id)
 })
 
 // handle key actived

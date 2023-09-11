@@ -8,10 +8,10 @@
 				<div
 					v-ripple
 					class="menu_item"
-					:class="menuClass(LinksIndexRoute.path)"
-					@click="handleMenuClick(LinksIndexRoute)"
+					:class="menuClass(ConnectionsIndexRoute.path)"
+					@click="handleMenuClick(ConnectionsIndexRoute)"
 				>
-					<Icon height="24" width="24" :icon="linkIcon" />
+					<Icon height="24" width="24" :icon="connectionIcon" />
 				</div>
 			</TTooltip>
 			<TTooltip content="终端" :class="menuClass(TerminalIndexRoute.path)" placement="right" :show-arrow="false">
@@ -45,7 +45,7 @@
 </template>
 
 <script setup lang="ts">
-import { LinksIndexRoute, TerminalIndexRoute } from '@/router'
+import { ConnectionsIndexRoute, TerminalIndexRoute } from '@/router'
 import { RouteRecordRaw } from 'vue-router'
 
 defineOptions({ name: 'Sider' })
@@ -64,8 +64,8 @@ function isMenuActived(path: string) {
 }
 
 // generate menu icon
-const linkIcon = computed(() =>
-	isMenuActived(LinksIndexRoute.path) ? 'fluent:link-square-20-filled' : 'fluent:link-square-20-regular'
+const connectionIcon = computed(() =>
+	isMenuActived(ConnectionsIndexRoute.path) ? 'fluent:link-square-20-filled' : 'fluent:link-square-20-regular'
 )
 const terminalIcon = computed(() =>
 	isMenuActived(TerminalIndexRoute.path) ? 'fluent:code-block-20-filled' : 'fluent:code-block-20-regular'

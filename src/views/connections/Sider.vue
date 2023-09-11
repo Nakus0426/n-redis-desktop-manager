@@ -5,27 +5,27 @@
 				<template #prefixIcon><Icon height="16" width="16" icon="fluent:search-20-regular" /></template>
 			</TInput>
 			<TTooltip content="添加连接" :show-arrow="false" placement="right">
-				<TButton variant="dashed" theme="default" shape="square" @click="handleEditLinkClick()">
+				<TButton variant="dashed" theme="default" shape="square" @click="handleEditConnectionClick()">
 					<template #icon><Icon height="16" width="16" icon="fluent:add-20-regular" /></template>
 				</TButton>
 			</TTooltip>
 		</div>
 		<div class="body">
-			<TCollapse v-model="expandedLinks" borderless expand-mutex @change="handleLinkCollapseChange">
+			<TCollapse v-model="expandedConnections" borderless expand-mutex @change="handleConnectionCollapseChange">
 				<TCollapsePanel
-					v-for="(item, index) in filteredLinks"
+					v-for="(item, index) in filteredConnections"
 					:key="item.id"
 					:value="item.id"
 					:header="item.name"
-					class="link"
+					class="connection"
 					:class="{ 'is-top': item.top, 'is-connected': item.connected === 'connected' }"
 				>
 					<template #headerRightContent>
-						<div class="link_actions" @click.stop>
+						<div class="connection_actions" @click.stop>
 							<TDropdown>
-								<Icon class="link_actions_item is-hide" height="16" width="16" icon="fluent:more-vertical-20-regular" />
+								<Icon class="connection_actions_item is-hide" height="16" width="16" icon="fluent:more-vertical-20-regular" />
 								<TDropdownMenu>
-									<TDropdownItem :divider="true" @click="handleLinkTopClick(item.id, item.top)">
+									<TDropdownItem :divider="true" @click="handleConnectionTopClick(item.id, item.top)">
 										<template #prefixIcon>
 											<Icon height="16" width="16" :icon="generateTopDropdownItem(item.top).icon" />
 										</template>
@@ -34,16 +34,16 @@
 									<TDropdownItem
 										theme="warning"
 										v-if="['connected', 'connecting'].includes(item.connected)"
-										@click="handleLinkDisconnectClick(item.id)"
+										@click="handleConnectionDisconnectClick(item.id)"
 									>
 										<template #prefixIcon><Icon height="16" width="16" icon="fluent:power-20-regular" /></template>
 										<span>关闭</span>
 									</TDropdownItem>
-									<TDropdownItem @click="handleEditLinkClick(item.id)">
+									<TDropdownItem @click="handleEditConnectionClick(item.id)">
 										<template #prefixIcon><Icon height="16" width="16" icon="fluent:settings-20-regular" /></template>
 										<span>编辑</span>
 									</TDropdownItem>
-									<TDropdownItem theme="error" @click="handleLinkRemoveClick(item.id)">
+									<TDropdownItem theme="error" @click="handleConnectionRemoveClick(item.id)">
 										<template #prefixIcon><Icon height="16" width="16" icon="fluent:delete-20-regular" /></template>
 										<span>删除</span>
 									</TDropdownItem>
@@ -51,18 +51,18 @@
 							</TDropdown>
 						</div>
 					</template>
-					<TLoading :delay="500" :loading="linkLoadingMap.get(item.id) ?? false" text="正在连接..." size="small">
+					<TLoading :delay="500" :loading="connectionLoadingMap.get(item.id) ?? false" text="正在连接..." size="small">
 						<OverlayScrollbarsComponent :options="{ scrollbars: { autoHide: 'leave', clickScroll: true } }" defer>
-							<div class="link_content" ref="linkContentRef">
-								<div class="link_content_actions">
-									<div class="link_content_actions_row">
+							<div class="connection_content" ref="connectionContentRef">
+								<div class="connection_content_actions">
+									<div class="connection_content_actions_row">
 										<TSelect
 											v-model="databaseMap[item.id]"
 											:options="databaseOptions.get(item.id)"
 											:loading="databaseLoadingMap.get(item.id)"
 											size="small"
 											@popup-visible-change="visible => visible && initDatabaseOptions(item.id)"
-											@change="initLinkKeysTree(item.id, item.separator)"
+											@change="initConnectionKeysTree(item.id, item.separator)"
 										>
 											<template #prefixIcon>
 												<Icon height="14" width="14" icon="fluent:database-multiple-20-regular" />
@@ -90,7 +90,7 @@
 												size="small"
 												theme="default"
 												variant="outline"
-												@click="initLinkKeysTree(item.id, item.separator)"
+												@click="initConnectionKeysTree(item.id, item.separator)"
 											>
 												<template #icon><Icon height="16" width="16" icon="fluent:arrow-sync-20-regular" /></template>
 											</TButton>
@@ -101,20 +101,20 @@
 											</TButton>
 										</TTooltip>
 									</div>
-									<div class="link_content_actions_row">
+									<div class="connection_content_actions_row">
 										<TInput
 											size="small"
 											placeholder="搜索"
 											clearable
-											@change="value => handleLinkKeysTreeFilterChange(item.id, value)"
+											@change="value => handleConnectionKeysTreeFilterChange(item.id, value)"
 										>
 											<template #prefixIcon><Icon height="14" width="14" icon="fluent:search-20-regular" /></template>
 										</TInput>
 									</div>
 								</div>
 								<TTree
-									:data="linkKeysTreeMap.get(item.id)"
-									:filter="linkKeysTreeFilterMap.get(item.id)"
+									:data="connectionKeysTreeMap.get(item.id)"
+									:filter="connectionKeysTreeFilterMap.get(item.id)"
 									:actived="activedKey"
 									allow-fold-node-on-filter
 									activable
@@ -126,7 +126,7 @@
 									@active="handleKeyTreeChange"
 								>
 									<template #empty>
-										<Empty class="link_content_empty" icon="nothingHere" description="暂无数据" />
+										<Empty class="connection_content_empty" icon="nothingHere" description="暂无数据" />
 									</template>
 								</TTree>
 							</div>
@@ -144,7 +144,7 @@
 				@click="handleEmptyClick()"
 			/>
 		</div>
-		<Edit ref="editRef" @update="handleLinkUpdate" />
+		<Edit ref="editRef" @update="handleConnectionUpdate" />
 	</div>
 </template>
 
@@ -160,23 +160,23 @@ import {
 } from 'tdesign-vue-next'
 import { useEventBus } from '@vueuse/core'
 import { pull } from 'lodash-es'
-import { useLinksStore } from '@/store'
+import { useConnectionsStore } from '@/store'
 import { useKeyTree } from './hooks'
 import Edit from './modules/Edit.vue'
-import { keyActivedEventKey, linkConnectedEventKey, linkDisconnectedEventKey } from './events'
+import { keyActivedEventKey, connectionConnectedEventKey, connectionDisconnectedEventKey } from './events'
 
-const linksStore = useLinksStore()
+const connectionsStore = useConnectionsStore()
 
 // keyword filter
 const keyword = ref<string>()
-const filteredLinks = computed(() => {
-	if (!keyword.value) return linksStore.links
-	return linksStore.links.filter(item => item.name.includes(keyword.value))
+const filteredConnections = computed(() => {
+	if (!keyword.value) return connectionsStore.connections
+	return connectionsStore.connections.filter(item => item.name.includes(keyword.value))
 })
 
-// is links empty
+// is connections empty
 const emptyStatus = computed(() => {
-	const visible = filteredLinks.value.length === 0
+	const visible = filteredConnections.value.length === 0
 	const clickable = !keyword.value
 	const description = clickable ? '点击添加连接' : '没有找到相关连接'
 	const icon = clickable ? 'addToInbox' : 'nothingHere'
@@ -185,31 +185,31 @@ const emptyStatus = computed(() => {
 
 // handle empty click event
 function handleEmptyClick() {
-	handleEditLinkClick()
+	handleEditConnectionClick()
 }
 
-// handle add or edit link event
+// handle add or edit connection event
 const editRef = ref<InstanceType<typeof Edit>>()
-function handleEditLinkClick(id?: string) {
+function handleEditConnectionClick(id?: string) {
 	editRef.value.open(id)
 }
 
-// handle link update event
-function handleLinkUpdate() {}
+// handle connection update event
+function handleConnectionUpdate() {}
 
-// handle top link event
+// handle top connection event
 function generateTopDropdownItem(top: boolean) {
 	return {
 		text: top ? '取消置顶' : '置顶',
 		icon: top ? 'fluent:pin-off-20-regular' : 'fluent:pin-20-regular',
 	}
 }
-function handleLinkTopClick(id: string, top: boolean) {
-	top ? linksStore.cancelTopLink(id) : linksStore.topLink(id)
+function handleConnectionTopClick(id: string, top: boolean) {
+	top ? connectionsStore.cancelTopConnection(id) : connectionsStore.topConnection(id)
 }
 
-// handle remove link event
-function handleLinkRemoveClick(id: string) {
+// handle remove connection event
+function handleConnectionRemoveClick(id: string) {
 	const loading = ref(false)
 	const dialogInstance = DialogPlugin.confirm({
 		header: '删除连接',
@@ -219,7 +219,7 @@ function handleLinkRemoveClick(id: string) {
 		onConfirm: async () => {
 			try {
 				loading.value = true
-				await linksStore.removeLink(id)
+				await connectionsStore.removeConnection(id)
 				MessagePlugin.success('删除成功')
 				dialogInstance.destroy()
 			} finally {
@@ -229,32 +229,32 @@ function handleLinkRemoveClick(id: string) {
 	})
 }
 
-// handle disconnect link event
-const linkDisconnectedEventBus = useEventBus(linkDisconnectedEventKey)
-async function handleLinkDisconnectClick(id: string) {
-	await linksStore.disconnectLink(id)
-	pull(expandedLinks.value, id)
-	linkDisconnectedEventBus.emit(filteredLinks.value.find(item => item.id === id))
+// handle disconnect connection event
+const connectionDisconnectedEventBus = useEventBus(connectionDisconnectedEventKey)
+async function handleConnectionDisconnectClick(id: string) {
+	await connectionsStore.disconnectConnection(id)
+	pull(expandedConnections.value, id)
+	connectionDisconnectedEventBus.emit(filteredConnections.value.find(item => item.id === id))
 }
 
 // handle collapse change
-const expandedLinks = ref<string[]>([])
-const linkLoadingMap = ref(new Map<string, boolean>())
-async function handleLinkCollapseChange(value: CollapseValue) {
+const expandedConnections = ref<string[]>([])
+const connectionLoadingMap = ref(new Map<string, boolean>())
+async function handleConnectionCollapseChange(value: CollapseValue) {
 	if (!value || value.length === 0) return
-	const link = filteredLinks.value.find(item => item.id === value[0])
+	const connection = filteredConnections.value.find(item => item.id === value[0])
 	try {
-		linkLoadingMap.value.set(link.id, true)
-		await linksStore.connectLink(link.id)
-		useEventBus(linkConnectedEventKey).emit(link)
-		await initDatabaseOptions(link.id)
-		databaseMap.value[link.id] = 0
-		await initLinkKeysTree(link.id, link.separator)
+		connectionLoadingMap.value.set(connection.id, true)
+		await connectionsStore.connectConnection(connection.id)
+		useEventBus(connectionConnectedEventKey).emit(connection)
+		await initDatabaseOptions(connection.id)
+		databaseMap.value[connection.id] = 0
+		await initConnectionKeysTree(connection.id, connection.separator)
 	} catch (error) {
-		pull(expandedLinks.value, link.id)
-		linkDisconnectedEventBus.emit(link)
+		pull(expandedConnections.value, connection.id)
+		connectionDisconnectedEventBus.emit(connection)
 	} finally {
-		linkLoadingMap.value.set(link.id, false)
+		connectionLoadingMap.value.set(connection.id, false)
 	}
 }
 
@@ -285,27 +285,27 @@ async function initDatabaseOptions(id: string) {
 }
 
 // init keys tree
-const linkKeysTreeMap = ref<Map<string, any[]>>(new Map())
-async function initLinkKeysTree(id: string, separator: string) {
+const connectionKeysTreeMap = ref<Map<string, any[]>>(new Map())
+async function initConnectionKeysTree(id: string, separator: string) {
 	try {
-		linkLoadingMap.value.set(id, true)
+		connectionLoadingMap.value.set(id, true)
 		await window.mainWindow.redis.select(id, databaseMap.value[id])
 		const keys = await window.mainWindow.redis.keys(id, '*')
 		const tree = useKeyTree(keys, separator)
-		linkKeysTreeMap.value.set(id, [])
-		nextTick(() => linkKeysTreeMap.value.set(id, tree))
+		connectionKeysTreeMap.value.set(id, [])
+		nextTick(() => connectionKeysTreeMap.value.set(id, tree))
 	} finally {
-		linkLoadingMap.value.set(id, false)
+		connectionLoadingMap.value.set(id, false)
 	}
 }
 
-// handle link keys tree keyword filter change event
-const linkKeysTreeFilterMap = ref<Map<string, (node: TreeNodeModel) => boolean>>(new Map())
-function handleLinkKeysTreeFilterChange(id: string, value: string) {
-	linkKeysTreeFilterMap.value.set(id, node => node.label.includes(value))
+// handle connection keys tree keyword filter change event
+const connectionKeysTreeFilterMap = ref<Map<string, (node: TreeNodeModel) => boolean>>(new Map())
+function handleConnectionKeysTreeFilterChange(id: string, value: string) {
+	connectionKeysTreeFilterMap.value.set(id, node => node.label.includes(value))
 }
 
-// handle link keys tree change
+// handle connection keys tree change
 const activedKey = ref<TreeNodeValue[]>()
 function handleKeyTreeChange(value: TreeNodeValue[], { node }: { node: TreeNodeModel }) {
 	if (!node.data.isLeaf) return
@@ -356,7 +356,7 @@ function handleKeyTreeChange(value: TreeNodeValue[], { node }: { node: TreeNodeM
 		&:hover {
 			background-color: var(--td-bg-color-container-hover);
 
-			.link_actions_item {
+			.connection_actions_item {
 				opacity: 1;
 			}
 		}
@@ -372,7 +372,7 @@ function handleKeyTreeChange(value: TreeNodeValue[], { node }: { node: TreeNodeM
 	}
 }
 
-.link {
+.connection {
 	&.is-top {
 		:deep(.t-collapse-panel__header::before) {
 			content: '';

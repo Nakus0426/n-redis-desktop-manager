@@ -27,7 +27,7 @@
 			}
 		}
 	},
-	"links": {
+	"connections": {
 		"edit": {
 			"title": {
 				"edit": "編輯連接",

@@ -12,19 +12,19 @@
 		<div class="edit">
 			<TForm label-align="top" :rules="rules" :data="data" ref="formRef">
 				<div class="body">
-					<TFormItem :label="t('links.edit.name')" name="name">
+					<TFormItem :label="t('connections.edit.name')" name="name">
 						<TInput v-model="data.name" clearable />
 					</TFormItem>
-					<TFormItem :label="t('links.edit.host')" name="host">
+					<TFormItem :label="t('connections.edit.host')" name="host">
 						<TInput v-model="data.host" clearable />
 					</TFormItem>
-					<TFormItem :label="t('links.edit.port')" name="port">
+					<TFormItem :label="t('connections.edit.port')" name="port">
 						<TInputNumber v-model="data.port" name="port" theme="column" min="0" :input-props="{ clearable: true }" />
 					</TFormItem>
-					<TFormItem :label="t('links.edit.username')" name="username">
+					<TFormItem :label="t('connections.edit.username')" name="username">
 						<TInput v-model="data.username" clearable />
 					</TFormItem>
-					<TFormItem :label="t('links.edit.password')" name="password">
+					<TFormItem :label="t('connections.edit.password')" name="password">
 						<TInput v-model="data.password" clearable type="password" />
 					</TFormItem>
 					<TFormItem class="display-type" label="数据展示形式" name="separator">
@@ -67,12 +67,12 @@ import { type FormRules, type FormInstanceFunctions, ButtonProps, MessagePlugin 
 import { nanoid } from 'nanoid'
 import { cloneDeep } from 'lodash-es'
 import { useLocale } from '@/hooks'
-import { type Link, useLinksStore } from '@/store'
+import { type Connection, useConnectionsStore } from '@/store'
 
 const emit = defineEmits<{ (event: 'update', id: string) }>()
 
 const { t } = useLocale()
-const linksStore = useLinksStore()
+const connectionsStore = useConnectionsStore()
 
 // open
 const isEdit = ref(false)
@@ -80,7 +80,7 @@ const visible = ref(false)
 async function open(id?: string) {
 	isEdit.value = !!id
 	if (isEdit.value) {
-		data.value = cloneDeep(linksStore.links.find(link => link.id === id))
+		data.value = cloneDeep(connectionsStore.connections.find(connection => connection.id === id))
 	}
 	visible.value = true
 }
@@ -88,7 +88,7 @@ async function open(id?: string) {
 // dialog title
 const title = computed(() => {
 	return {
-		text: isEdit.value ? t('links.edit.title.edit') : t('links.edit.title.add'),
+		text: isEdit.value ? t('connections.edit.title.edit') : t('connections.edit.title.add'),
 		icon: isEdit.value ? 'fluent:settings-20-regular' : 'fluent:add-circle-20-regular',
 	}
 })
@@ -118,7 +118,7 @@ function createData() {
 		separator: null,
 	}
 }
-const data = ref<Link>(createData())
+const data = ref<Connection>(createData())
 
 // confirm
 const formRef = ref<FormInstanceFunctions>()
@@ -130,10 +130,10 @@ async function handleConfirmClick() {
 		const validate = await formRef.value.validate()
 		if (validate !== true) return
 		if (isEdit.value) {
-			await linksStore.updateLink(data.value)
+			await connectionsStore.updateConnection(data.value)
 			emit('update', data.value.id)
 		} else {
-			await linksStore.addLinks(data.value)
+			await connectionsStore.addConnections(data.value)
 		}
 		MessagePlugin.success('保存成功')
 		visible.value = false
