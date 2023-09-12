@@ -1,8 +1,8 @@
 <template>
 	<OverlayScrollbarsComponent :options="{ scrollbars: { autoHide: 'leave', clickScroll: true } }" defer>
 		<div class="sider-tree" ref="connectionContentRef">
-			<div class="sider-tree_actions">
-				<div class="sider-tree_actions_row">
+			<div class="header">
+				<div class="header_row">
 					<TSelect
 						v-model="activedDatabase"
 						:options="databaseOptions"
@@ -42,7 +42,7 @@
 						</TButton>
 					</TTooltip>
 				</div>
-				<div class="sider-tree_actions_row">
+				<div class="header_row">
 					<TInput size="small" placeholder="搜索" clearable @change="handleKeysTreeFilterChange">
 						<template #prefixIcon><Icon height="14" width="14" icon="fluent:search-20-regular" /></template>
 					</TInput>
@@ -63,7 +63,7 @@
 					@active="handleKeyTreeChange"
 				>
 					<template #empty>
-						<Empty class="sider-tree_empty" icon="nothingHere" description="暂无数据" />
+						<Empty class="header-empty" icon="nothingHere" description="暂无数据" />
 					</template>
 				</TTree>
 			</TSkeleton>
@@ -74,7 +74,7 @@
 
 <script setup lang="ts">
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue'
-import { type TreeNodeModel, type SelectOption, type TreeNodeValue, SkeletonRowCol } from 'tdesign-vue-next'
+import { type TreeNodeModel, type SelectOption, type TreeNodeValue, type SkeletonRowCol } from 'tdesign-vue-next'
 import { useEventBus } from '@vueuse/core'
 import { useConnectionsStore, type Connection } from '@/store'
 import { connectionConnectedEventKey, keyActivedEventKey } from '../events'
@@ -176,28 +176,30 @@ function handleKeyTreeChange(value: TreeNodeValue[], { node }: { node: TreeNodeM
 	padding: var(--td-comp-paddingLR-s) var(--td-comp-paddingLR-m);
 	min-height: 60px;
 	max-height: calc(100vh - 150px);
+}
 
-	&_actions {
+.header {
+	display: flex;
+	flex-direction: column;
+	gap: var(--td-comp-margin-s);
+
+	&_row {
 		display: flex;
-		flex-direction: column;
 		gap: var(--td-comp-margin-s);
-
-		&_row {
-			display: flex;
-			gap: var(--td-comp-margin-s);
-		}
-
-		:global(.database_panel_top) {
-			position: sticky;
-			top: 0;
-			padding: var(--td-comp-paddingLR-xs);
-			border-bottom: 1px solid var(--td-component-stroke);
-			background-color: var(--td-bg-color-container);
-			z-index: 1;
-		}
 	}
 
-	&_empty {
+	:global(.database_panel_top) {
+		position: sticky;
+		top: 0;
+		padding: var(--td-comp-paddingLR-xs);
+		border-bottom: 1px solid var(--td-component-stroke);
+		background-color: var(--td-bg-color-container);
+		z-index: 1;
+	}
+}
+
+.body {
+	&-empty {
 		padding: var(--td-comp-paddingTB-m) 0;
 	}
 }

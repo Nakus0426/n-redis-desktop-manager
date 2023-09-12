@@ -33,11 +33,11 @@
 								<TDropdownMenu>
 									<TDropdownItem @click="handleConnectionTopClick(item.id, item.top)">
 										<template #prefixIcon>
-											<Icon height="16" width="16" :icon="generateTopDropdownItem(item.top).icon" />
+											<Icon height="16" width="16" :icon="generateConnectionTopDropdownItem(item.top).icon" />
 										</template>
-										<span>{{ generateTopDropdownItem(item.top).text }}</span>
+										<span>{{ generateConnectionTopDropdownItem(item.top).text }}</span>
 									</TDropdownItem>
-									<TDropdownItem divider>
+									<TDropdownItem divider @click="handleConnectionDisplayChange(item)">
 										<template #prefixIcon>
 											<Icon height="16" width="16" :icon="generateDisplayDropdownItem(item.display).icon" />
 										</template>
@@ -122,7 +122,7 @@ function handleEditConnectionClick(id?: string) {
 function handleConnectionUpdate() {}
 
 // top connection
-function generateTopDropdownItem(top: boolean) {
+function generateConnectionTopDropdownItem(top: boolean) {
 	return {
 		text: top ? '取消置顶' : '置顶',
 		icon: top ? 'fluent:pin-off-20-regular' : 'fluent:pin-20-regular',
@@ -139,6 +139,10 @@ function generateDisplayDropdownItem(display: Connection['display']) {
 		text: isTree ? '列表视图' : '树形视图',
 		icon: isTree ? 'fluent:text-bullet-list-ltr-20-regular' : 'fluent:text-bullet-list-tree-20-regular',
 	}
+}
+function handleConnectionDisplayChange(connection: Connection) {
+	connection.display = connection.display === 'tree' ? 'list' : 'tree'
+	connectionsStore.updateConnection(connection)
 }
 
 // remove connection
