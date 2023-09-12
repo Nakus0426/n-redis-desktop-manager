@@ -37,7 +37,9 @@
 			"host": "地址",
 			"port": "端口",
 			"username": "用戶名",
-			"password": "密碼"
+			"password": "密碼",
+			"separator": "分隔符號",
+			"display": "展示形式"
 		}
 	}
 }

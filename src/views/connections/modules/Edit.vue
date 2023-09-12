@@ -27,34 +27,23 @@
 					<TFormItem :label="t('connections.edit.password')" name="password">
 						<TInput v-model="data.password" clearable type="password" />
 					</TFormItem>
-					<TFormItem class="display-type" label="数据展示形式" name="separator">
+					<TFormItem :label="t('connections.edit.separator')">
+						<TInput v-model="data.separator" clearable />
 						<template #statusIcon>
-							<HelpTooltip>
-								<template #content>
-									<div>1、“树形”：连接将按指定的“分隔符”分割成树形展示</div>
-									<div>2、“平铺”：连接将平铺展示所有数据</div>
-								</template>
-							</HelpTooltip>
+							<HelpTooltip content="当展示形式为“树形”时，键将按“分隔符”进行分割"></HelpTooltip>
 						</template>
-						<TInputAdornment>
-							<template #prepend>
-								<TSelect v-model="displayType">
-									<TOption value="tree" label="树形" title="树形">
-										<div class="display-type-item">
-											<Icon height="16" width="16" icon="fluent:text-bullet-list-tree-20-regular" />
-											<span>树形</span>
-										</div>
-									</TOption>
-									<TOption value="list" label="平铺" title="平铺" disabled>
-										<div class="display-type-item">
-											<Icon height="16" width="16" icon="fluent:text-bullet-list-ltr-20-regular" />
-											<span>平铺</span>
-										</div>
-									</TOption>
-								</TSelect>
-							</template>
-							<TInput v-model="data.separator" placeholder="请输入分隔符" :disabled="isDisplayTypeList" clearable />
-						</TInputAdornment>
+					</TFormItem>
+					<TFormItem :label="t('connections.edit.display')">
+						<div class="display">
+							<div class="display_item" :class="displayActivedClass('list')" @click="handleDisplayChange('list')">
+								<div class="display_item_icon list" v-ripple></div>
+								<div class="display_item_title">列表</div>
+							</div>
+							<div class="display_item" :class="displayActivedClass('tree')" @click="handleDisplayChange('tree')">
+								<div class="display_item_icon tree" v-ripple></div>
+								<div class="display_item_title">树形</div>
+							</div>
+						</div>
 					</TFormItem>
 				</div>
 			</TForm>
@@ -98,16 +87,10 @@ const rules = computed<FormRules>(() => ({
 	name: [{ required: true }],
 	host: [{ required: true }],
 	port: [{ required: true }],
-	separator: [{ required: !isDisplayTypeList.value, message: '分隔符必填' }],
 }))
 
-// display type
-type DisplayType = 'tree' | 'list'
-const displayType = ref<DisplayType>('tree')
-const isDisplayTypeList = computed(() => displayType.value === 'list')
-
 // data
-function createData() {
+function createData(): Connection {
 	return {
 		id: nanoid(),
 		name: null,
@@ -115,10 +98,19 @@ function createData() {
 		port: 6379,
 		username: null,
 		password: null,
-		separator: null,
+		separator: ':',
+		display: 'list',
 	}
 }
 const data = ref<Connection>(createData())
+
+// display switch
+function displayActivedClass(display: Connection['display']) {
+	return data.value.display === display ? 'is-actived' : ''
+}
+function handleDisplayChange(display: Connection['display']) {
+	data.value.display = display
+}
 
 // confirm
 const formRef = ref<FormInstanceFunctions>()
@@ -158,31 +150,61 @@ defineExpose({
 	grid-template-columns: repeat(2, 1fr);
 	column-gap: var(--td-comp-margin-xl);
 
-	.display-type {
-		:deep(.t-form__item),
-		:deep(.t-input__wrap),
-		:deep(.t-input-adornment) {
-			overflow: hidden;
-		}
-
-		:deep(.t-input-adornment) {
-			flex: 1;
-		}
-
-		:deep(.t-select-input) {
-			width: 100px;
-		}
-	}
-
-	:global(.display-type-item) {
-		display: flex;
-		align-items: center;
-		gap: var(--td-comp-margin-s);
-		width: 100px;
-	}
-
 	:deep(.t-input-number) {
 		flex: 1;
+	}
+}
+
+.display {
+	display: flex;
+	gap: var(--td-comp-margin-m);
+
+	&_item {
+		display: flex;
+		flex-direction: column;
+		border-radius: var(--td-radius-medium);
+
+		&_icon {
+			height: 60px;
+			width: 60px;
+			border-radius: var(--td-radius-medium);
+			border: 1px solid var(--td-component-stroke);
+			outline: solid 2px transparent;
+			transition: outline var(--td-transition);
+			cursor: pointer;
+			--ripple-color: var(--td-bg-color-container-active);
+
+			&:hover {
+				outline: solid 2px var(--td-brand-color-focus);
+			}
+
+			&.tree {
+				background: url(@/assets/images/display_tree_light.svg) no-repeat center center;
+			}
+
+			&.list {
+				background: url(@/assets/images/display_list_light.svg) no-repeat center center;
+			}
+		}
+
+		&_title {
+			font: var(--td-font-body-small);
+			color: var(--td-text-color-secondary);
+		}
+
+		&.is-actived .display_item_icon {
+			border: 2px solid var(--td-brand-color);
+		}
+	}
+}
+
+[theme-mode='dark'] {
+	.list {
+		background: url(@/assets/images/display_list_dark.svg) no-repeat center center;
+	}
+
+	.tree {
+		background: url(@/assets/images/display_tree_dark.svg) no-repeat center center;
 	}
 }
 </style>

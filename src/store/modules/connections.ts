@@ -10,6 +10,7 @@ export interface Connection {
 	username: string
 	password: string
 	separator: string
+	display: 'tree' | 'list'
 	top?: boolean
 	connected?: 'connecting' | 'connected' | 'disconnected'
 }

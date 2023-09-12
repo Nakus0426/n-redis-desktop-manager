@@ -47,7 +47,12 @@ const iconDarkSrcMap = {
 	noContent: noContentDark,
 	logo: logoDark,
 }
-const iconSrc = computed(() => (appStore.theme === 'light' ? iconLightSrcMap : iconDarkSrcMap)[props.icon])
+const iconSrc = computed(() => {
+	if (appStore.theme === 'light') return iconLightSrcMap[props.icon]
+	if (appStore.theme === 'dark') return iconDarkSrcMap[props.icon]
+	if (appStore.theme === 'system')
+		return (window.mainWindow.getAppTheme() === 'light' ? iconLightSrcMap : iconDarkSrcMap)[props.icon]
+})
 const clazz = computed(() => `empty-${props.size} ${props.clickable ? 'empty-clickable' : ''}`)
 </script>
 

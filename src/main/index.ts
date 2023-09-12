@@ -1,9 +1,13 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, session } from 'electron'
+import { resolve } from 'node:path'
 import { createMainWindow } from './windows'
 
 if (require('electron-squirrel-startup')) app.quit()
 
-app.on('ready', () => {
+const vueDevtoolsPath = resolve(__dirname, '../../extensions/vue-devtools')
+
+app.on('ready', async () => {
+	if (MAIN_WINDOW_VITE_DEV_SERVER_URL) await session.defaultSession.loadExtension(vueDevtoolsPath)
 	createMainWindow()
 })
 
