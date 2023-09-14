@@ -81,6 +81,12 @@ function handleResize(e: MouseEvent) {
 		bottom: 0;
 		width: 5px;
 		cursor: e-resize;
+		z-index: 3;
+		transition: all var(--td-transition);
+
+		&:hover {
+			background-color: var(--td-brand-color-hover);
+		}
 	}
 }
 

@@ -1,6 +1,7 @@
 @import './var.scss';
 @import './common.scss';
 @import './component.scss';
+@import './font.scss';
 @import 'tdesign-vue-next/dist/reset.css';
 @import 'tdesign-vue-next/es/style/index.css';
 
@@ -12,6 +13,7 @@ body,
 	cursor: default;
 	overflow: hidden;
 	user-select: none;
+	font-family: var(--td-font-family);
 }
 
 ::-webkit-scrollbar {

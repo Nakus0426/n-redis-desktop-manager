@@ -37,7 +37,7 @@
 										</template>
 										<span>{{ generateConnectionTopDropdownItem(item.top).text }}</span>
 									</TDropdownItem>
-									<TDropdownItem divider @click="handleConnectionDisplayChange(item)">
+									<TDropdownItem :divider="true" @click="handleConnectionDisplayChange(item)">
 										<template #prefixIcon>
 											<Icon height="16" width="16" :icon="generateDisplayDropdownItem(item.display).icon" />
 										</template>
@@ -63,7 +63,11 @@
 							</TDropdown>
 						</div>
 					</template>
-					<component :is="item.display === 'tree' ? SiderTree : SiderList" :connection="item" />
+					<component
+						:is="item.display === 'tree' ? SiderTree : SiderList"
+						:connection="item"
+						@error="handleConnectionError"
+					/>
 				</TCollapsePanel>
 			</TCollapse>
 			<Empty
@@ -173,6 +177,11 @@ async function handleConnectionDisconnectClick(id: string) {
 	await connectionsStore.disconnectConnection(id)
 	pull(expandedConnections.value, id)
 	connectionDisconnectedEventBus.emit(filteredConnections.value.find(item => item.id === id))
+}
+
+// connection connecting error
+function handleConnectionError(id: string) {
+	pull(expandedConnections.value, id)
 }
 </script>
 

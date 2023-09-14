@@ -84,6 +84,7 @@ import { useLoading } from '@/hooks'
 defineOptions({ name: 'SiderTree' })
 
 const props = defineProps<{ connection: Connection }>()
+const emit = defineEmits<{ (event: 'error', id: string) }>()
 
 const connectionsStore = useConnectionsStore()
 
@@ -105,6 +106,8 @@ async function init() {
 		useEventBus(connectionConnectedEventKey).emit(props.connection)
 		await initDatabaseOptions()
 		await initKeys()
+	} catch (error) {
+		emit('error', props.connection.id)
 	} finally {
 		loading.value = false
 	}
