@@ -161,12 +161,14 @@ export const useConnectionsStore = defineStore('Connections', () => {
 	/** handle redis ready event */
 	window.mainWindow.redis.onReady(id => {
 		const connection = connections.value.find(connection => connection.id === id)
+		if (!connection) return
 		connection.connected = 'connected'
 	})
 
 	/** handle redis end event */
 	function handleConnectionDisconnected(id: string) {
 		const connection = connections.value.find(connection => connection.id === id)
+		if (!connection) return
 		connection.connected = 'disconnected'
 	}
 	window.mainWindow.redis.onEnd(handleConnectionDisconnected)
@@ -174,6 +176,7 @@ export const useConnectionsStore = defineStore('Connections', () => {
 	/** handle redis connect event */
 	function handleConnectionConnect(id: string) {
 		const connection = connections.value.find(connection => connection.id === id)
+		if (!connection) return
 		connection.connected = 'connecting'
 	}
 	window.mainWindow.redis.onConnect(handleConnectionConnect)

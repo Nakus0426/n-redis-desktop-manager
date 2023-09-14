@@ -31,7 +31,7 @@ contextBridge.exposeInMainWorld('mainWindow', {
 		disconnect: (...args) => ipcRenderer.invoke(channel.main.redis.disconnect, ...args),
 		destory: (...args) => ipcRenderer.invoke(channel.main.redis.destory, ...args),
 		isConnected: (...args) => ipcRenderer.sendSync(channel.main.redis.isConnected, ...args),
-		ping: (...args) => ipcRenderer.sendSync(channel.main.redis.ping, ...args),
+		ping: (...args) => ipcRenderer.invoke(channel.main.redis.ping, ...args),
 		configGet: (...args) => ipcRenderer.invoke(channel.main.redis.configGet, ...args),
 		select: (...args) => ipcRenderer.invoke(channel.main.redis.select, ...args),
 		info: (...args) => ipcRenderer.invoke(channel.main.redis.info, ...args),

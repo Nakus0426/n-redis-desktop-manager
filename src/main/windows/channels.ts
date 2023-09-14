@@ -25,7 +25,7 @@ export const channel = {
 			disconnect: 'main:redis:disconnect',
 			destory: 'main:redie:destory',
 			isConnected: 'main:redis:isConnected',
-			ping: 'main:redis.ping',
+			ping: 'main:redis:ping',
 			configGet: 'main:redis:configGet',
 			select: 'main:redis:select',
 			info: 'main:redis:info',

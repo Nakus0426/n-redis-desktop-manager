@@ -66,7 +66,8 @@ export class RedisUtil {
 	async ping(id: string) {
 		const client = this.clients.get(id)
 		if (!client) return false
-		return (await client.ping('test')) === 'test'
+		const pingResult = await client.ping('test')
+		return pingResult === 'test'
 	}
 
 	/** config get */
