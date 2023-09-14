@@ -25,6 +25,7 @@ export interface MainWindow {
 		destory: typeof import('./utils')['RedisUtil']['prototype']['destory']
 		isConnected: typeof import('./utils')['RedisUtil']['prototype']['isConnected']
 		configGet: typeof import('./utils')['RedisUtil']['prototype']['configGet']
+		ping: typeof import('./utils')['RedisUtil']['prototype']['ping']
 		select: typeof import('./utils')['RedisUtil']['prototype']['select']
 		info: typeof import('./utils')['RedisUtil']['prototype']['info']
 		keys: typeof import('./utils')['RedisUtil']['prototype']['keys']

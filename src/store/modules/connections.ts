@@ -20,33 +20,23 @@ enum ConnectionKeys {
 	TopConnections = 'topConnections',
 }
 
-/**
- * connections store
- */
+/** connections store */
 export const useConnectionsStore = defineStore('Connections', () => {
-	/**
-	 * array of connections
-	 */
+	/* array of connections */
 	const connections = computed<Connection[]>(() => topConnections.value.concat(normalConnections.value))
 
-	/**
-	 * array of top connections
-	 */
+	/** array of top connections */
 	const topConnections = ref<Connection[]>([])
 
-	/**
-	 * array of normal connections
-	 */
+	/** array of normal connections */
 	const normalConnections = ref<Connection[]>([])
 
-	/**
-	 *  sync stored connections data
-	 */
+	/** sync stored connections data */
 	async function syncConnections() {
 		const storedNormalLiks = await localForage.getItem<string>(ConnectionKeys.NormalConnections)
 		const storedTopLiks = await localForage.getItem<string>(ConnectionKeys.TopConnections)
-		const normalConnectionsArr = storedNormalLiks ? JSON.parse(storedNormalLiks) : []
-		const topConnectionsArr = storedTopLiks ? JSON.parse(storedTopLiks) : []
+		const normalConnectionsArr = storedNormalLiks ? (JSON.parse(storedNormalLiks) as Connection[]) : []
+		const topConnectionsArr = storedTopLiks ? (JSON.parse(storedTopLiks) as Connection[]) : []
 		normalConnectionsArr.forEach(connection => {
 			connection.connected = window.mainWindow.redis.isConnected(connection.id) ? 'connected' : 'disconnected'
 		})
@@ -57,9 +47,7 @@ export const useConnectionsStore = defineStore('Connections', () => {
 		topConnections.value = topConnectionsArr
 	}
 
-	/**
-	 * add connections
-	 */
+	/** add connections */
 	async function addConnections(connection: Connection) {
 		const clonedConnections = cloneDeep(normalConnections.value)
 		clonedConnections.push(connection)
@@ -67,9 +55,7 @@ export const useConnectionsStore = defineStore('Connections', () => {
 		if (res) normalConnections.value = clonedConnections
 	}
 
-	/**
-	 * remove connection
-	 */
+	/** remove connection */
 	async function removeConnection(id: string) {
 		const clonedConnections = cloneDeep(normalConnections.value)
 		const connectionIndex = clonedConnections.findIndex(connection => connection.id === id)
@@ -78,9 +64,7 @@ export const useConnectionsStore = defineStore('Connections', () => {
 		if (res) normalConnections.value = clonedConnections
 	}
 
-	/**
-	 * update connection
-	 */
+	/** update connection */
 	async function updateConnection(connection: Connection) {
 		const clonedConnections = cloneDeep(connection.top ? topConnections.value : normalConnections.value)
 		const connectionIndex = clonedConnections.findIndex(item => item.id === connection.id)
@@ -95,9 +79,7 @@ export const useConnectionsStore = defineStore('Connections', () => {
 		}
 	}
 
-	/**
-	 * placing connection on top
-	 */
+	/** placing connection on top */
 	async function topConnection(id: string) {
 		const clonedTopConnections = cloneDeep(topConnections.value)
 		const clonedNormalConnections = cloneDeep(normalConnections.value)
@@ -118,9 +100,7 @@ export const useConnectionsStore = defineStore('Connections', () => {
 		if (removeNormalConnectionRes) normalConnections.value.splice(connectionIndex, 1)
 	}
 
-	/**
-	 * cancel placing connection on top
-	 */
+	/** cancel placing connection on top */
 	async function cancelTopConnection(id: string) {
 		const clonedTopConnections = cloneDeep(topConnections.value)
 		const clonedNormalConnections = cloneDeep(normalConnections.value)
@@ -141,14 +121,28 @@ export const useConnectionsStore = defineStore('Connections', () => {
 		if (removeTopConnectionRes) topConnections.value.splice(connectionIndex, 1)
 	}
 
-	/**
-	 * connect connection
-	 */
+	/** connection connect test */
+	async function connectTest(connection: Connection) {
+		const id = 'test'
+		try {
+			const { host, port, username, password } = connection
+			const url = `redis://${host}:${String(port)}`
+			await window.mainWindow.redis.create({ id, url, username, password, ignoreError: true })
+			await window.mainWindow.redis.connect(id)
+			const testResult = await window.mainWindow.redis.ping(id)
+			window.mainWindow.redis.disconnect(id)
+			return testResult
+		} finally {
+			window.mainWindow.redis.destory(id)
+		}
+	}
+
+	/** connect connection */
 	async function connectConnection(id: string) {
 		try {
 			if (window.mainWindow.redis.isConnected(id)) return
 			const connection = connections.value.find(connection => connection.id === id)
-			const { host, port, username, password } = cloneDeep(connection)
+			const { host, port, username, password } = connection
 			const url = `redis://${host}:${String(port)}`
 			await window.mainWindow.redis.create({ id, url, username, password })
 			await window.mainWindow.redis.connect(id)
@@ -158,34 +152,26 @@ export const useConnectionsStore = defineStore('Connections', () => {
 		}
 	}
 
-	/**
-	 * disconnect connection
-	 */
+	/** disconnect connection */
 	async function disconnectConnection(id: string) {
 		await window.mainWindow.redis.disconnect(id)
 		handleConnectionDisconnected(id)
 	}
 
-	/**
-	 * handle redis ready event
-	 */
+	/** handle redis ready event */
 	window.mainWindow.redis.onReady(id => {
 		const connection = connections.value.find(connection => connection.id === id)
 		connection.connected = 'connected'
 	})
 
-	/**
-	 * handle redis end event
-	 */
+	/** handle redis end event */
 	function handleConnectionDisconnected(id: string) {
 		const connection = connections.value.find(connection => connection.id === id)
 		connection.connected = 'disconnected'
 	}
 	window.mainWindow.redis.onEnd(handleConnectionDisconnected)
 
-	/**
-	 * handle redis connect event
-	 */
+	/** handle redis connect event */
 	function handleConnectionConnect(id: string) {
 		const connection = connections.value.find(connection => connection.id === id)
 		connection.connected = 'connecting'
@@ -201,6 +187,7 @@ export const useConnectionsStore = defineStore('Connections', () => {
 		updateConnection,
 		topConnection,
 		cancelTopConnection,
+		connectTest,
 		connectConnection,
 		disconnectConnection,
 	}

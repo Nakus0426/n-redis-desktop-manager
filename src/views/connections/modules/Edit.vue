@@ -6,7 +6,6 @@
 		:width="800"
 		:close-on-overlay-click="false"
 		:confirm-btn="confirmButtonProps"
-		@confirm="handleConfirmClick()"
 		@closed="handleDialogClosed()"
 	>
 		<div class="edit">
@@ -48,14 +47,30 @@
 				</div>
 			</TForm>
 		</div>
+		<template #footer>
+			<div class="footer">
+				<div class="prefix">
+					<TButton variant="text" theme="primary" :loading="connectTesting" @click="handleConnectTestClick()">
+						<template #icon>
+							<Icon height="16" width="16" icon="fluent:plug-connected-20-regular" />
+						</template>
+						<span>测试连接</span>
+					</TButton>
+				</div>
+				<div class="suffix">
+					<TButton theme="default" @click="visible = false">取消</TButton>
+					<TButton @click="handleConfirmClick()">保存</TButton>
+				</div>
+			</div>
+		</template>
 	</Dialog>
 </template>
 
 <script setup lang="ts">
-import { type FormRules, type FormInstanceFunctions, ButtonProps, MessagePlugin } from 'tdesign-vue-next'
+import { type FormRules, type FormInstanceFunctions, type ButtonProps, MessagePlugin } from 'tdesign-vue-next'
 import { nanoid } from 'nanoid'
 import { cloneDeep } from 'lodash-es'
-import { useLocale } from '@/hooks'
+import { useLoading, useLocale } from '@/hooks'
 import { type Connection, useConnectionsStore } from '@/store'
 
 const emit = defineEmits<{ (event: 'update', id: string) }>()
@@ -110,6 +125,22 @@ function displayActivedClass(display: Connection['display']) {
 }
 function handleDisplayChange(display: Connection['display']) {
 	data.value.display = display
+}
+
+// test connectivity
+const { isLoading: connectTesting, enter: enterConnectTesting, exit: exitConnectTesting } = useLoading()
+async function handleConnectTestClick() {
+	try {
+		enterConnectTesting()
+		const validate = await formRef.value.validate()
+		if (validate !== true) return
+		const testResult = await connectionsStore.connectTest(data.value)
+		testResult ? MessagePlugin.success('连接成功') : MessagePlugin.error('连接失败')
+	} catch (error) {
+		MessagePlugin.error('连接失败')
+	} finally {
+		exitConnectTesting()
+	}
 }
 
 // confirm
@@ -196,6 +227,11 @@ defineExpose({
 			border: 2px solid var(--td-brand-color);
 		}
 	}
+}
+
+.footer {
+	display: flex;
+	justify-content: space-between;
 }
 
 [theme-mode='dark'] {

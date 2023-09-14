@@ -83,6 +83,7 @@ export function createMainWindow() {
 	ipcMain.on(channel.main.redis.isConnected, (event, value) => {
 		event.returnValue = redis.isConnected(value)
 	})
+	ipcMain.handle(channel.main.redis.ping, (event, id) => redis.ping(id))
 	ipcMain.handle(channel.main.redis.configGet, (event, id, value) => redis.configGet(id, value))
 	ipcMain.handle(channel.main.redis.select, (event, id, value) => redis.select(id, value))
 	ipcMain.handle(channel.main.redis.info, (event, id, value) => redis.info(id, value))

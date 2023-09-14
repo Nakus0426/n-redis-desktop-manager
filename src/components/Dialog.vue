@@ -7,6 +7,9 @@
 			</div>
 		</template>
 		<slot name="default" />
+		<template #footer>
+			<slot name="footer" />
+		</template>
 	</TDialog>
 </template>
 
