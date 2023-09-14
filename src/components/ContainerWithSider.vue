@@ -87,6 +87,10 @@ function handleResize(e: MouseEvent) {
 		&:hover {
 			background-color: var(--td-brand-color-hover);
 		}
+
+		&:active {
+			background-color: var(--td-brand-color-active);
+		}
 	}
 }
 

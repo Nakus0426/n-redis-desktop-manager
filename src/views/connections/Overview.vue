@@ -8,6 +8,20 @@
 				</div>
 				<div class="header_item_body">123</div>
 			</div>
+			<div class="header_item">
+				<div class="header_item_header">
+					<Icon height="16" width="16" icon="fluent:server-20-regular" />
+					<div class="header_item_header_title">服务器</div>
+				</div>
+				<div class="header_item_body">123</div>
+			</div>
+			<div class="header_item">
+				<div class="header_item_header">
+					<Icon height="16" width="16" icon="fluent:server-20-regular" />
+					<div class="header_item_header_title">服务器</div>
+				</div>
+				<div class="header_item_body">123</div>
+			</div>
 		</div>
 		<h1>Overview</h1>
 	</div>

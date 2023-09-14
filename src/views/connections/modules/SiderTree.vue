@@ -62,6 +62,12 @@
 					check-strictly
 					@active="handleKeyTreeChange"
 				>
+					<template #label="{ node }">
+						<div class="tree_node">
+							<Icon height="16" width="16" icon="fluent:key-20-regular" v-if="node.data.isLeaf" />
+							<div class="tree_node_label">{{ node.label }}</div>
+						</div>
+					</template>
 					<template #empty>
 						<Empty class="header-empty" icon="nothingHere" description="暂无数据" />
 					</template>
@@ -204,6 +210,21 @@ function handleKeyTreeChange(value: TreeNodeValue[], { node }: { node: TreeNodeM
 .body {
 	&-empty {
 		padding: var(--td-comp-paddingTB-m) 0;
+	}
+
+	.tree_node {
+		display: flex;
+		align-items: center;
+		gap: var(--td-comp-margin-s);
+		color: var(--td-text-color-primary);
+
+		&_label {
+			flex: 1;
+			font: var(--td-font-body-medium);
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
 	}
 }
 </style>

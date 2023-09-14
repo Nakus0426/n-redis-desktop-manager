@@ -43,6 +43,10 @@
 										</template>
 										<span>{{ generateDisplayDropdownItem(item.display).text }}</span>
 									</TDropdownItem>
+									<TDropdownItem @click="handleEditConnectionClick(item.id)">
+										<template #prefixIcon><Icon height="16" width="16" icon="fluent:settings-20-regular" /></template>
+										<span>编辑</span>
+									</TDropdownItem>
 									<TDropdownItem
 										theme="warning"
 										v-if="['connected', 'connecting'].includes(item.connected)"
@@ -50,10 +54,6 @@
 									>
 										<template #prefixIcon><Icon height="16" width="16" icon="fluent:power-20-regular" /></template>
 										<span>关闭</span>
-									</TDropdownItem>
-									<TDropdownItem @click="handleEditConnectionClick(item.id)">
-										<template #prefixIcon><Icon height="16" width="16" icon="fluent:settings-20-regular" /></template>
-										<span>编辑</span>
 									</TDropdownItem>
 									<TDropdownItem theme="error" @click="handleConnectionRemoveClick(item.id)">
 										<template #prefixIcon><Icon height="16" width="16" icon="fluent:delete-20-regular" /></template>
