@@ -8,7 +8,7 @@
 		:confirm-btn="confirmButtonProps"
 		@closed="handleDialogClosed()"
 	>
-		<div class="edit">
+		<div class="edit" id="connectionEdit">
 			<TForm label-align="top" :rules="rules" :data="data" ref="formRef">
 				<div class="body">
 					<TFormItem :label="t('connections.edit.name')" name="name">
@@ -50,12 +50,41 @@
 		<template #footer>
 			<div class="footer">
 				<div class="prefix">
-					<TButton variant="text" theme="primary" :loading="connectTesting" @click="handleConnectTestClick()">
-						<template #icon>
-							<Icon height="16" width="16" icon="fluent:plug-connected-20-regular" />
+					<TPopup
+						:visible="connectTestResultPopupVisible"
+						:overlay-class-name="`connect-test-result-popup ${connectTestResultPopupStatus.class}`"
+					>
+						<template #content>
+							<div class="connect-test-result-popup_content">
+								<div class="connect-test-result-popup_content_header">
+									<div
+										class="connect-test-result-popup_content_header_title"
+										:class="connectTestResultPopupStatus.class"
+									>
+										<Icon height="16" width="16" :icon="connectTestResultPopupStatus.icon"></Icon>
+										<span>{{ connectTestResultPopupStatus.title }}</span>
+									</div>
+									<div
+										class="connect-test-result-popup_content_header_close"
+										:class="connectTestResultPopupStatus.class"
+										v-ripple
+										@click="connectTestResultPopupVisible = false"
+									>
+										<Icon height="16" width="16" icon="fluent:dismiss-20-regular" />
+									</div>
+								</div>
+								<div class="connect-test-result-popup_content_body" v-show="connectTestResultError">
+									{{ connectTestResultError }}
+								</div>
+							</div>
 						</template>
-						<span>测试连接</span>
-					</TButton>
+						<TButton variant="text" theme="primary" :loading="connectTesting" @click="handleConnectTestClick()">
+							<template #icon>
+								<Icon height="14" width="14" icon="fluent:plug-connected-20-regular" />
+							</template>
+							<span>测试连接</span>
+						</TButton>
+					</TPopup>
 				</div>
 				<div class="suffix">
 					<TButton theme="default" @click="visible = false">取消</TButton>
@@ -128,18 +157,29 @@ function handleDisplayChange(display: Connection['display']) {
 }
 
 // test connectivity
+const connectTestResultPopupVisible = ref(false)
+const connectTestResultPopupStatus = computed(() => ({
+	class: connectTestResult.value ? 'is-success' : 'is-error',
+	title: connectTestResult.value ? '连接成功' : '连接失败',
+	icon: connectTestResult.value ? 'fluent:checkmark-circle-20-regular' : 'fluent:dismiss-circle-20-regular',
+}))
+const connectTestResultError = ref<string>()
+const connectTestResult = ref(false)
 const { isLoading: connectTesting, enter: enterConnectTesting, exit: exitConnectTesting } = useLoading()
 async function handleConnectTestClick() {
 	try {
+		connectTestResultPopupVisible.value = false
 		enterConnectTesting()
 		const validate = await formRef.value.validate()
 		if (validate !== true) return
-		const testResult = await connectionsStore.connectTest(data.value)
-		testResult ? MessagePlugin.success('连接成功') : MessagePlugin.error('连接失败')
+		connectTestResult.value = await connectionsStore.connectTest(data.value)
+		connectTestResultError.value = null
 	} catch (error) {
-		MessagePlugin.error('连接失败')
+		connectTestResult.value = false
+		connectTestResultError.value = error
 	} finally {
 		exitConnectTesting()
+		connectTestResultPopupVisible.value = true
 	}
 }
 
@@ -242,5 +282,69 @@ defineExpose({
 	.tree {
 		background: url(@/assets/images/display_tree_dark.svg) no-repeat center center;
 	}
+}
+
+.connect-test-result-popup_content {
+	font: var(--td-font-body-medium);
+	max-width: 400px;
+
+	&_header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: var(--td-comp-margin-m);
+
+		&_title {
+			display: flex;
+			align-items: center;
+			gap: var(--td-comp-margin-xs);
+
+			&.is-success {
+				color: var(--td-success-color);
+			}
+
+			&.is-error {
+				color: var(--td-error-color);
+			}
+		}
+
+		&_close {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			width: 16px;
+			height: 16px;
+			color: var(--td-text-color-secondary);
+			border-radius: var(--td-radius-default);
+			transition: all var(--td-transition);
+			cursor: pointer;
+
+			&:hover {
+				color: var(--td-text-color-primary);
+			}
+
+			&.is-success {
+				--ripple-color: var(--td-success-color-light-hover);
+			}
+
+			&.is-error {
+				--ripple-color: var(--td-error-color-light-hover);
+			}
+		}
+	}
+
+	&_body {
+		color: var(--td-text-color-secondary);
+	}
+}
+
+:global(.connect-test-result-popup.is-success .t-popup__content) {
+	background-color: var(--td-success-color-light);
+	border: 1px solid var(--td-success-color);
+}
+
+:global(.connect-test-result-popup.is-error .t-popup__content) {
+	background-color: var(--td-error-color-light);
+	border: 1px solid var(--td-error-color);
 }
 </style>
