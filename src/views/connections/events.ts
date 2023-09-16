@@ -6,3 +6,5 @@ export const connectionConnectedEventKey: EventBusKey<Connection> = Symbol()
 export const connectionDisconnectedEventKey: EventBusKey<Connection> = Symbol()
 
 export const keyActivedEventKey: EventBusKey<string> = Symbol()
+
+export const tabActivedEventKey: EventBusKey<string> = Symbol()

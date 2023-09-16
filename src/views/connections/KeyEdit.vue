@@ -1,6 +1,6 @@
 <template>
 	<div class="key-edit">
-		<h1>KeyEdit</h1>
+		<h1><input /></h1>
 	</div>
 </template>
 

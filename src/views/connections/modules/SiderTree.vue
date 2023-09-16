@@ -52,7 +52,7 @@
 				<TTree
 					:data="keysTree"
 					:filter="keysTreeFilter"
-					:actived="activedKey"
+					v-model:actived="activedKey"
 					allow-fold-node-on-filter
 					activable
 					expand-mutex
@@ -83,9 +83,9 @@ import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue'
 import { type TreeNodeModel, type SelectOption, type TreeNodeValue, type SkeletonRowCol } from 'tdesign-vue-next'
 import { useEventBus } from '@vueuse/core'
 import { useConnectionsStore, type Connection } from '@/store'
-import { connectionConnectedEventKey, keyActivedEventKey } from '../events'
-import { useKeyTree } from '../hooks'
 import { useLoading } from '@/hooks'
+import { connectionConnectedEventKey, keyActivedEventKey, tabActivedEventKey } from '../events'
+import { useKeyTree } from '../hooks'
 
 defineOptions({ name: 'SiderTree' })
 
@@ -175,6 +175,11 @@ function handleKeyTreeChange(value: TreeNodeValue[], { node }: { node: TreeNodeM
 	if (value.length !== 0) activedKey.value = value
 	useEventBus(keyActivedEventKey).emit(node.value as string)
 }
+
+// tab actived
+useEventBus(tabActivedEventKey).on(key => {
+	activedKey.value = [key]
+})
 </script>
 
 <style scoped lang="scss">

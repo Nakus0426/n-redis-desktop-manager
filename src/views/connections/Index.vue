@@ -53,9 +53,12 @@
 					</div>
 				</div>
 				<div class="content_body">
-					<Transition enter-active-class="animate__animated animate__fadeInLeft animate__faster" mode="out-in" appear>
-						<component :is="activedTabPanel?.type === 'KeyEdit' ? KeyEdit : Overview" :key="activedTabPanel?.key" />
-					</Transition>
+					<component
+						v-for="item in tabPanels"
+						:key="item.key"
+						:is="item.type === 'Overview' ? Overview : KeyEdit"
+						v-show="item.key === activedTabPanel.key"
+					/>
 				</div>
 				<Empty class="content-empty" description="" icon="logo" size="large" v-show="isEmpty" />
 			</div>
@@ -67,12 +70,17 @@
 import { useResizeObserver } from '@vueuse/core'
 import { cloneDeep } from 'lodash-es'
 import { useEventBus } from '@vueuse/core'
-import { connectionConnectedEventKey, connectionDisconnectedEventKey, keyActivedEventKey } from './events'
+import {
+	connectionConnectedEventKey,
+	connectionDisconnectedEventKey,
+	keyActivedEventKey,
+	tabActivedEventKey,
+} from './events'
 import Sider from './Sider.vue'
 import Overview from './Overview.vue'
 import KeyEdit from './KeyEdit.vue'
 
-// handle connection connected
+// connection connected
 useEventBus(connectionConnectedEventKey).on(connection => {
 	const tabPanel: TabPanel = {
 		key: connection.id,
@@ -85,13 +93,13 @@ useEventBus(connectionConnectedEventKey).on(connection => {
 	tabPanels.value.push(tabPanel)
 })
 
-// handle connection disconnected
+// connection disconnected
 useEventBus(connectionDisconnectedEventKey).on(connection => {
 	const index = tabPanels.value.findIndex(item => item.key === connection.id)
 	if (index >= 0) handleTabRemove(index, connection.id)
 })
 
-// handle key actived
+// key actived
 useEventBus(keyActivedEventKey).on(key => {
 	const tabPanel: TabPanel = {
 		key,
@@ -146,7 +154,7 @@ watch(
 	{ immediate: true }
 )
 
-// handle tab remove
+// tab remove
 function handleTabRemove(index: number, key: string) {
 	const length = tabPanels.value.length
 	tabPanels.value.splice(index, 1)
@@ -170,8 +178,10 @@ function tabActivedClass(key: string) {
 }
 
 // tab click
+const tabActivedEventBus = useEventBus(tabActivedEventKey)
 function handleTabClick(value: TabPanel) {
 	activedTabPanel.value = value
+	tabActivedEventBus.emit(value.key)
 	if (tabsOverlow.value) tabRefs.get(value.key).scrollIntoView({ inline: 'center', behavior: 'smooth' })
 }
 </script>
