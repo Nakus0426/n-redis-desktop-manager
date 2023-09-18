@@ -7,7 +7,7 @@
 			</div>
 		</template>
 		<slot name="default" />
-		<template #footer>
+		<template v-if="$slots?.footer" #footer>
 			<slot name="footer" />
 		</template>
 	</TDialog>
@@ -15,6 +15,7 @@
 
 <script setup lang="ts">
 defineOptions({ name: 'Dialog' })
+
 const props = defineProps<{ title: string; icon?: string }>()
 </script>
 

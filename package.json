@@ -49,6 +49,7 @@
     "@vitejs/plugin-vue": "^4.3.3",
     "electron": "^26.1.0",
     "sass": "^1.66.1",
+    "typescript": "^5.2.2",
     "unplugin-auto-import": "^0.16.6",
     "unplugin-vue-components": "^0.25.1",
     "vite": "^4.4.9",

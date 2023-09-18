@@ -5,7 +5,9 @@
 		:icon="title.icon"
 		:width="800"
 		:close-on-overlay-click="false"
-		:confirm-btn="confirmButtonProps"
+		:close-on-esc-key-down="!connectTesting"
+		:close-btn="!connectTesting"
+		placement="center"
 		@closed="handleDialogClosed()"
 	>
 		<div class="edit" id="connectionEdit">
@@ -55,7 +57,7 @@
 						:overlay-class-name="`connect-test-result-popup ${connectTestResultPopupStatus.class}`"
 					>
 						<template #content>
-							<div class="connect-test-result-popup_content">
+							<div class="connect-test-result-popup_content" ref="connectTestResultPopupContentRef">
 								<div class="connect-test-result-popup_content_header">
 									<div
 										class="connect-test-result-popup_content_header_title"
@@ -87,8 +89,8 @@
 					</TPopup>
 				</div>
 				<div class="suffix">
-					<TButton theme="default" @click="visible = false">取消</TButton>
-					<TButton @click="handleConfirmClick()">保存</TButton>
+					<TButton theme="default" :disabled="connectTesting" @click="visible = false">取消</TButton>
+					<TButton :disabled="connectTesting" :loading="confirmLoading" @click="handleConfirmClick()">保存</TButton>
 				</div>
 			</div>
 		</template>
@@ -96,7 +98,8 @@
 </template>
 
 <script setup lang="ts">
-import { type FormRules, type FormInstanceFunctions, type ButtonProps, MessagePlugin } from 'tdesign-vue-next'
+import { type FormRules, type FormInstanceFunctions, MessagePlugin } from 'tdesign-vue-next'
+import { onClickOutside } from '@vueuse/core'
 import { nanoid } from 'nanoid'
 import { cloneDeep } from 'lodash-es'
 import { useLoading, useLocale } from '@/hooks'
@@ -184,13 +187,18 @@ async function handleConnectTestClick() {
 	}
 }
 
+// test connectivity popup on click outside
+const connectTestResultPopupContentRef = ref(null)
+onClickOutside(connectTestResultPopupContentRef, () => {
+	connectTestResultPopupVisible.value = false
+})
+
 // confirm
 const formRef = ref<FormInstanceFunctions>()
-const loading = ref(false)
-const confirmButtonProps = computed<ButtonProps>(() => ({ loading: loading.value }))
+const confirmLoading = ref(false)
 async function handleConfirmClick() {
 	try {
-		loading.value = true
+		confirmLoading.value = true
 		const validate = await formRef.value.validate()
 		if (validate !== true) return
 		if (isEdit.value) {
@@ -202,13 +210,14 @@ async function handleConfirmClick() {
 		MessagePlugin.success('保存成功')
 		visible.value = false
 	} finally {
-		loading.value = false
+		confirmLoading.value = false
 	}
 }
 
 // dialog closed
 function handleDialogClosed() {
 	data.value = createData()
+	connectTestResultPopupVisible.value = false
 }
 
 defineExpose({
