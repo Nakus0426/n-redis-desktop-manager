@@ -92,10 +92,14 @@ export class RedisUtil {
 	}
 
 	/** keys */
-	keys(id: string, pattern?: string) {
+	async keys(id: string, pattern?: string) {
 		const client = this.clients.get(id)
 		if (!client || !client?.isReady) return
-		return client.keys(pattern)
+		const keys: string[] = []
+		for await (const key of client.scanIterator({ MATCH: pattern })) {
+			keys.push(key)
+		}
+		return keys
 	}
 
 	/** set */

@@ -178,12 +178,13 @@ function tabActivedClass(key: string) {
 }
 
 // tab click
-const tabActivedEventBus = useEventBus(tabActivedEventKey)
 function handleTabClick(value: TabPanel) {
 	activedTabPanel.value = value
-	tabActivedEventBus.emit(value.key)
 	if (tabsOverlow.value) tabRefs.get(value.key).scrollIntoView({ inline: 'center', behavior: 'smooth' })
 }
+
+// tab actived emit event
+watch(activedTabPanel, value => useEventBus(tabActivedEventKey).emit(value.key))
 </script>
 
 <style scoped lang="scss">

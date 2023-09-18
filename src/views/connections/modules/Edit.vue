@@ -195,10 +195,10 @@ onClickOutside(connectTestResultPopupContentRef, () => {
 
 // confirm
 const formRef = ref<FormInstanceFunctions>()
-const confirmLoading = ref(false)
+const { isLoading: confirmLoading, enter: enterConfirmLoading, exit: exitConfirmLoading } = useLoading()
 async function handleConfirmClick() {
 	try {
-		confirmLoading.value = true
+		enterConfirmLoading()
 		const validate = await formRef.value.validate()
 		if (validate !== true) return
 		if (isEdit.value) {
@@ -210,7 +210,7 @@ async function handleConfirmClick() {
 		MessagePlugin.success('保存成功')
 		visible.value = false
 	} finally {
-		confirmLoading.value = false
+		exitConfirmLoading()
 	}
 }
 
