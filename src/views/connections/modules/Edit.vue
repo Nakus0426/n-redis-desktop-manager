@@ -174,12 +174,13 @@ async function handleConnectTestClick() {
 		if (validate !== true) return
 		connectTestResult.value = await connectionsStore.connectTest(data.value)
 		connectTestResultError.value = null
+		connectTestResultPopupVisible.value = true
 	} catch (error) {
 		connectTestResult.value = false
 		connectTestResultError.value = error
+		connectTestResultPopupVisible.value = true
 	} finally {
 		exitConnectTesting()
-		connectTestResultPopupVisible.value = true
 	}
 }
 
