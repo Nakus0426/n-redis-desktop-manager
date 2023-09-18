@@ -74,7 +74,7 @@ import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue'
 import { type SelectOption, type SkeletonRowCol } from 'tdesign-vue-next'
 import { useEventBus } from '@vueuse/core'
 import { useConnectionsStore, type Connection } from '@/store'
-import { connectionConnectedEventKey, keyActivedEventKey } from '../events'
+import { connectionConnectedEventKey, keyActivedEventKey, tabActivedEventKey } from '../events'
 import { useLoading } from '@/hooks'
 
 defineOptions({ name: 'SiderList' })
@@ -165,6 +165,11 @@ function handleKeyClick(key: string) {
 function keyActivedClass(key: string) {
 	return activedKey.value === key ? 'is-actived' : ''
 }
+
+// tab actived
+useEventBus(tabActivedEventKey).on(key => {
+	activedKey.value = key
+})
 </script>
 
 <style scoped lang="scss">
