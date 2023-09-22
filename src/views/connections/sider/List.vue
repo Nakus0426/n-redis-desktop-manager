@@ -1,81 +1,78 @@
 <template>
-	<OverlayScrollbarsComponent :options="{ scrollbars: { autoHide: 'leave', clickScroll: true } }" defer>
-		<div class="sider-list" ref="connectionContentRef">
-			<div class="header">
-				<div class="header_row">
-					<TSelect
-						v-model="activedDatabase"
-						:options="databaseOptions"
-						:loading="databasesLoading"
-						size="small"
-						@change="initKeys()"
-					>
-						<template #prefixIcon>
-							<Icon height="14" width="14" icon="fluent:database-multiple-20-regular" />
-						</template>
-						<template #panelTopContent>
-							<div class="database_panel_top">
-								<TButton
-									size="small"
-									block
-									theme="default"
-									variant="text"
-									:loading="databasesLoading"
-									@click="initDatabaseOptions()"
-								>
-									<template #icon>
-										<Icon height="14" width="14" icon="fluent:arrow-sync-20-regular" />
-									</template>
-									<span>刷新</span>
-								</TButton>
-							</div>
-						</template>
-					</TSelect>
-					<TTooltip content="刷新" :show-arrow="false">
-						<TButton size="small" theme="default" variant="outline" @click="initKeys()">
-							<template #icon><Icon height="16" width="16" icon="fluent:arrow-sync-20-regular" /></template>
-						</TButton>
-					</TTooltip>
-					<TTooltip content="新增" :show-arrow="false">
-						<TButton size="small" theme="default" variant="outline">
-							<template #icon><Icon height="16" width="16" icon="fluent:add-20-regular" /></template>
-						</TButton>
-					</TTooltip>
-				</div>
-				<div class="header_row">
-					<TInput size="small" placeholder="搜索" clearable v-model="filterKeyword">
-						<template #prefixIcon><Icon height="14" width="14" icon="fluent:search-20-regular" /></template>
-					</TInput>
+	<div class="sider-list" ref="containerRef">
+		<div class="header">
+			<div class="header_row">
+				<TSelect
+					v-model="activedDatabase"
+					:options="databaseOptions"
+					:loading="databasesLoading"
+					size="small"
+					@change="initKeys()"
+				>
+					<template #prefixIcon>
+						<Icon height="16" width="16" icon="fluent:database-stack-16-regular" />
+					</template>
+					<template #panelTopContent>
+						<div class="database_panel_top">
+							<TButton
+								size="small"
+								block
+								theme="default"
+								variant="text"
+								:loading="databasesLoading"
+								@click="initDatabaseOptions()"
+							>
+								<template #icon>
+									<Icon height="16" width="16" icon="fluent:arrow-sync-16-regular" />
+								</template>
+								<span>刷新</span>
+							</TButton>
+						</div>
+					</template>
+				</TSelect>
+				<TTooltip content="刷新" :show-arrow="false">
+					<TButton size="small" theme="default" variant="outline" @click="initKeys()">
+						<template #icon><Icon height="16" width="16" icon="fluent:arrow-sync-16-regular" /></template>
+					</TButton>
+				</TTooltip>
+				<TTooltip content="新增" :show-arrow="false">
+					<TButton size="small" theme="default" variant="outline">
+						<template #icon><Icon height="16" width="16" icon="fluent:add-16-regular" /></template>
+					</TButton>
+				</TTooltip>
+			</div>
+			<div class="header_row">
+				<TInput size="small" placeholder="搜索" clearable v-model="filterKeyword">
+					<template #prefixIcon><Icon height="16" width="16" icon="fluent:search-16-regular" /></template>
+				</TInput>
+			</div>
+		</div>
+		<TSkeleton animation="gradient" :loading="keysLoading" :row-col="skeletonRowCol">
+			<div class="body">
+				<div
+					class="body_item"
+					:class="keyActivedClass(item)"
+					v-for="item in filterKeysList"
+					:key="item"
+					:title="item"
+					@click="handleKeyClick(item)"
+				>
+					<Icon height="16" width="16" icon="fluent:key-16-regular" />
+					<div class="body_item_label">{{ item }}</div>
 				</div>
 			</div>
-			<TSkeleton animation="gradient" :loading="keysLoading" :row-col="skeletonRowCol">
-				<div class="body">
-					<div
-						class="body_item"
-						:class="keyActivedClass(item)"
-						v-for="item in filterKeysList"
-						:key="item"
-						:title="item"
-						@click="handleKeyClick(item)"
-					>
-						<Icon height="16" width="16" icon="fluent:key-20-regular" />
-						<div class="body_item_label">{{ item }}</div>
-					</div>
-				</div>
-				<Empty class="body-empty" icon="nothingHere" description="暂无数据" v-show="isEmpty" />
-			</TSkeleton>
-		</div>
-		<BackTop size="small" offset="large" />
-	</OverlayScrollbarsComponent>
+			<Empty class="body-empty" icon="nothingHere" description="暂无数据" v-show="isEmpty" />
+		</TSkeleton>
+	</div>
+	<BackTop size="small" offset="large" />
 </template>
 
 <script setup lang="ts">
-import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue'
 import { type SelectOption, type SkeletonRowCol } from 'tdesign-vue-next'
 import { useEventBus } from '@vueuse/core'
 import { useConnectionsStore, type Connection } from '@/store'
-import { connectionConnectedEventKey, keyActivedEventKey, tabActivedEventKey } from '../events'
-import { useLoading } from '@/hooks'
+import { connectionConnectedEventKey, keyActivedEventKey, tabActivedEventKey } from '../keys'
+import { useLoading, useScrollbar } from '@/hooks'
 
 defineOptions({ name: 'SiderList' })
 
@@ -85,6 +82,12 @@ const emit = defineEmits<{ (event: 'error', id: string) }>()
 const connectionsStore = useConnectionsStore()
 
 const skeletonRowCol: SkeletonRowCol = [1, 1, 1, 1, 1, 1]
+
+// init scrollbar
+const containerRef = ref(null)
+const { init: initScrollbar } = useScrollbar(containerRef)
+
+onMounted(() => nextTick(() => initScrollbar()))
 
 // is keys empty
 const isEmpty = computed(() => filterKeysList.value.length === 0)
@@ -174,6 +177,7 @@ useEventBus(tabActivedEventKey).on(key => {
 
 <style scoped lang="scss">
 .sider-list {
+	position: relative;
 	display: flex;
 	flex-direction: column;
 	gap: var(--td-comp-margin-s);

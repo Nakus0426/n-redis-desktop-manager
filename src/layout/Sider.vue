@@ -23,19 +23,19 @@
 		<div class="footer">
 			<TDropdown placement="right-top">
 				<div v-ripple class="menu_item">
-					<Icon height="24" width="24" icon="fluent:text-align-justify-20-filled" />
+					<Icon height="24" width="24" icon="fluent:text-align-justify-24-filled" />
 				</div>
 				<TDropdownMenu>
 					<TDropdownItem @click="handleExtraMenuClick(0)">
-						<template #prefixIcon><Icon height="16" width="16" icon="fluent:chat-help-20-regular" /></template>
+						<template #prefixIcon><Icon height="16" width="16" icon="fluent:question-circle-16-regular" /></template>
 						<span>帮助</span>
 					</TDropdownItem>
 					<TDropdownItem @click="handleExtraMenuClick(1)">
-						<template #prefixIcon><Icon height="16" width="16" icon="fluent:settings-20-regular" /></template>
+						<template #prefixIcon><Icon height="16" width="16" icon="fluent:settings-16-regular" /></template>
 						<span>设置</span>
 					</TDropdownItem>
 					<TDropdownItem @click="handleExtraMenuClick(2)">
-						<template #prefixIcon><Icon height="16" width="16" icon="fluent:info-20-regular" /></template>
+						<template #prefixIcon><Icon height="16" width="16" icon="fluent:info-16-regular" /></template>
 						<span>关于</span>
 					</TDropdownItem>
 				</TDropdownMenu>
@@ -65,10 +65,10 @@ function isMenuActived(path: string) {
 
 // generate menu icon
 const connectionIcon = computed(() =>
-	isMenuActived(ConnectionsIndexRoute.path) ? 'fluent:link-square-20-filled' : 'fluent:link-square-20-regular'
+	isMenuActived(ConnectionsIndexRoute.path) ? 'fluent:link-square-24-filled' : 'fluent:link-square-24-regular'
 )
 const terminalIcon = computed(() =>
-	isMenuActived(TerminalIndexRoute.path) ? 'fluent:code-block-20-filled' : 'fluent:code-block-20-regular'
+	isMenuActived(TerminalIndexRoute.path) ? 'fluent:window-console-20-filled' : 'fluent:window-console-20-regular'
 )
 
 // generate menu class

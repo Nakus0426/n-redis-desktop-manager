@@ -19,6 +19,10 @@
 
 // dialog
 .t-dialog {
+	display: flex !important;
+	flex-direction: column !important;
+	max-height: 80vh !important;
+	max-width: 80vw !important;
 	padding: 0 !important;
 	overflow: hidden !important;
 
@@ -27,7 +31,10 @@
 	}
 
 	&__body {
-		padding: 0 var(--td-comp-paddingLR-l) var(--td-comp-paddingLR-l) var(--td-comp-paddingLR-l) !important;
+		display: flex !important;
+		flex: 1 !important;
+		padding: 0 !important;
+		overflow: hidden !important;
 
 		&__icon,
 		&--icon {

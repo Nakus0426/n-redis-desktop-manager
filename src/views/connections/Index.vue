@@ -13,7 +13,7 @@
 						v-ripple
 						@click="handleTabsOverflowButtonClick('prefix')"
 					>
-						<Icon height="18" width="18" icon="fluent:chevron-left-20-regular" />
+						<Icon height="20" width="20" icon="fluent:chevron-left-20-regular" />
 					</div>
 					<div class="content_header_divider" v-show="tabsOverlow" />
 					<div class="content_header_center" ref="tabsRef">
@@ -37,7 +37,7 @@
 									<div class="content_header_center_item_label_text">{{ item.label }}</div>
 								</div>
 								<div class="content_header_center_item_close" @click.stop="handleTabRemove(index, item.key)">
-									<Icon height="14" width="14" icon="fluent:dismiss-20-regular" />
+									<Icon height="16" width="16" icon="fluent:dismiss-16-regular" />
 								</div>
 							</div>
 						</TransitionGroup>
@@ -49,7 +49,7 @@
 						v-ripple
 						@click="handleTabsOverflowButtonClick('suffix')"
 					>
-						<Icon height="18" width="18" icon="fluent:chevron-right-20-regular" />
+						<Icon height="20" width="20" icon="fluent:chevron-right-20-regular" />
 					</div>
 				</div>
 				<div class="content_body">
@@ -57,6 +57,7 @@
 						v-for="item in tabPanels"
 						:key="item.key"
 						:is="item.type === 'Overview' ? Overview : KeyEdit"
+						:data="item.key"
 						v-show="item.key === activedTabPanel.key"
 					/>
 				</div>
@@ -75,10 +76,12 @@ import {
 	connectionDisconnectedEventKey,
 	keyActivedEventKey,
 	tabActivedEventKey,
-} from './events'
-import Sider from './Sider.vue'
-import Overview from './Overview.vue'
-import KeyEdit from './KeyEdit.vue'
+} from './keys'
+import Sider from './sider/Index.vue'
+import Overview from './overview/Index.vue'
+import KeyEdit from './keyEdit/Index.vue'
+
+defineOptions({ name: 'ConnectionsIndex' })
 
 // connection connected
 useEventBus(connectionConnectedEventKey).on(connection => {
@@ -86,7 +89,7 @@ useEventBus(connectionConnectedEventKey).on(connection => {
 		key: connection.id,
 		label: connection.name,
 		type: 'Overview',
-		icon: 'fluent:database-multiple-20-regular',
+		icon: 'fluent:database-stack-16-regular',
 	}
 	activedTabPanel.value = tabPanel
 	if (tabPanels.value.findIndex(item => item.key === connection.id) >= 0) return
@@ -105,7 +108,7 @@ useEventBus(keyActivedEventKey).on(key => {
 		key,
 		label: key,
 		type: 'KeyEdit',
-		icon: 'fluent:key-20-regular',
+		icon: 'fluent:key-16-regular',
 	}
 	activedTabPanel.value = tabPanel
 	if (tabPanels.value.findIndex(item => item.key === key) >= 0) return

@@ -1,90 +1,87 @@
 <template>
-	<OverlayScrollbarsComponent :options="{ scrollbars: { autoHide: 'leave', clickScroll: true } }" defer>
-		<div class="sider-tree" ref="connectionContentRef">
-			<div class="header">
-				<div class="header_row">
-					<TSelect
-						v-model="activedDatabase"
-						:options="databaseOptions"
-						:loading="databasesLoading"
-						size="small"
-						@change="initKeys()"
-					>
-						<template #prefixIcon>
-							<Icon height="14" width="14" icon="fluent:database-multiple-20-regular" />
-						</template>
-						<template #panelTopContent>
-							<div class="database_panel_top">
-								<TButton
-									size="small"
-									block
-									theme="default"
-									variant="text"
-									:loading="databasesLoading"
-									@click="initDatabaseOptions()"
-								>
-									<template #icon>
-										<Icon height="14" width="14" icon="fluent:arrow-sync-20-regular" />
-									</template>
-									<span>刷新</span>
-								</TButton>
-							</div>
-						</template>
-					</TSelect>
-					<TTooltip content="刷新" :show-arrow="false">
-						<TButton size="small" theme="default" variant="outline" @click="initKeys()">
-							<template #icon><Icon height="16" width="16" icon="fluent:arrow-sync-20-regular" /></template>
-						</TButton>
-					</TTooltip>
-					<TTooltip content="新增" :show-arrow="false">
-						<TButton size="small" theme="default" variant="outline">
-							<template #icon><Icon height="16" width="16" icon="fluent:add-20-regular" /></template>
-						</TButton>
-					</TTooltip>
-				</div>
-				<div class="header_row">
-					<TInput size="small" placeholder="搜索" clearable @change="handleKeysTreeFilterChange">
-						<template #prefixIcon><Icon height="14" width="14" icon="fluent:search-20-regular" /></template>
-					</TInput>
-				</div>
-			</div>
-			<TSkeleton animation="gradient" :loading="keysLoading" :row-col="skeletonRowCol">
-				<TTree
-					:data="keysTree"
-					:filter="keysTreeFilter"
-					v-model:actived="activedKey"
-					allow-fold-node-on-filter
-					activable
-					expand-mutex
-					expand-on-click-node
-					hover
-					line
-					check-strictly
-					@active="handleKeyTreeChange"
+	<div class="sider-tree" ref="containerRef">
+		<div class="header">
+			<div class="header_row">
+				<TSelect
+					v-model="activedDatabase"
+					:options="databaseOptions"
+					:loading="databasesLoading"
+					size="small"
+					@change="initKeys()"
 				>
-					<template #label="{ node }">
-						<div class="tree_node">
-							<Icon height="16" width="16" icon="fluent:key-20-regular" v-if="node.data.isLeaf" />
-							<div class="tree_node_label">{{ node.label }}</div>
+					<template #prefixIcon>
+						<Icon height="14" width="14" icon="fluent:database-multiple-20-regular" />
+					</template>
+					<template #panelTopContent>
+						<div class="database_panel_top">
+							<TButton
+								size="small"
+								block
+								theme="default"
+								variant="text"
+								:loading="databasesLoading"
+								@click="initDatabaseOptions()"
+							>
+								<template #icon>
+									<Icon height="14" width="14" icon="fluent:arrow-sync-20-regular" />
+								</template>
+								<span>刷新</span>
+							</TButton>
 						</div>
 					</template>
-					<template #empty>
-						<Empty class="header-empty" icon="nothingHere" description="暂无数据" />
-					</template>
-				</TTree>
-			</TSkeleton>
+				</TSelect>
+				<TTooltip content="刷新" :show-arrow="false">
+					<TButton size="small" theme="default" variant="outline" @click="initKeys()">
+						<template #icon><Icon height="16" width="16" icon="fluent:arrow-sync-20-regular" /></template>
+					</TButton>
+				</TTooltip>
+				<TTooltip content="新增" :show-arrow="false">
+					<TButton size="small" theme="default" variant="outline">
+						<template #icon><Icon height="16" width="16" icon="fluent:add-20-regular" /></template>
+					</TButton>
+				</TTooltip>
+			</div>
+			<div class="header_row">
+				<TInput size="small" placeholder="搜索" clearable @change="handleKeysTreeFilterChange">
+					<template #prefixIcon><Icon height="14" width="14" icon="fluent:search-20-regular" /></template>
+				</TInput>
+			</div>
 		</div>
-		<BackTop size="small" offset="large" />
-	</OverlayScrollbarsComponent>
+		<TSkeleton animation="gradient" :loading="keysLoading" :row-col="skeletonRowCol">
+			<TTree
+				:data="keysTree"
+				:filter="keysTreeFilter"
+				v-model:actived="activedKey"
+				allow-fold-node-on-filter
+				activable
+				expand-mutex
+				expand-on-click-node
+				hover
+				line
+				check-strictly
+				@active="handleKeyTreeChange"
+			>
+				<template #label="{ node }">
+					<div class="tree_node">
+						<Icon height="16" width="16" icon="fluent:key-20-regular" v-if="node.data.isLeaf" />
+						<div class="tree_node_label">{{ node.label }}</div>
+					</div>
+				</template>
+				<template #empty>
+					<Empty class="header-empty" icon="nothingHere" description="暂无数据" />
+				</template>
+			</TTree>
+		</TSkeleton>
+	</div>
+	<BackTop size="small" offset="large" />
 </template>
 
 <script setup lang="ts">
-import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue'
 import { type TreeNodeModel, type SelectOption, type TreeNodeValue, type SkeletonRowCol } from 'tdesign-vue-next'
 import { useEventBus } from '@vueuse/core'
 import { useConnectionsStore, type Connection } from '@/store'
-import { useLoading } from '@/hooks'
-import { connectionConnectedEventKey, keyActivedEventKey, tabActivedEventKey } from '../events'
+import { useLoading, useScrollbar } from '@/hooks'
+import { connectionConnectedEventKey, keyActivedEventKey, tabActivedEventKey } from '../keys'
 import { useKeyTree } from '../hooks'
 
 defineOptions({ name: 'SiderTree' })
@@ -93,6 +90,11 @@ const props = defineProps<{ connection: Connection }>()
 const emit = defineEmits<{ (event: 'error', id: string) }>()
 
 const connectionsStore = useConnectionsStore()
+
+// init scrollbar
+const containerRef = ref()
+const { init: initScrollbar } = useScrollbar(containerRef)
+onMounted(() => nextTick(() => initScrollbar()))
 
 const skeletonRowCol: SkeletonRowCol = [
 	1,
@@ -184,6 +186,7 @@ useEventBus(tabActivedEventKey).on(key => {
 
 <style scoped lang="scss">
 .sider-tree {
+	position: relative;
 	display: flex;
 	flex-direction: column;
 	gap: var(--td-comp-margin-s);

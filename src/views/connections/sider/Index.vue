@@ -2,11 +2,11 @@
 	<div class="sider">
 		<div class="header">
 			<TInput v-model="keyword" placeholder="搜索" clearable>
-				<template #prefixIcon><Icon height="16" width="16" icon="fluent:search-20-regular" /></template>
+				<template #prefixIcon><Icon height="16" width="16" icon="fluent:search-16-regular" /></template>
 			</TInput>
 			<TTooltip content="添加连接" :show-arrow="false" placement="right">
 				<TButton variant="dashed" theme="default" shape="square" @click="handleEditConnectionClick()">
-					<template #icon><Icon height="16" width="16" icon="fluent:add-20-regular" /></template>
+					<template #icon><Icon height="16" width="16" icon="fluent:add-16-regular" /></template>
 				</TButton>
 			</TTooltip>
 		</div>
@@ -28,7 +28,7 @@
 									class="connection_actions_item is-hide"
 									height="16"
 									width="16"
-									icon="fluent:more-vertical-20-regular"
+									icon="fluent:more-vertical-16-regular"
 								/>
 								<TDropdownMenu>
 									<TDropdownItem @click="handleConnectionTopClick(item.id, item.top)">
@@ -44,7 +44,7 @@
 										<span>{{ generateDisplayDropdownItem(item.display).text }}</span>
 									</TDropdownItem>
 									<TDropdownItem @click="handleEditConnectionClick(item.id)">
-										<template #prefixIcon><Icon height="16" width="16" icon="fluent:settings-20-regular" /></template>
+										<template #prefixIcon><Icon height="16" width="16" icon="fluent:settings-16-regular" /></template>
 										<span>编辑</span>
 									</TDropdownItem>
 									<TDropdownItem
@@ -56,18 +56,14 @@
 										<span>关闭</span>
 									</TDropdownItem>
 									<TDropdownItem theme="error" @click="handleConnectionRemoveClick(item.id)">
-										<template #prefixIcon><Icon height="16" width="16" icon="fluent:delete-20-regular" /></template>
+										<template #prefixIcon><Icon height="16" width="16" icon="fluent:delete-16-regular" /></template>
 										<span>删除</span>
 									</TDropdownItem>
 								</TDropdownMenu>
 							</TDropdown>
 						</div>
 					</template>
-					<component
-						:is="item.display === 'tree' ? SiderTree : SiderList"
-						:connection="item"
-						@error="handleConnectionError"
-					/>
+					<component :is="item.display === 'tree' ? Tree : List" :connection="item" @error="handleConnectionError" />
 				</TCollapsePanel>
 			</TCollapse>
 			<Empty
@@ -79,7 +75,7 @@
 				@click="handleEmptyClick()"
 			/>
 		</div>
-		<Edit ref="editRef" @update="handleConnectionUpdate" />
+		<EditDialog ref="editDialogRef" @update="handleConnectionUpdate" />
 	</div>
 </template>
 
@@ -88,10 +84,12 @@ import { DialogPlugin, MessagePlugin } from 'tdesign-vue-next'
 import { useEventBus } from '@vueuse/core'
 import { pull } from 'lodash-es'
 import { Connection, useConnectionsStore } from '@/store'
-import Edit from './modules/Edit.vue'
-import SiderTree from './modules/SiderTree.vue'
-import SiderList from './modules/SiderList.vue'
-import { connectionDisconnectedEventKey } from './events'
+import EditDialog from './EditDialog.vue'
+import Tree from './Tree.vue'
+import List from './List.vue'
+import { connectionDisconnectedEventKey } from '../keys'
+
+defineOptions({ name: 'ConnectionsSiderIndex' })
 
 const connectionsStore = useConnectionsStore()
 
@@ -117,9 +115,9 @@ function handleEmptyClick() {
 }
 
 // add or edit connection
-const editRef = ref<InstanceType<typeof Edit>>()
+const editDialogRef = ref<InstanceType<typeof EditDialog>>()
 function handleEditConnectionClick(id?: string) {
-	editRef.value.open(id)
+	editDialogRef.value.open(id)
 }
 
 // connection update
@@ -129,7 +127,7 @@ function handleConnectionUpdate() {}
 function generateConnectionTopDropdownItem(top: boolean) {
 	return {
 		text: top ? '取消置顶' : '置顶',
-		icon: top ? 'fluent:pin-off-20-regular' : 'fluent:pin-20-regular',
+		icon: top ? 'fluent:pin-off-16-regular' : 'fluent:pin-16-regular',
 	}
 }
 function handleConnectionTopClick(id: string, top: boolean) {
@@ -141,7 +139,7 @@ function generateDisplayDropdownItem(display: Connection['display']) {
 	const isTree = display === 'tree'
 	return {
 		text: isTree ? '列表视图' : '树形视图',
-		icon: isTree ? 'fluent:text-bullet-list-ltr-20-regular' : 'fluent:text-bullet-list-tree-20-regular',
+		icon: isTree ? 'fluent:text-bullet-list-ltr-16-regular' : 'fluent:text-bullet-list-tree-16-regular',
 	}
 }
 function handleConnectionDisplayChange(connection: Connection) {

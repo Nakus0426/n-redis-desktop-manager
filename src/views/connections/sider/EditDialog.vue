@@ -3,7 +3,7 @@
 		v-model:visible="visible"
 		:title="title.text"
 		:icon="title.icon"
-		:width="800"
+		width="800px"
 		:close-on-overlay-click="false"
 		:close-on-esc-key-down="!connectTesting"
 		:close-btn="!connectTesting"
@@ -72,7 +72,7 @@
 										v-ripple
 										@click="connectTestResultPopupVisible = false"
 									>
-										<Icon height="16" width="16" icon="fluent:dismiss-20-regular" />
+										<Icon height="16" width="16" icon="fluent:dismiss-16-regular" />
 									</div>
 								</div>
 								<div class="connect-test-result-popup_content_body" v-show="connectTestResultError">
@@ -82,7 +82,7 @@
 						</template>
 						<TButton variant="text" theme="primary" :loading="connectTesting" @click="handleConnectTestClick()">
 							<template #icon>
-								<Icon height="14" width="14" icon="fluent:plug-connected-20-regular" />
+								<Icon height="16" width="16" icon="fluent:plug-connected-20-regular" />
 							</template>
 							<span>测试连接</span>
 						</TButton>
@@ -105,6 +105,8 @@ import { cloneDeep } from 'lodash-es'
 import { useLoading, useLocale } from '@/hooks'
 import { type Connection, useConnectionsStore } from '@/store'
 
+defineOptions({ name: 'ConnectionsSiderEditDialog' })
+
 const emit = defineEmits<{ (event: 'update', id: string) }>()
 
 const { t } = useLocale()
@@ -125,7 +127,7 @@ async function open(id?: string) {
 const title = computed(() => {
 	return {
 		text: isEdit.value ? t('connections.edit.title.edit') : t('connections.edit.title.add'),
-		icon: isEdit.value ? 'fluent:settings-20-regular' : 'fluent:add-circle-20-regular',
+		icon: isEdit.value ? 'fluent:settings-24-regular' : 'fluent:add-circle-24-regular',
 	}
 })
 
@@ -164,7 +166,7 @@ const connectTestResultPopupVisible = ref(false)
 const connectTestResultPopupStatus = computed(() => ({
 	class: connectTestResult.value ? 'is-success' : 'is-error',
 	title: connectTestResult.value ? '连接成功' : '连接失败',
-	icon: connectTestResult.value ? 'fluent:checkmark-circle-20-regular' : 'fluent:dismiss-circle-20-regular',
+	icon: connectTestResult.value ? 'fluent:cloud-checkmark-16-regular' : 'fluent:cloud-dismiss-16-regular',
 }))
 const connectTestResultError = ref<string>()
 const connectTestResult = ref(false)
@@ -230,6 +232,7 @@ defineExpose({
 	display: grid;
 	grid-template-columns: repeat(2, 1fr);
 	column-gap: var(--td-comp-margin-xl);
+	padding: 0 var(--td-comp-paddingLR-l) var(--td-comp-paddingLR-l) var(--td-comp-paddingLR-l) !important;
 
 	:deep(.t-input-number) {
 		flex: 1;

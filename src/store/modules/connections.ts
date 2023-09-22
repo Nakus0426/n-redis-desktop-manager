@@ -1,6 +1,6 @@
 import { acceptHMRUpdate, defineStore } from 'pinia'
 import localForage from 'localforage'
-import { cloneDeep } from 'lodash-es'
+import { cloneDeep, set } from 'lodash-es'
 
 export interface Connection {
 	id: string
@@ -13,6 +13,20 @@ export interface Connection {
 	display: 'tree' | 'list'
 	top?: boolean
 	connected?: 'connecting' | 'connected' | 'disconnected'
+}
+
+export interface ConnectionInfo {
+	Server?: Record<string, string>
+	Clients?: Record<string, string>
+	Memory?: Record<string, string>
+	Persistence?: Record<string, string>
+	Stats?: Record<string, string>
+	Replication?: Record<string, string>
+	CPU?: Record<string, string>
+	Modules?: Record<string, string>
+	Errorstats?: Record<string, string>
+	Cluster?: Record<string, string>
+	Keyspace?: Record<string, string>
 }
 
 enum ConnectionKeys {
@@ -182,6 +196,49 @@ export const useConnectionsStore = defineStore('Connections', () => {
 	window.mainWindow.redis.onConnect(handleConnectionConnect)
 	window.mainWindow.redis.onReconnect(handleConnectionConnect)
 
+	/** get connection info */
+	async function getConnectionInfo(id: string) {
+		const infoStr = await window.mainWindow.redis.info(id)
+		const infoArray = infoStr.split('\r\n')
+
+		const infoTypeSign = {
+			Server: false,
+			Clients: false,
+			Memory: false,
+			Persistence: false,
+			Stats: false,
+			Replication: false,
+			CPU: false,
+			Modules: false,
+			Errorstats: false,
+			Cluster: false,
+			Keyspace: false,
+		}
+		function setInfoTypeSign(type: string) {
+			Object.keys(infoTypeSign).forEach(item => {
+				infoTypeSign[item] = item === type
+			})
+		}
+
+		const info: ConnectionInfo = {}
+		for (const index in infoArray) {
+			const item = infoArray[index]
+			if (!item) continue
+			if (item.includes('#')) {
+				const type = item.substring(2)
+				setInfoTypeSign(type)
+				continue
+			}
+			Object.keys(infoTypeSign).forEach(typeKey => {
+				if (infoTypeSign[typeKey]) {
+					const infoItemArray = item.split(':')
+					set(info, `${typeKey}.${infoItemArray[0]}`, infoItemArray[1])
+				}
+			})
+		}
+		return info
+	}
+
 	return {
 		connections,
 		syncConnections,
@@ -193,6 +250,7 @@ export const useConnectionsStore = defineStore('Connections', () => {
 		connectTest,
 		connectConnection,
 		disconnectConnection,
+		getConnectionInfo,
 	}
 })
 

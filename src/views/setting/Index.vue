@@ -77,10 +77,10 @@ function menuClass(path: string) {
 
 // generate menu icon
 const commonIcon = computed(() =>
-	isMenuActived(CommonSettingRoute.path) ? 'fluent:options-20-filled' : 'fluent:options-20-regular'
+	isMenuActived(CommonSettingRoute.path) ? 'fluent:options-16-filled' : 'fluent:options-16-regular'
 )
 const appearanceIcon = computed(() =>
-	isMenuActived(AppearanceSettingRoute.path) ? 'fluent:color-20-filled' : 'fluent:color-20-regular'
+	isMenuActived(AppearanceSettingRoute.path) ? 'fluent:color-16-filled' : 'fluent:color-16-regular'
 )
 </script>
 

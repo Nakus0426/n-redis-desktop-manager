@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-defineOptions({ name: 'KeyEdit' })
+defineOptions({ name: 'ConnectionsKeyEditIndex' })
 </script>
 
 <style scoped lang="scss"></style>
