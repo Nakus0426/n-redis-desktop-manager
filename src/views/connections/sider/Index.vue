@@ -236,6 +236,7 @@ function handleConnectionError(id: string) {
 	}
 
 	:deep(.t-collapse-panel__content) {
+		position: relative;
 		padding: 0;
 	}
 }

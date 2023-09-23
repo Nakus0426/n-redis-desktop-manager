@@ -1,6 +1,6 @@
 <template>
 	<div class="overview_header">
-		<TSwiper :duration="500" theme="light">
+		<TSwiper :autoplay="false" :duration="1000" theme="light">
 			<TSwiperItem>
 				<div class="cells">
 					<Cell
@@ -131,9 +131,9 @@ function Cell(props: { title: string; icon: string }, context: SetupContext) {
 					<Icon class="cell_header_prefix_icon" height="16" width="16" icon={props.icon} />
 					<div class="cell_header_prefix_title">{props.title}</div>
 				</div>
-				<button class="cell_header_suffix" v-ripple onClick={() => context.emit('onMoreClick')}>
-					<Icon height="14" width="14" icon="fluent:more-vertical-20-regular" />
-				</button>
+				<div class="cell_header_suffix" v-ripple onClick={() => context.emit('onMoreClick')}>
+					<Icon height="14" width="14" icon="fluent:more-vertical-24-regular" />
+				</div>
 			</div>
 			<div class="cell_body">{context.slots?.default?.()}</div>
 		</div>
@@ -207,8 +207,11 @@ function handleMoreClick(type: keyof ConnectionInfo, icon: string) {
 
 		:deep(.cell_header_suffix) {
 			display: flex;
+			justify-content: center;
 			align-items: center;
 			gap: var(--td-comp-margin-xs);
+			width: 24px;
+			height: 24px;
 			border: none;
 			background-color: transparent;
 			color: var(--td-text-color-secondary);

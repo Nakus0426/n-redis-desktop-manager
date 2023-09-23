@@ -1,42 +1,59 @@
 <template>
-	<div class="back-top" :class="[size, visibleClass]" :style="style" v-ripple @click="handleBackTopClick()">
-		<Icon :height="iconSize" :width="iconSize" icon="fluent:arrow-up-20-regular" />
-	</div>
+	<button class="back-top" :class="[sizeClass, visibleClass]" :style="style" v-ripple @click="handleBackTopClick()">
+		<Icon :height="icon.size" :width="icon.size" :icon="icon.icon" />
+	</button>
 </template>
 
 <script setup lang="ts">
 import { type SizeEnum } from 'tdesign-vue-next'
-import { useParentElement, useEventListener } from '@vueuse/core'
+import { useEventListener } from '@vueuse/core'
+import { type MaybeRef } from 'vue'
 
 defineOptions({ name: 'BackTop' })
 
-const props = withDefaults(defineProps<{ size?: SizeEnum; visibleHeight?: number; offset?: SizeEnum }>(), {
-	size: 'medium',
-	visibleHeight: 300,
-	offset: 'medium',
-})
+const props = withDefaults(
+	defineProps<{
+		target: MaybeRef<HTMLElement>
+		size?: SizeEnum
+		visibleHeight?: number
+		offset?: SizeEnum
+	}>(),
+	{
+		size: 'medium',
+		visibleHeight: 300,
+		offset: 'medium',
+	}
+)
 
+// generate component style
+const sizeClass = computed(() => `back-top-${props.size}`)
+const iconSizeMap = { small: 16, medium: 20, large: 24 }
+const icon = computed(() => {
+	const size = iconSizeMap[props.size]
+	return { icon: `fluent:arrow-upload-${size}-regular`, size }
+})
 const offsetMap = { small: 8, medium: 12, large: 16 }
 const style = computed(() => {
 	const offset = offsetMap[props.offset]
 	return { bottom: `${offset}px`, right: `${offset}px` }
 })
 
-const size = computed(() => `back-top-${props.size}`)
-const iconSizeMap = { small: 16, medium: 24, large: 32 }
-const iconSize = computed(() => iconSizeMap[props.size])
-
+// determine whether the component is displayed
 const visible = ref(false)
 const visibleClass = computed(() => (visible.value ? 'is-visible' : ''))
-const parentElement = useParentElement()
-onMounted(() =>
-	useEventListener(parentElement, 'scroll', e => {
-		visible.value = e.target['scrollTop'] >= props.visibleHeight
-	})
+watch(
+	() => props.target,
+	value => {
+		if (!value) return
+		useEventListener(value, 'scroll', e => {
+			visible.value = e.target['scrollTop'] >= props.visibleHeight
+		})
+	},
+	{ deep: true }
 )
 
 function handleBackTopClick() {
-	parentElement.value.scrollTo({ top: 0, behavior: 'smooth' })
+	unref(props.target).scrollTo({ top: 0, behavior: 'smooth' })
 }
 </script>
 

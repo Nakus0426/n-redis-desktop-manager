@@ -80,7 +80,7 @@ function handleResize(e: MouseEvent) {
 		top: 0;
 		bottom: 0;
 		width: 5px;
-		cursor: e-resize;
+		cursor: col-resize;
 		z-index: 3;
 		transition: all var(--td-transition);
 

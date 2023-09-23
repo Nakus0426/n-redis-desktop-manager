@@ -90,7 +90,6 @@ function handleExtraMenuClick(index: number) {
 	flex-direction: column;
 	gap: var(--td-comp-margin-m);
 	background-color: var(--td-bg-color-secondarycontainer);
-	border-right: 1px solid var(--td-component-stroke);
 	padding: var(--window-action-height) 0 var(--td-comp-paddingTB-m) 0;
 	-webkit-app-region: drag;
 }

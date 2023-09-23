@@ -73,7 +73,7 @@
 			</TTree>
 		</TSkeleton>
 	</div>
-	<BackTop size="small" offset="large" />
+	<BackTop :target="containerRef" size="small" offset="large" />
 </template>
 
 <script setup lang="ts">

@@ -22,7 +22,7 @@
 							leave-active-class="animate__animated animate__fadeOut animate__faster tabs-leave-animate"
 							appear
 						>
-							<div
+							<button
 								class="content_header_center_item"
 								:class="tabActivedClass(item.key)"
 								v-for="(item, index) in tabPanels"
@@ -39,7 +39,7 @@
 								<div class="content_header_center_item_close" @click.stop="handleTabRemove(index, item.key)">
 									<Icon height="16" width="16" icon="fluent:dismiss-16-regular" />
 								</div>
-							</div>
+							</button>
 						</TransitionGroup>
 					</div>
 					<div class="content_header_divider" v-show="tabsOverlow" />
@@ -256,7 +256,9 @@ watch(activedTabPanel, value => useEventBus(tabActivedEventKey).emit(value.key))
 				max-width: 180px;
 				overflow: hidden;
 				border-radius: var(--td-radius-default);
+				border: none;
 				color: var(--td-text-color-secondary);
+				background-color: transparent;
 				padding: 0 var(--td-comp-paddingLR-s);
 				cursor: pointer;
 				transition: all var(--td-transition);
@@ -273,6 +275,11 @@ watch(activedTabPanel, value => useEventBus(tabActivedEventKey).emit(value.key))
 					.content_header_center_item_close {
 						width: 14px;
 					}
+				}
+
+				&:focus-visible {
+					outline: none;
+					border: 1px solid var(--td-brand-color);
 				}
 
 				&.is-actived {
