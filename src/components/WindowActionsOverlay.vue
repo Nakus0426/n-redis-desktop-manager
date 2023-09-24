@@ -1,13 +1,13 @@
 <template>
 	<div class="window-actions-overlay">
 		<div class="window-actions-overlay_item" v-if="minimizable" @click="handleMinimizeClick()">
-			<Icon height="16" width="16" icon="fluent:subtract-20-regular" />
+			<Icon height="16" width="16" icon="fluent:subtract-16-regular" />
 		</div>
 		<div class="window-actions-overlay_item" v-if="maximizable" @click="handleMaximizeClick()">
 			<Icon height="16" width="16" :icon="maximizeIcon" />
 		</div>
 		<div class="window-actions-overlay_item exit" @click="handleCloseClick()">
-			<Icon height="16" width="16" icon="fluent:dismiss-20-regular" />
+			<Icon height="16" width="16" icon="fluent:dismiss-16-regular" />
 		</div>
 	</div>
 </template>
@@ -40,7 +40,7 @@ const props = withDefaults(
 
 const isMaximize = ref(false)
 const maximizeIcon = computed(() =>
-	isMaximize.value ? 'fluent:square-multiple-20-regular' : 'fluent:maximize-20-regular'
+	isMaximize.value ? 'fluent:square-multiple-16-regular' : 'fluent:maximize-16-regular'
 )
 if (props.windowApi?.onMaximize) {
 	props.windowApi.onMaximize(() => {
