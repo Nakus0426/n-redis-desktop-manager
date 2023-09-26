@@ -1,12 +1,12 @@
 <template>
 	<div class="window-actions-overlay">
-		<div class="window-actions-overlay_item" v-if="minimizable" @click="handleMinimizeClick()">
+		<div class="window-actions-overlay_item" v-ripple v-if="minimizable" @click="handleMinimizeClick()">
 			<Icon height="16" width="16" icon="fluent:subtract-16-regular" />
 		</div>
-		<div class="window-actions-overlay_item" v-if="maximizable" @click="handleMaximizeClick()">
+		<div class="window-actions-overlay_item" v-ripple v-if="maximizable" @click="handleMaximizeClick()">
 			<Icon height="16" width="16" :icon="maximizeIcon" />
 		</div>
-		<div class="window-actions-overlay_item exit" @click="handleCloseClick()">
+		<div class="window-actions-overlay_item exit" v-ripple @click="handleCloseClick()">
 			<Icon height="16" width="16" icon="fluent:dismiss-16-regular" />
 		</div>
 	</div>
@@ -91,23 +91,18 @@ function handleCloseClick() {
 		color: var(--td-text-color-primary);
 		cursor: pointer;
 		transition: all var(--td-transition);
+		--ripple-color: var(--td-bg-color-secondarycontainer-active);
 
 		&.exit {
+			--ripple-color: var(--td-error-color-active);
+
 			&:hover {
 				background-color: var(--td-error-color);
 				color: #ffffff;
 			}
-
-			&:active {
-				background-color: var(--td-error-color-active);
-			}
 		}
 
 		&:hover {
-			background-color: var(--td-bg-color-container-hover);
-		}
-
-		&:active {
 			background-color: var(--td-bg-color-container-active);
 		}
 	}

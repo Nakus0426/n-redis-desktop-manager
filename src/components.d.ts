@@ -29,6 +29,7 @@ declare module 'vue' {
     TInput: typeof import('tdesign-vue-next')['Input']
     TInputNumber: typeof import('tdesign-vue-next')['InputNumber']
     TPopup: typeof import('tdesign-vue-next')['Popup']
+    TPrimaryTable: typeof import('tdesign-vue-next')['PrimaryTable']
     TSelect: typeof import('tdesign-vue-next')['Select']
     TSkeleton: typeof import('tdesign-vue-next')['Skeleton']
     TSwiper: typeof import('tdesign-vue-next')['Swiper']

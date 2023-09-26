@@ -36,10 +36,10 @@ export class RedisUtil {
 	}
 
 	/** connect to redis */
-	connect(id: string) {
+	async connect(id: string) {
 		const client = this.clients.get(id)
 		if (!client) return
-		return this.clients.get(id).connect()
+		await this.clients.get(id).connect()
 	}
 
 	/** disconnect from redis */

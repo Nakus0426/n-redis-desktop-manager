@@ -10,7 +10,7 @@
 					@change="initKeys()"
 				>
 					<template #prefixIcon>
-						<Icon height="14" width="14" icon="fluent:database-multiple-20-regular" />
+						<Icon height="14" width="14" icon="fluent:database-stack-16-regular" />
 					</template>
 					<template #panelTopContent>
 						<div class="database_panel_top">
@@ -23,7 +23,7 @@
 								@click="initDatabaseOptions()"
 							>
 								<template #icon>
-									<Icon height="14" width="14" icon="fluent:arrow-sync-20-regular" />
+									<Icon height="16" width="16" icon="fluent:arrow-sync-16-regular" />
 								</template>
 								<span>刷新</span>
 							</TButton>

@@ -181,7 +181,7 @@ function handleMoreClick(type: keyof ConnectionInfo, icon: string) {
 			flex: 1;
 			display: flex;
 			flex-direction: column;
-			gap: var(--td-comp-paddingTB-xs);
+			gap: var(--td-comp-margin-xs);
 			overflow: hidden;
 		}
 

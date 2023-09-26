@@ -2,6 +2,7 @@
 	<div class="overview">
 		<TSkeleton :loading="connectionInfoLoading" :row-col="skeletonRowCol" animation="gradient">
 			<Header />
+			<Keyspace />
 		</TSkeleton>
 		<TTooltip :show-arrow="false" :content="autoRefreshButtonStyle.tooltipContent" placement="left">
 			<button class="auto-refresh" v-ripple @click="handleAutoRefreshClick()">
@@ -16,6 +17,7 @@ import { type SkeletonRowCol } from 'tdesign-vue-next'
 import { useLoading } from '@/hooks'
 import { type ConnectionInfo, useConnectionsStore } from '@/store'
 import Header from './Header.vue'
+import Keyspace from './Keyspace.vue'
 import { connectionInfoInjectKey } from '../keys'
 
 defineOptions({ name: 'ConnectionsOverviewIndex' })
@@ -27,15 +29,17 @@ const connectionStore = useConnectionsStore()
 // skeleton rows
 const skeletonRowCol: SkeletonRowCol = [
 	[
-		{ width: '8%', marginRight: '26%' },
+		{ width: '8%', marginRight: '26%', marginLeft: '12px' },
 		{ width: '8%', marginRight: '26%' },
 		{ width: '8%', marginRight: '25%' },
 	],
 	[
+		{ width: '33%', height: '200px', marginLeft: '12px' },
 		{ width: '33%', height: '200px' },
-		{ width: '33%', height: '200px' },
-		{ width: '33%', height: '200px' },
+		{ width: '33%', height: '200px', marginRight: '12px' },
 	],
+	{ width: '8%', marginLeft: '12px' },
+	{ height: '200px', marginLeft: '12px', marginRight: '12px' },
 ]
 
 // init connection info
@@ -47,7 +51,6 @@ const {
 } = useLoading()
 async function initConnectionInfo() {
 	connectionInfo.value = await connectionStore.getConnectionInfo(props.data)
-	console.log(connectionInfo.value)
 }
 onMounted(async () => {
 	try {
@@ -85,7 +88,7 @@ function handleAutoRefreshClick() {
 }
 
 .auto-refresh {
-	position: absolute;
+	position: fixed;
 	right: var(--td-comp-paddingLR-m);
 	bottom: var(--td-comp-paddingLR-m);
 	width: 32px;

@@ -52,7 +52,7 @@
 						<Icon height="20" width="20" icon="fluent:chevron-right-20-regular" />
 					</div>
 				</div>
-				<div class="content_body">
+				<div class="content_body" ref="containerRef">
 					<component
 						v-for="item in tabPanels"
 						:key="item.key"
@@ -80,8 +80,14 @@ import {
 import Sider from './sider/Index.vue'
 import Overview from './overview/Index.vue'
 import KeyEdit from './keyEdit/Index.vue'
+import { useScrollbar } from '@/hooks'
 
 defineOptions({ name: 'ConnectionsIndex' })
+
+// init scrollbar
+const containerRef = ref()
+const { init: initScrollbar } = useScrollbar(containerRef)
+onMounted(() => nextTick(() => initScrollbar()))
 
 // connection connected
 useEventBus(connectionConnectedEventKey).on(connection => {
@@ -187,7 +193,7 @@ function handleTabClick(value: TabPanel) {
 }
 
 // tab actived emit event
-watch(activedTabPanel, value => useEventBus(tabActivedEventKey).emit(value.key))
+watch(activedTabPanel, value => useEventBus(tabActivedEventKey).emit(value?.key))
 </script>
 
 <style scoped lang="scss">
@@ -322,8 +328,9 @@ watch(activedTabPanel, value => useEventBus(tabActivedEventKey).emit(value.key))
 	}
 
 	&_body {
+		position: relative;
 		flex: 1;
-		overflow: hidden;
+		// overflow: hidden;
 	}
 }
 
