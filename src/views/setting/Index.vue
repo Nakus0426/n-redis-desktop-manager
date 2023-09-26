@@ -97,7 +97,7 @@ const appearanceIcon = computed(() =>
 	display: flex;
 	flex-direction: column;
 	gap: var(--td-comp-margin-s);
-	background-color: var(--td-bg-color-secondarycontainer);
+	background-color: var(--td-bg-color-container);
 	border-right: 1px solid var(--td-component-stroke);
 	padding: var(--td-comp-paddingLR-s);
 	-webkit-app-region: drag;
@@ -113,19 +113,15 @@ const appearanceIcon = computed(() =>
 		transition: background-color var(--td-transition);
 		cursor: pointer;
 		-webkit-app-region: no-drag;
-		--ripple-color: var(--td-bg-color-secondarycontainer-active);
+		--ripple-color: var(--td-bg-color-container-active);
 
 		&:hover {
-			background-color: var(--td-bg-color-secondarycontainer-hover);
+			background-color: var(--td-bg-color-container-hover);
 		}
 
 		&.is-actived {
 			background-color: var(--td-bg-color-container-active);
 			color: var(--td-brand-color);
-
-			&:hover {
-				background-color: var(--td-bg-color-container-active);
-			}
 		}
 	}
 }

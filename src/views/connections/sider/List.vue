@@ -64,7 +64,7 @@
 			<Empty class="body-empty" icon="nothingHere" description="暂无数据" v-show="isEmpty" />
 		</TSkeleton>
 	</div>
-	<BackTop size="small" offset="large" />
+	<BackTop :target="containerRef" size="small" offset="large" />
 </template>
 
 <script setup lang="ts">

@@ -46,14 +46,17 @@ const {
 	exit: exitConnectionInfoLoading,
 } = useLoading()
 async function initConnectionInfo() {
+	connectionInfo.value = await connectionStore.getConnectionInfo(props.data)
+	console.log(connectionInfo.value)
+}
+onMounted(async () => {
 	try {
 		enterConnectionInfoLoading()
-		connectionInfo.value = await connectionStore.getConnectionInfo(props.data)
+		initConnectionInfo()
 	} finally {
 		exitConnectionInfoLoading()
 	}
-}
-onMounted(() => initConnectionInfo())
+})
 provide(connectionInfoInjectKey, connectionInfo)
 
 // auto refresh
@@ -62,8 +65,11 @@ const autoRefreshButtonStyle = computed(() => ({
 	icon: autoRefreshEnable.value ? 'line-md:loading-loop' : 'fluent:arrow-sync-24-regular',
 	tooltipContent: autoRefreshEnable.value ? '关闭自动刷新' : '开启自动刷新',
 }))
+let autoRefreshInterval: NodeJS.Timeout
 function handleAutoRefreshClick() {
 	autoRefreshEnable.value = !autoRefreshEnable.value
+	clearInterval(autoRefreshInterval)
+	autoRefreshEnable.value && (autoRefreshInterval = setInterval(initConnectionInfo, 2000))
 }
 </script>
 
@@ -82,8 +88,8 @@ function handleAutoRefreshClick() {
 	position: absolute;
 	right: var(--td-comp-paddingLR-m);
 	bottom: var(--td-comp-paddingLR-m);
-	width: 42px;
-	height: 42px;
+	width: 32px;
+	height: 32px;
 	display: flex;
 	align-items: center;
 	justify-content: center;
