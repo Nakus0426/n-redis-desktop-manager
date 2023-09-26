@@ -175,6 +175,7 @@ function handleMoreClick(type: keyof ConnectionInfo, icon: string) {
 		display: grid;
 		grid-template-columns: repeat(3, 1fr);
 		gap: var(--td-comp-margin-m);
+		padding: 0 var(--td-comp-paddingLR-m);
 
 		:deep(.cell) {
 			flex: 1;
