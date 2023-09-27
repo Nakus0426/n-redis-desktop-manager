@@ -81,7 +81,7 @@ import { type TreeNodeModel, type SelectOption, type TreeNodeValue, type Skeleto
 import { useEventBus } from '@vueuse/core'
 import { useConnectionsStore, type Connection } from '@/store'
 import { useLoading, useScrollbar } from '@/hooks'
-import { connectionConnectedEventKey, keyActivedEventKey, tabActivedEventKey } from '../keys'
+import { connectionConnectedEventKey, keyActivedEventKey, keyRemovedEventKey, tabActivedEventKey } from '../keys'
 import { useKeyTree } from '../hooks'
 
 defineOptions({ name: 'SiderTree' })
@@ -148,19 +148,22 @@ async function initDatabaseOptions() {
 	}
 }
 
+// key removed
+useEventBus(keyRemovedEventKey).on(key => initKeys(false))
+
 // init keys
 const { isLoading: keysLoading, enter: enterKeysLoading, exit: exitKeysLoading } = useLoading()
 const keysTree = ref<any[]>()
-async function initKeys() {
+async function initKeys(showLoading = true) {
 	try {
-		enterKeysLoading()
+		showLoading && enterKeysLoading()
 		await window.mainWindow.redis.select(props.connection.id, activedDatabase.value)
 		const keys = await window.mainWindow.redis.keys(props.connection.id, '*')
 		const tree = useKeyTree(keys, props.connection.separator)
 		keysTree.value = []
 		nextTick(() => (keysTree.value = tree))
 	} finally {
-		exitKeysLoading()
+		showLoading && exitKeysLoading()
 	}
 }
 
@@ -175,7 +178,7 @@ const activedKey = ref<TreeNodeValue[]>()
 function handleKeyTreeChange(value: TreeNodeValue[], { node }: { node: TreeNodeModel }) {
 	if (!node.data.isLeaf) return
 	if (value.length !== 0) activedKey.value = value
-	useEventBus(keyActivedEventKey).emit(node.value as string)
+	useEventBus(keyActivedEventKey).emit({ key: node.value as string, id: props.connection.id })
 }
 
 // tab actived

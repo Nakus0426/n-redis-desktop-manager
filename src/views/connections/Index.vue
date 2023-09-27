@@ -25,7 +25,7 @@
 							<button
 								class="content_header_center_item"
 								:class="tabActivedClass(item.key)"
-								v-for="(item, index) in tabPanels"
+								v-for="item in tabPanels"
 								:key="item.key"
 								:ref="ref => generateTabRef(item.key, ref)"
 								:title="item.label"
@@ -36,7 +36,7 @@
 									<Icon height="16" width="16" :icon="item.icon" />
 									<div class="content_header_center_item_label_text">{{ item.label }}</div>
 								</div>
-								<div class="content_header_center_item_close" @click.stop="handleTabRemove(index, item.key)">
+								<div class="content_header_center_item_close" @click.stop="handleTabRemove(item.key)">
 									<Icon height="16" width="16" icon="fluent:dismiss-16-regular" />
 								</div>
 							</button>
@@ -55,9 +55,10 @@
 				<div class="content_body" ref="containerRef">
 					<component
 						v-for="item in tabPanels"
+						:id="item.id"
+						:key-value="item.key"
 						:key="item.key"
 						:is="item.type === 'Overview' ? Overview : KeyEdit"
-						:data="item.key"
 						v-show="item.key === activedTabPanel.key"
 					/>
 				</div>
@@ -75,6 +76,7 @@ import {
 	connectionConnectedEventKey,
 	connectionDisconnectedEventKey,
 	keyActivedEventKey,
+	keyRemovedEventKey,
 	tabActivedEventKey,
 } from './keys'
 import Sider from './sider/Index.vue'
@@ -92,6 +94,7 @@ onMounted(() => nextTick(() => initScrollbar()))
 // connection connected
 useEventBus(connectionConnectedEventKey).on(connection => {
 	const tabPanel: TabPanel = {
+		id: connection.id,
 		key: connection.id,
 		label: connection.name,
 		type: 'Overview',
@@ -102,15 +105,10 @@ useEventBus(connectionConnectedEventKey).on(connection => {
 	tabPanels.value.push(tabPanel)
 })
 
-// connection disconnected
-useEventBus(connectionDisconnectedEventKey).on(connection => {
-	const index = tabPanels.value.findIndex(item => item.key === connection.id)
-	if (index >= 0) handleTabRemove(index, connection.id)
-})
-
 // key actived
-useEventBus(keyActivedEventKey).on(key => {
+useEventBus(keyActivedEventKey).on(({ key, id }) => {
 	const tabPanel: TabPanel = {
+		id,
 		key,
 		label: key,
 		type: 'KeyEdit',
@@ -139,6 +137,7 @@ function handleTabsOverflowButtonClick(type: 'prefix' | 'suffix') {
 
 // tabs
 interface TabPanel {
+	id: string
 	key: string
 	label: string
 	type: 'Overview' | 'KeyEdit'
@@ -163,8 +162,16 @@ watch(
 	{ immediate: true }
 )
 
+// connection disconnected
+useEventBus(connectionDisconnectedEventKey).on(connection => handleTabRemove(connection.id))
+
+// key removed
+useEventBus(keyRemovedEventKey).on(key => handleTabRemove(key))
+
 // tab remove
-function handleTabRemove(index: number, key: string) {
+function handleTabRemove(key: string) {
+	const index = tabPanels.value.findIndex(item => item.key === key)
+	if (index < 0) return
 	const length = tabPanels.value.length
 	tabPanels.value.splice(index, 1)
 	const oldTabPanels = cloneDeep(tabPanels.value)

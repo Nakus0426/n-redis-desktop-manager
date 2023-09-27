@@ -214,6 +214,7 @@ function handleMoreClick(type: keyof ConnectionInfo, icon: string) {
 			width: 24px;
 			height: 24px;
 			border: none;
+			padding: 0;
 			background-color: transparent;
 			color: var(--td-text-color-secondary);
 			font: var(--td-font-body-medium);

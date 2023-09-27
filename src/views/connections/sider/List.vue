@@ -71,7 +71,7 @@
 import { type SelectOption, type SkeletonRowCol } from 'tdesign-vue-next'
 import { useEventBus } from '@vueuse/core'
 import { useConnectionsStore, type Connection } from '@/store'
-import { connectionConnectedEventKey, keyActivedEventKey, tabActivedEventKey } from '../keys'
+import { connectionConnectedEventKey, keyActivedEventKey, keyRemovedEventKey, tabActivedEventKey } from '../keys'
 import { useLoading, useScrollbar } from '@/hooks'
 
 defineOptions({ name: 'SiderList' })
@@ -135,18 +135,21 @@ async function initDatabaseOptions() {
 	}
 }
 
+// key removed
+useEventBus(keyRemovedEventKey).on(key => initKeys(false))
+
 // init keys
 const { isLoading: keysLoading, enter: enterKeysLoading, exit: exitKeysLoading } = useLoading()
 const keysList = ref<any[]>([])
-async function initKeys() {
+async function initKeys(showLoading = true) {
 	try {
-		enterKeysLoading()
+		showLoading && enterKeysLoading()
 		await window.mainWindow.redis.select(props.connection.id, activedDatabase.value)
 		const keys = await window.mainWindow.redis.keys(props.connection.id, '*')
 		keysList.value = []
 		nextTick(() => (keysList.value = keys.sort()))
 	} finally {
-		exitKeysLoading()
+		showLoading && exitKeysLoading()
 	}
 }
 
@@ -161,7 +164,7 @@ const filterKeysList = computed(() => {
 const activedKey = ref<string>()
 function handleKeyClick(key: string) {
 	activedKey.value = key
-	useEventBus(keyActivedEventKey).emit(key)
+	useEventBus(keyActivedEventKey).emit({ key, id: props.connection.id })
 }
 
 // generate key actived class

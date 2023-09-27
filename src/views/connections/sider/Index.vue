@@ -88,6 +88,7 @@ import EditDialog from './EditDialog.vue'
 import Tree from './Tree.vue'
 import List from './List.vue'
 import { connectionDisconnectedEventKey } from '../keys'
+import { useLoading } from '@/hooks'
 
 defineOptions({ name: 'ConnectionsSiderIndex' })
 
@@ -148,21 +149,21 @@ function handleConnectionDisplayChange(connection: Connection) {
 }
 
 // remove connection
+const { isLoading: isRemoveLoading, enter: enterRemoveLoading, exit: exitRemoveLoading } = useLoading()
 function handleConnectionRemoveClick(id: string) {
-	const loading = ref(false)
 	const dialogInstance = DialogPlugin.confirm({
 		header: '删除连接',
 		body: '确定要删除该连接吗？',
 		theme: 'danger',
-		confirmBtn: { loading: loading.value },
+		confirmBtn: { loading: isRemoveLoading.value },
 		onConfirm: async () => {
 			try {
-				loading.value = true
+				enterRemoveLoading()
 				await connectionsStore.removeConnection(id)
 				MessagePlugin.success('删除成功')
 				dialogInstance.destroy()
 			} finally {
-				loading.value = false
+				exitRemoveLoading()
 			}
 		},
 	})

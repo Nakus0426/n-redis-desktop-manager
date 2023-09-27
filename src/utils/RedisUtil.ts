@@ -10,6 +10,8 @@ export type CreateClientOptions = {
 	reconnect?: (id: string) => void
 } & RedisClientOptions
 
+export type KeyType = 'string' | 'list' | 'set' | 'zset' | 'hash' | 'stream' | string
+
 /** Redis Util */
 export class RedisUtil {
 	private clients: Map<string, RedisClientType<any, any, any>>
@@ -107,5 +109,34 @@ export class RedisUtil {
 		const client = this.clients.get(id)
 		if (!client || !client?.isReady) return
 		return client.SET(key, value, { EX: expire, GET: true })
+	}
+
+	/** get */
+	get(id: string, key: string, type: KeyType = 'string') {
+		const client = this.clients.get(id)
+		if (!client || !client?.isReady) return
+		if (type === 'string') return client.GET(key)
+		return client.GET(key)
+	}
+
+	/** del */
+	del(id: string, key: string | string[]) {
+		const client = this.clients.get(id)
+		if (!client || !client?.isReady) return
+		return client.DEL(key)
+	}
+
+	/** type */
+	type(id: string, key: string) {
+		const client = this.clients.get(id)
+		if (!client || !client?.isReady) return
+		return client.TYPE(key)
+	}
+
+	/** ttl */
+	ttl(id: string, key: string) {
+		const client = this.clients.get(id)
+		if (!client || !client?.isReady) return
+		return client.ttl(key)
 	}
 }

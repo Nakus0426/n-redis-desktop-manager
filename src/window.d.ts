@@ -30,6 +30,10 @@ export interface MainWindow {
 		info: typeof import('./utils')['RedisUtil']['prototype']['info']
 		keys: typeof import('./utils')['RedisUtil']['prototype']['keys']
 		set: typeof import('./utils')['RedisUtil']['prototype']['set']
+		get: typeof import('./utils')['RedisUtil']['prototype']['get']
+		del: typeof import('./utils')['RedisUtil']['prototype']['del']
+		type: typeof import('./utils')['RedisUtil']['prototype']['type']
+		ttl: typeof import('./utils')['RedisUtil']['prototype']['ttl']
 		onError: (callback: (id: string, error: Error) => void) => void
 		onReady: (callback: (id: string) => void) => void
 		onEnd: (callback: (id: string) => void) => void

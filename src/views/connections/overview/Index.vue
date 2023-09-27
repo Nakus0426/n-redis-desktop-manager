@@ -22,7 +22,7 @@ import { connectionInfoInjectKey } from '../keys'
 
 defineOptions({ name: 'ConnectionsOverviewIndex' })
 
-const props = defineProps<{ data: string }>()
+const props = defineProps<{ id: string }>()
 
 const connectionStore = useConnectionsStore()
 
@@ -49,17 +49,15 @@ const {
 	enter: enterConnectionInfoLoading,
 	exit: exitConnectionInfoLoading,
 } = useLoading()
-async function initConnectionInfo() {
-	connectionInfo.value = await connectionStore.getConnectionInfo(props.data)
-}
-onMounted(async () => {
+async function initConnectionInfo(showLoading = true) {
 	try {
-		enterConnectionInfoLoading()
-		initConnectionInfo()
+		showLoading && enterConnectionInfoLoading()
+		connectionInfo.value = await connectionStore.getConnectionInfo(props.id)
 	} finally {
-		exitConnectionInfoLoading()
+		showLoading && exitConnectionInfoLoading()
 	}
-})
+}
+onMounted(() => initConnectionInfo())
 provide(connectionInfoInjectKey, connectionInfo)
 
 // auto refresh
@@ -72,7 +70,7 @@ let autoRefreshInterval: NodeJS.Timeout
 function handleAutoRefreshClick() {
 	autoRefreshEnable.value = !autoRefreshEnable.value
 	clearInterval(autoRefreshInterval)
-	autoRefreshEnable.value && (autoRefreshInterval = setInterval(initConnectionInfo, 2000))
+	autoRefreshEnable.value && (autoRefreshInterval = setInterval(() => initConnectionInfo(false), 2000))
 }
 </script>
 

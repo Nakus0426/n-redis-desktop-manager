@@ -20,7 +20,7 @@ watch(
 	isOutside,
 	value => {
 		if (value) return
-		isOverflow.value = containerRef.value.clientWidth <= contentRef.value.offsetWidth
+		isOverflow.value = containerRef.value.clientWidth < contentRef.value.offsetWidth
 	},
 	{ immediate: true }
 )
