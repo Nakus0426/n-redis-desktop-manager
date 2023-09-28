@@ -109,7 +109,6 @@ useEventBus(connectionConnectedEventKey).on(connection => {
 const activeKey = ref<{ key: string; id: string }>()
 provide(activedKeyInjectKey, activeKey)
 useEventBus(keyActivedEventKey).on(({ key, id }) => {
-	console.log('index', key, id)
 	const tabPanel: TabPanel = {
 		id,
 		key,
@@ -187,6 +186,7 @@ function handleTabRemove(key: string) {
 	if (length === 1) {
 		activedTabPanel.value = null
 	}
+	activeKey.value = { key: activedTabPanel.value?.key, id: activedTabPanel.value?.id }
 }
 
 // is empty

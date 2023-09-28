@@ -52,6 +52,7 @@
 				<div
 					class="body_item"
 					:class="keyActivedClass(item)"
+					:id="item"
 					v-for="item in filterKeysList"
 					:key="item"
 					:title="item"
@@ -94,7 +95,6 @@ const skeletonRowCol: SkeletonRowCol = [1, 1, 1, 1, 1, 1]
 // init scrollbar
 const containerRef = ref(null)
 const { init: initScrollbar } = useScrollbar(containerRef)
-
 onMounted(() => nextTick(() => initScrollbar()))
 
 // is keys empty
@@ -158,7 +158,9 @@ async function initKeys(showLoading = true) {
 		await window.mainWindow.redis.select(props.connection.id, activedDatabase.value)
 		const keys = await window.mainWindow.redis.keys(props.connection.id, '*')
 		keysList.value = []
-		nextTick(() => (keysList.value = keys.sort()))
+		nextTick(() => {
+			keysList.value = keys.sort()
+		})
 	} finally {
 		showLoading && exitKeysLoading()
 	}

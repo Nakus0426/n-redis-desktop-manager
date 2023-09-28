@@ -140,6 +140,13 @@ export class RedisUtil {
 		return client.EXISTS(key)
 	}
 
+	/** expire */
+	expire(id: string, key: string, expire: number) {
+		const client = this.clients.get(id)
+		if (!client || !client?.isReady) return
+		return client.EXPIRE(key, expire)
+	}
+
 	/** type */
 	type(id: string, key: string) {
 		const client = this.clients.get(id)

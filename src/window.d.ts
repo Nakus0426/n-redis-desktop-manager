@@ -34,6 +34,7 @@ export interface MainWindow {
 		del: typeof import('./utils')['RedisUtil']['prototype']['del']
 		rename: typeof import('./utils')['RedisUtil']['prototype']['rename']
 		exists: typeof import('./utils')['RedisUtil']['prototype']['exists']
+		expire: typeof import('./utils')['RedisUtil']['prototype']['expire']
 		type: typeof import('./utils')['RedisUtil']['prototype']['type']
 		ttl: typeof import('./utils')['RedisUtil']['prototype']['ttl']
 		onError: (callback: (id: string, error: Error) => void) => void

@@ -9,7 +9,7 @@ import { useMouseInElement } from '@vueuse/core'
 
 defineOptions({ name: 'TextEllipsis' })
 
-const props = defineProps<{ content: string }>()
+const props = defineProps<{ content?: string | number }>()
 
 // calculate whether text overflows
 const containerRef = ref<HTMLElement>()
@@ -26,7 +26,7 @@ watch(
 )
 
 // title
-const title = computed(() => (isOverflow.value ? props.content : null))
+const title = computed(() => (isOverflow.value ? String(props.content) : null))
 </script>
 
 <style scoped lang="scss">

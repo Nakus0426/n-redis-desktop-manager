@@ -7,7 +7,7 @@
 					<TTag variant="light-outline" theme="primary">{{ upperFirst(keyType) }}</TTag>
 					<TextEllipsis :content="data" @click="enterKeyEdit()" v-show="!keyEditing" />
 					<div class="header_title_input" v-show="keyEditing">
-						<TInput size="small" ref="keyEditInputRef" v-model="keyEditValue" />
+						<TInput size="small" ref="keyEditInputRef" v-model="keyEditValue" @enter="handleRenameClick()" />
 						<TButton
 							size="small"
 							variant="text"
@@ -26,10 +26,23 @@
 				<div class="header_divider" />
 				<div class="header_title_ttl">
 					<TTag variant="light-outline" theme="primary">TTL</TTag>
-					<div v-show="!ttlEditing" @click="enterTtlEdit()">{{ keyTtl }}</div>
+					<TextEllipsis :content="keyTtl" v-show="!ttlEditing" @click="enterTtlEdit()" />
 					<div class="header_title_input" v-show="ttlEditing">
-						<TInputNumber size="small" theme="normal" ref="ttlEditInputRef" v-model="ttlEditValue" />
-						<TButton size="small" variant="text" theme="success" shape="square">
+						<TInputNumber
+							size="small"
+							theme="normal"
+							ref="ttlEditInputRef"
+							v-model="ttlEditValue"
+							@enter="handleTtlEditClick()"
+						/>
+						<TButton
+							size="small"
+							variant="text"
+							theme="success"
+							shape="square"
+							:loading="isTtlLoading"
+							@click="handleTtlEditClick()"
+						>
 							<Icon height="14" width="14" icon="fluent:checkmark-16-regular" />
 						</TButton>
 						<TButton size="small" variant="text" theme="danger" shape="square" @click="exitTtlEdit()">
@@ -123,17 +136,15 @@ function exitKeyEdit() {
 	keyEditing.value = false
 }
 
-// key edit
+// key rename
 const { isLoading: isRenameLoading, enter: enterRenameLoading, exit: exitRenameLoading } = useLoading()
 async function handleRenameClick() {
 	try {
 		enterRenameLoading()
 		await window.mainWindow.redis.rename(props.id, props.data, keyEditValue.value)
 		useEventBus(keyRenamedEventKey).emit(keyEditValue.value)
-		nextTick(() => {
-			useEventBus(keyActivedEventKey).emit({ key: keyEditValue.value, id: props.id })
-			nextTick(() => useEventBus(keyRemovedEventKey).emit(keyEditValue.value))
-		})
+		useEventBus(keyActivedEventKey).emit({ key: keyEditValue.value, id: props.id })
+		useEventBus(keyRemovedEventKey).emit(props.data)
 		MessagePlugin.success('保存成功')
 	} catch (e) {
 		MessagePlugin.error(e.message)
@@ -142,7 +153,7 @@ async function handleRenameClick() {
 	}
 }
 
-// ttl edit
+// ttl edit status
 const ttlEditing = ref(false)
 const ttlEditValue = ref<number>()
 const ttlEditInputRef = ref<HTMLInputElement>()
@@ -153,6 +164,23 @@ function enterTtlEdit() {
 }
 function exitTtlEdit() {
 	ttlEditing.value = false
+}
+
+// ttl edit
+const { isLoading: isTtlLoading, enter: enterTtlLoading, exit: exitTtlLoading } = useLoading()
+async function handleTtlEditClick() {
+	try {
+		enterTtlLoading()
+		await window.mainWindow.redis.expire(props.id, props.data, ttlEditValue.value)
+		exitTtlEdit()
+		initKeyTtl()
+		initKeyValue()
+		MessagePlugin.success('保存成功')
+	} catch (e) {
+		MessagePlugin.error(e.message)
+	} finally {
+		exitTtlLoading()
+	}
 }
 
 // remove key
@@ -233,7 +261,6 @@ function handleAutoRefreshClick() {
 			font: var(--td-font-title-medium);
 			color: var(--td-text-color-primary);
 			overflow: hidden;
-			cursor: text;
 		}
 
 		&_ttl {
@@ -242,7 +269,6 @@ function handleAutoRefreshClick() {
 			gap: var(--td-comp-margin-m);
 			font: var(--td-font-body-medium);
 			color: var(--td-text-color-secondary);
-			cursor: text;
 		}
 
 		&_input {
@@ -250,6 +276,10 @@ function handleAutoRefreshClick() {
 			align-items: center;
 			gap: var(--td-comp-margin-xs);
 			flex: 1;
+		}
+
+		.text-ellipsis {
+			cursor: text;
 		}
 	}
 
