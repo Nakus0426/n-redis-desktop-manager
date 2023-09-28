@@ -5,34 +5,51 @@
 			<div class="header_title">
 				<div class="header_title_key">
 					<TTag variant="light-outline" theme="primary">{{ upperFirst(keyType) }}</TTag>
-					<TextEllipsis :content="keyEditValue" @click="enterKeyEdit()" v-show="!keyEditing" />
-					<input
-						class="key-input"
-						v-model="keyEditValue"
-						ref="keyEditInputRef"
-						v-show="keyEditing"
-						@blur="exitKeyEdit()"
-					/>
+					<TextEllipsis :content="data" @click="enterKeyEdit()" v-show="!keyEditing" />
+					<div class="header_title_input" v-show="keyEditing">
+						<TInput size="small" ref="keyEditInputRef" v-model="keyEditValue" />
+						<TButton
+							size="small"
+							variant="text"
+							theme="success"
+							shape="square"
+							:loading="isRenameLoading"
+							@click="handleRenameClick()"
+						>
+							<Icon height="14" width="14" icon="fluent:checkmark-16-regular" />
+						</TButton>
+						<TButton size="small" variant="text" theme="danger" shape="square" @click="exitKeyEdit()">
+							<Icon height="14" width="14" icon="fluent:dismiss-16-regular" />
+						</TButton>
+					</div>
 				</div>
+				<div class="header_divider" />
 				<div class="header_title_ttl">
 					<TTag variant="light-outline" theme="primary">TTL</TTag>
 					<div v-show="!ttlEditing" @click="enterTtlEdit()">{{ keyTtl }}</div>
-					<input
-						class="ttl-input"
-						v-model="ttlEditValue"
-						ref="ttlEditInputRef"
-						v-show="ttlEditing"
-						@blur="exitTtlEdit()"
-					/>
+					<div class="header_title_input" v-show="ttlEditing">
+						<TInputNumber size="small" theme="normal" ref="ttlEditInputRef" v-model="ttlEditValue" />
+						<TButton size="small" variant="text" theme="success" shape="square">
+							<Icon height="14" width="14" icon="fluent:checkmark-16-regular" />
+						</TButton>
+						<TButton size="small" variant="text" theme="danger" shape="square" @click="exitTtlEdit()">
+							<Icon height="14" width="14" icon="fluent:dismiss-16-regular" />
+						</TButton>
+					</div>
 				</div>
 			</div>
+			<div class="header_divider" />
 			<div class="header_action">
-				<TButton theme="primary" shape="square" variant="text" :disabled="!saveAvaliable">
-					<Icon height="20" width="20" icon="fluent:save-20-regular" />
-				</TButton>
-				<TButton theme="danger" shape="square" variant="text" @click="handleRemoveClick()">
-					<Icon height="20" width="20" icon="fluent:delete-20-regular" />
-				</TButton>
+				<TTooltip content="刷新" placement="top" :show-arrow="false">
+					<TButton theme="primary" shape="square" variant="text">
+						<Icon height="20" width="20" icon="fluent:arrow-sync-20-regular" />
+					</TButton>
+				</TTooltip>
+				<TTooltip content="删除" placement="top" :show-arrow="false">
+					<TButton theme="danger" shape="square" variant="text" @click="handleRemoveClick()">
+						<Icon height="20" width="20" icon="fluent:delete-20-regular" />
+					</TButton>
+				</TTooltip>
 			</div>
 		</div>
 		<div class="body">
@@ -52,11 +69,11 @@ import { useEventBus, useIntersectionObserver } from '@vueuse/core'
 import { upperFirst } from 'lodash-es'
 import { type KeyType } from '@/utils'
 import { useLoading } from '@/hooks'
-import { keyRemovedEventKey } from '../keys'
+import { keyActivedEventKey, keyRemovedEventKey, keyRenamedEventKey } from '../keys'
 
 defineOptions({ name: 'ConnectionsKeyEditIndex' })
 
-const props = defineProps<{ keyValue: string; id: string }>()
+const props = defineProps<{ data: string; id: string }>()
 
 // init data
 onMounted(async () => {
@@ -73,31 +90,32 @@ useIntersectionObserver(headerReferenceRef, ([{ isIntersecting }]) => {
 })
 
 // init key value
+const keyValue = ref()
 async function initKeyValue() {
-	const value = await window.mainWindow.redis.get(props.id, props.keyValue)
-	console.log(value)
+	const _value = await window.mainWindow.redis.get(props.id, props.data)
+	keyValue.value = _value || ''
 }
 
 // init key type
 const keyType = ref<KeyType>()
 async function initKeyType() {
-	const type = await window.mainWindow.redis.type(props.id, props.keyValue)
+	const type = await window.mainWindow.redis.type(props.id, props.data)
 	keyType.value = type || '-'
 }
 
 // init key ttl
-const keyTtl = ref<number | string>()
+const keyTtl = ref<number>()
 async function initKeyTtl() {
-	const ttl = await window.mainWindow.redis.ttl(props.id, props.keyValue)
-	console.log(ttl)
-	keyTtl.value = ttl || '-'
+	const ttl = await window.mainWindow.redis.ttl(props.id, props.data)
+	keyTtl.value = ttl
 }
 
 // key edit status
 const keyEditing = ref(false)
-const keyEditValue = ref(props.keyValue)
+const keyEditValue = ref<string>()
 const keyEditInputRef = ref<HTMLInputElement>()
 function enterKeyEdit() {
+	keyEditValue.value = props.data
 	keyEditing.value = true
 	nextTick(() => keyEditInputRef.value.focus())
 }
@@ -105,23 +123,37 @@ function exitKeyEdit() {
 	keyEditing.value = false
 }
 
-// ttl edit status
+// key edit
+const { isLoading: isRenameLoading, enter: enterRenameLoading, exit: exitRenameLoading } = useLoading()
+async function handleRenameClick() {
+	try {
+		enterRenameLoading()
+		await window.mainWindow.redis.rename(props.id, props.data, keyEditValue.value)
+		useEventBus(keyRenamedEventKey).emit(keyEditValue.value)
+		nextTick(() => {
+			useEventBus(keyActivedEventKey).emit({ key: keyEditValue.value, id: props.id })
+			nextTick(() => useEventBus(keyRemovedEventKey).emit(keyEditValue.value))
+		})
+		MessagePlugin.success('保存成功')
+	} catch (e) {
+		MessagePlugin.error(e.message)
+	} finally {
+		exitRenameLoading()
+	}
+}
+
+// ttl edit
 const ttlEditing = ref(false)
-const ttlEditValue = ref<number | string>()
+const ttlEditValue = ref<number>()
 const ttlEditInputRef = ref<HTMLInputElement>()
 function enterTtlEdit() {
-	ttlEditing.value = true
 	ttlEditValue.value = keyTtl.value
+	ttlEditing.value = true
 	nextTick(() => ttlEditInputRef.value.focus())
 }
 function exitTtlEdit() {
 	ttlEditing.value = false
 }
-
-// save avaliable
-const isKeyChanged = computed(() => keyEditValue.value !== props.keyValue)
-const isTtlChanged = computed(() => ttlEditValue.value !== 0)
-const saveAvaliable = computed(() => isKeyChanged.value || isTtlChanged.value)
 
 // remove key
 const { isLoading: isRemoveLoading, enter: enterRemoveLoading, exit: exitRemoveLoading } = useLoading()
@@ -134,10 +166,12 @@ function handleRemoveClick() {
 		onConfirm: async () => {
 			try {
 				enterRemoveLoading()
-				await window.mainWindow.redis.del(props.id, props.keyValue)
-				useEventBus(keyRemovedEventKey).emit(props.keyValue)
+				await window.mainWindow.redis.del(props.id, props.data)
+				useEventBus(keyRemovedEventKey).emit(props.data)
 				MessagePlugin.success('删除成功')
 				dialogInstance.destroy()
+			} catch (e) {
+				MessagePlugin.error(e.message)
 			} finally {
 				exitRemoveLoading()
 			}
@@ -174,20 +208,19 @@ function handleAutoRefreshClick() {
 	position: sticky;
 	top: 0;
 	display: flex;
-	gap: var(--td-comp-margin-m);
+	align-items: center;
 	background-color: var(--td-bg-color-page);
 	border-bottom: 1px solid transparent;
 	transition: all var(--td-transition);
 
 	&.is-sticky {
-		border-bottom: 1px solid var(--td-component-stroke);
+		box-shadow: 0 3px 2px -2px rgba(0, 0, 0, 6%);
 		background-color: var(--td-bg-color-secondarycontainer);
 	}
 
 	&_title {
 		display: flex;
-		flex-direction: column;
-		gap: var(--td-comp-margin-s);
+		align-items: center;
 		flex: 1;
 		overflow: hidden;
 		padding: var(--td-comp-paddingLR-m) 0 var(--td-comp-paddingLR-m) var(--td-comp-paddingLR-m);
@@ -195,6 +228,7 @@ function handleAutoRefreshClick() {
 		&_key {
 			display: flex;
 			align-items: center;
+			flex: 1;
 			gap: var(--td-comp-margin-m);
 			font: var(--td-font-title-medium);
 			color: var(--td-text-color-primary);
@@ -211,27 +245,11 @@ function handleAutoRefreshClick() {
 			cursor: text;
 		}
 
-		.key-input,
-		.ttl-input {
-			width: 100%;
-			border: none;
-			background-color: transparent;
-
-			&:focus-visible {
-				outline: none;
-			}
-		}
-
-		.key-input {
-			height: 24px;
-			font: var(--td-font-title-medium);
-			color: var(--td-text-color-primary);
-		}
-
-		.ttl-input {
-			height: 22px;
-			font: var(--td-font-body-medium);
-			color: var(--td-text-color-secondary);
+		&_input {
+			display: flex;
+			align-items: center;
+			gap: var(--td-comp-margin-xs);
+			flex: 1;
 		}
 	}
 
@@ -240,6 +258,13 @@ function handleAutoRefreshClick() {
 		align-items: center;
 		gap: var(--td-comp-margin-m);
 		padding-right: var(--td-comp-paddingLR-m);
+	}
+
+	&_divider {
+		height: var(--td-line-height-body-medium);
+		width: 1px;
+		background-color: var(--td-component-border);
+		margin: 0 var(--td-comp-paddingLR-m);
 	}
 
 	:deep(.t-button--variant-text) {

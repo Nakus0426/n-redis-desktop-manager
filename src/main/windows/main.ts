@@ -91,6 +91,8 @@ export function createMainWindow() {
 	ipcMain.handle(channel.main.redis.set, (event, id, key, value, expire) => redis.set(id, key, value, expire))
 	ipcMain.handle(channel.main.redis.get, (event, id, key, type) => redis.get(id, key, type))
 	ipcMain.handle(channel.main.redis.del, (event, id, key) => redis.del(id, key))
+	ipcMain.handle(channel.main.redis.rename, (event, id, key, newKey) => redis.rename(id, key, newKey))
+	ipcMain.handle(channel.main.redis.exists, (event, id, key) => redis.exists(id, key))
 	ipcMain.handle(channel.main.redis.type, (event, id, key) => redis.type(id, key))
 	ipcMain.handle(channel.main.redis.ttl, (event, id, key) => redis.ttl(id, key))
 }

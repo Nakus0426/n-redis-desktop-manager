@@ -56,7 +56,7 @@
 					<component
 						v-for="item in tabPanels"
 						:id="item.id"
-						:key-value="item.key"
+						:data="item.key"
 						:key="item.key"
 						:is="item.type === 'Overview' ? Overview : KeyEdit"
 						v-show="item.key === activedTabPanel.key"
@@ -73,11 +73,11 @@ import { useResizeObserver } from '@vueuse/core'
 import { cloneDeep } from 'lodash-es'
 import { useEventBus } from '@vueuse/core'
 import {
+	activedKeyInjectKey,
 	connectionConnectedEventKey,
 	connectionDisconnectedEventKey,
 	keyActivedEventKey,
 	keyRemovedEventKey,
-	tabActivedEventKey,
 } from './keys'
 import Sider from './sider/Index.vue'
 import Overview from './overview/Index.vue'
@@ -106,7 +106,10 @@ useEventBus(connectionConnectedEventKey).on(connection => {
 })
 
 // key actived
+const activeKey = ref<{ key: string; id: string }>()
+provide(activedKeyInjectKey, activeKey)
 useEventBus(keyActivedEventKey).on(({ key, id }) => {
+	console.log('index', key, id)
 	const tabPanel: TabPanel = {
 		id,
 		key,
@@ -114,6 +117,7 @@ useEventBus(keyActivedEventKey).on(({ key, id }) => {
 		type: 'KeyEdit',
 		icon: 'fluent:key-16-regular',
 	}
+	activeKey.value = { key, id }
 	activedTabPanel.value = tabPanel
 	if (tabPanels.value.findIndex(item => item.key === key) >= 0) return
 	tabPanels.value.push(tabPanel)
@@ -196,11 +200,9 @@ function tabActivedClass(key: string) {
 // tab click
 function handleTabClick(value: TabPanel) {
 	activedTabPanel.value = value
+	activeKey.value = { key: value.key, id: value.id }
 	if (tabsOverlow.value) tabRefs.get(value.key).scrollIntoView({ inline: 'center', behavior: 'smooth' })
 }
-
-// tab actived emit event
-watch(activedTabPanel, value => useEventBus(tabActivedEventKey).emit(value?.key))
 </script>
 
 <style scoped lang="scss">

@@ -51,7 +51,8 @@
 			<TTree
 				:data="keysTree"
 				:filter="keysTreeFilter"
-				v-model:actived="activedKey"
+				:actived="activedKey"
+				:disabled="isKeyChangeLoading"
 				allow-fold-node-on-filter
 				activable
 				expand-mutex
@@ -63,7 +64,7 @@
 			>
 				<template #label="{ node }">
 					<div class="tree_node">
-						<Icon height="16" width="16" icon="fluent:key-20-regular" v-if="node.data.isLeaf" />
+						<Icon height="16" width="16" :icon="keyIcon" v-if="node.data.isLeaf" />
 						<div class="tree_node_label">{{ node.label }}</div>
 					</div>
 				</template>
@@ -77,11 +78,25 @@
 </template>
 
 <script setup lang="ts">
-import { type TreeNodeModel, type SelectOption, type TreeNodeValue, type SkeletonRowCol } from 'tdesign-vue-next'
+import {
+	type TreeNodeModel,
+	type SelectOption,
+	type TreeNodeValue,
+	type SkeletonRowCol,
+	MessagePlugin,
+} from 'tdesign-vue-next'
 import { useEventBus } from '@vueuse/core'
 import { useConnectionsStore, type Connection } from '@/store'
 import { useLoading, useScrollbar } from '@/hooks'
-import { connectionConnectedEventKey, keyActivedEventKey, keyRemovedEventKey, tabActivedEventKey } from '../keys'
+import {
+	activedKeyInjectKey,
+	connectionConnectedEventKey,
+	keyActivedEventKey,
+	keyRemovedEventKey,
+	keyRenamedEventKey,
+	keySavedEventKey,
+	keyUpdatedEventKey,
+} from '../keys'
 import { useKeyTree } from '../hooks'
 
 defineOptions({ name: 'SiderTree' })
@@ -148,8 +163,11 @@ async function initDatabaseOptions() {
 	}
 }
 
-// key removed
+// key changed
 useEventBus(keyRemovedEventKey).on(key => initKeys(false))
+useEventBus(keySavedEventKey).on(key => initKeys(false))
+useEventBus(keyUpdatedEventKey).on(key => initKeys(false))
+useEventBus(keyRenamedEventKey).on(key => initKeys(false))
 
 // init keys
 const { isLoading: keysLoading, enter: enterKeysLoading, exit: exitKeysLoading } = useLoading()
@@ -174,17 +192,26 @@ function handleKeysTreeFilterChange(value: string) {
 }
 
 // connection keys tree change
-const activedKey = ref<TreeNodeValue[]>()
-function handleKeyTreeChange(value: TreeNodeValue[], { node }: { node: TreeNodeModel }) {
-	if (!node.data.isLeaf) return
-	if (value.length !== 0) activedKey.value = value
-	useEventBus(keyActivedEventKey).emit({ key: node.value as string, id: props.connection.id })
+const injectActivedKey = inject(activedKeyInjectKey)
+const { isLoading: isKeyChangeLoading, enter: enterKeyChangeLoading, exit: exitKeyChangeLoading } = useLoading()
+const keyIcon = computed(() => (isKeyChangeLoading.value ? 'line-md:loading-loop' : 'fluent:key-20-regular'))
+const activedKey = computed(() => (injectActivedKey.value?.key ? [injectActivedKey.value.key] : []))
+async function handleKeyTreeChange(value: TreeNodeValue[], { node }: { node: TreeNodeModel }) {
+	try {
+		enterKeyChangeLoading()
+		if (!node.data.isLeaf) return
+		const key = node.value as string
+		const id = props.connection.id
+		const keyExists = await window.mainWindow.redis.exists(id, key)
+		if (keyExists !== 1) {
+			MessagePlugin.error('键不存在')
+			return
+		}
+		useEventBus(keyActivedEventKey).emit({ key, id })
+	} finally {
+		exitKeyChangeLoading()
+	}
 }
-
-// tab actived
-useEventBus(tabActivedEventKey).on(key => {
-	activedKey.value = [key]
-})
 </script>
 
 <style scoped lang="scss">

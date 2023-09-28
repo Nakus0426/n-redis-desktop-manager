@@ -71,7 +71,15 @@
 import { type SelectOption, type SkeletonRowCol } from 'tdesign-vue-next'
 import { useEventBus } from '@vueuse/core'
 import { useConnectionsStore, type Connection } from '@/store'
-import { connectionConnectedEventKey, keyActivedEventKey, keyRemovedEventKey, tabActivedEventKey } from '../keys'
+import {
+	activedKeyInjectKey,
+	connectionConnectedEventKey,
+	keyActivedEventKey,
+	keyRemovedEventKey,
+	keyRenamedEventKey,
+	keySavedEventKey,
+	keyUpdatedEventKey,
+} from '../keys'
 import { useLoading, useScrollbar } from '@/hooks'
 
 defineOptions({ name: 'SiderList' })
@@ -135,8 +143,11 @@ async function initDatabaseOptions() {
 	}
 }
 
-// key removed
+// key changed
 useEventBus(keyRemovedEventKey).on(key => initKeys(false))
+useEventBus(keySavedEventKey).on(key => initKeys(false))
+useEventBus(keyUpdatedEventKey).on(key => initKeys(false))
+useEventBus(keyRenamedEventKey).on(key => initKeys(false))
 
 // init keys
 const { isLoading: keysLoading, enter: enterKeysLoading, exit: exitKeysLoading } = useLoading()
@@ -161,21 +172,15 @@ const filterKeysList = computed(() => {
 })
 
 // key click
-const activedKey = ref<string>()
+const activedKey = inject(activedKeyInjectKey)
 function handleKeyClick(key: string) {
-	activedKey.value = key
 	useEventBus(keyActivedEventKey).emit({ key, id: props.connection.id })
 }
 
 // generate key actived class
 function keyActivedClass(key: string) {
-	return activedKey.value === key ? 'is-actived' : ''
+	return activedKey.value?.key === key ? 'is-actived' : ''
 }
-
-// tab actived
-useEventBus(tabActivedEventKey).on(key => {
-	activedKey.value = key
-})
 </script>
 
 <style scoped lang="scss">

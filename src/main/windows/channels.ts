@@ -33,6 +33,8 @@ export const channel = {
 			set: 'main:redis:set',
 			get: 'main:redis:get',
 			del: 'main:redis:del',
+			rename: 'main:redis:rename',
+			exists: 'main:redis:exists',
 			type: 'main:redis:type',
 			ttl: 'main:redis:ttl',
 			onError: 'main:redis:onError',

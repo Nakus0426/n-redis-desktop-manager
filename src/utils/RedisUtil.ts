@@ -126,6 +126,20 @@ export class RedisUtil {
 		return client.DEL(key)
 	}
 
+	/** rename */
+	rename(id: string, key: string, newKey: string) {
+		const client = this.clients.get(id)
+		if (!client || !client?.isReady) return
+		return client.RENAMENX(key, newKey)
+	}
+
+	/** exists */
+	exists(id: string, key: string) {
+		const client = this.clients.get(id)
+		if (!client || !client?.isReady) return
+		return client.EXISTS(key)
+	}
+
 	/** type */
 	type(id: string, key: string) {
 		const client = this.clients.get(id)
