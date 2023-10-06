@@ -12,7 +12,11 @@ export const channel = {
 		onError: 'main:onError',
 		// app operations
 		getAppTheme: 'main:getAppTheme',
+		setAppTheme: 'main:setAppTheme',
 		getSystemLocale: 'main:getSystemLocale',
+		getMicaConfig: 'main:getMicaConfig',
+		setMicaConfig: 'main:setMicaConfig',
+		isWindows11: 'main:isWindows11',
 		// pinia operations
 		pinia: {
 			change: 'main:pinia:change',

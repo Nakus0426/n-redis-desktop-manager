@@ -1,6 +1,3 @@
-// See the Electron documentation for details on how to use preload scripts:
-// https://www.electronjs.org/docs/latest/tutorial/process-model#preload-scripts
-
 import { contextBridge, ipcRenderer } from 'electron'
 import { channel } from './windows/channels'
 
@@ -18,7 +15,11 @@ contextBridge.exposeInMainWorld('mainWindow', {
 	onError: callback => ipcRenderer.on(channel.main.onError, (e, ...args) => callback(...args)),
 	// app operations
 	getAppTheme: () => ipcRenderer.sendSync(channel.main.getAppTheme),
+	setAppTheme: (...args) => ipcRenderer.send(channel.main.setAppTheme, ...args),
 	getSystemLocale: () => ipcRenderer.sendSync(channel.main.getSystemLocale),
+	getMicaConfig: () => ipcRenderer.sendSync(channel.main.getMicaConfig),
+	setMicaConfig: (...args) => ipcRenderer.send(channel.main.setMicaConfig, ...args),
+	isWindows11: () => ipcRenderer.sendSync(channel.main.isWindows11),
 	// pinia operations
 	pinia: {
 		change: (...args) => ipcRenderer.send(channel.main.pinia.change, ...args),

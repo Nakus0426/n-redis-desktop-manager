@@ -4,11 +4,7 @@
 			<Header />
 			<Keyspace />
 		</TSkeleton>
-		<TTooltip :show-arrow="false" :content="autoRefreshButtonStyle.tooltipContent" placement="left">
-			<button class="auto-refresh" v-ripple @click="handleAutoRefreshClick()">
-				<Icon height="24" width="24" :icon="autoRefreshButtonStyle.icon" />
-			</button>
-		</TTooltip>
+		<AutoRefresh @refresh="handleAutoRefreshClick()" />
 	</div>
 </template>
 
@@ -18,6 +14,7 @@ import { useLoading } from '@/hooks'
 import { type ConnectionInfo, useConnectionsStore } from '@/store'
 import Header from './Header.vue'
 import Keyspace from './Keyspace.vue'
+import AutoRefresh from '../components/AutoRefresh.vue'
 import { connectionInfoInjectKey } from '../keys'
 
 defineOptions({ name: 'ConnectionsOverviewIndex' })
@@ -61,16 +58,8 @@ onMounted(() => initConnectionInfo())
 provide(connectionInfoInjectKey, connectionInfo)
 
 // auto refresh
-const autoRefreshEnable = ref(false)
-const autoRefreshButtonStyle = computed(() => ({
-	icon: autoRefreshEnable.value ? 'line-md:loading-loop' : 'fluent:arrow-sync-24-regular',
-	tooltipContent: autoRefreshEnable.value ? '关闭自动刷新' : '开启自动刷新',
-}))
-let autoRefreshInterval: NodeJS.Timeout
 function handleAutoRefreshClick() {
-	autoRefreshEnable.value = !autoRefreshEnable.value
-	clearInterval(autoRefreshInterval)
-	autoRefreshEnable.value && (autoRefreshInterval = setInterval(() => initConnectionInfo(false), 2000))
+	initConnectionInfo(false)
 }
 </script>
 
@@ -83,35 +72,5 @@ function handleAutoRefreshClick() {
 
 :deep(.t-skeleton__col) {
 	background-color: var(--td-bg-color-component);
-}
-
-.auto-refresh {
-	position: fixed;
-	right: var(--td-comp-paddingLR-m);
-	bottom: var(--td-comp-paddingLR-m);
-	width: 32px;
-	height: 32px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	border: 1px solid var(--td-component-border);
-	border-radius: var(--td-radius-medium);
-	background-color: var(--td-bg-color-container);
-	color: var(--td-text-color-primary);
-	box-shadow: var(--td-shadow-3);
-	transition: all var(--td-transition);
-	cursor: pointer;
-	z-index: 500;
-	--ripple-color: var(--td-bg-color-container-active);
-
-	&:hover {
-		background-color: var(--td-bg-color-container-hover);
-	}
-
-	&:focus-visible {
-		outline: none;
-		border-color: var(--td-brand-color);
-		color: var(--td-brand-color);
-	}
 }
 </style>

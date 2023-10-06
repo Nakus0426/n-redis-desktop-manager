@@ -171,11 +171,10 @@ function handleConnectionRemoveClick(id: string) {
 
 // disconnect connection
 const expandedConnections = ref<string[]>([])
-const connectionDisconnectedEventBus = useEventBus(connectionDisconnectedEventKey)
 async function handleConnectionDisconnectClick(id: string) {
 	await connectionsStore.disconnectConnection(id)
 	pull(expandedConnections.value, id)
-	connectionDisconnectedEventBus.emit(filteredConnections.value.find(item => item.id === id))
+	useEventBus(connectionDisconnectedEventKey).emit(filteredConnections.value.find(item => item.id === id))
 }
 
 // connection connecting error

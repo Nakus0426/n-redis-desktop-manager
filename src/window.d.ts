@@ -11,7 +11,11 @@ export interface MainWindow {
 	onUnMaximize: (callback: () => void) => void
 	onError: (callback: (error: any) => void) => void
 	getAppTheme: () => 'light' | 'dark'
+	setAppTheme: (theme: 'light' | 'dark' | 'system') => void
 	getSystemLocale: () => string
+	getMicaConfig: () => boolean
+	setMicaConfig: (enable: boolean) => void
+	isWindows11: () => boolean
 
 	pinia: {
 		change: (key: string, value: any, isResetVersion: boolean, storeVersion: string) => void

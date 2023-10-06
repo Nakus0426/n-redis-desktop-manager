@@ -89,7 +89,6 @@ function handleExtraMenuClick(index: number) {
 	display: flex;
 	flex-direction: column;
 	gap: var(--td-comp-margin-m);
-	background-color: var(--td-bg-color-secondarycontainer);
 	padding: var(--window-action-height) 0 var(--td-comp-paddingTB-m) 0;
 	-webkit-app-region: drag;
 }
@@ -105,6 +104,7 @@ function handleExtraMenuClick(index: number) {
 }
 
 .menu_item {
+	position: relative;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -112,22 +112,37 @@ function handleExtraMenuClick(index: number) {
 	width: 40px;
 	color: var(--td-text-color-primary);
 	border-radius: var(--td-radius-medium);
-	transition: background-color var(--td-transition);
+	transition: all var(--td-transition);
 	cursor: pointer;
 	-webkit-app-region: no-drag;
 	--ripple-color: var(--td-bg-color-secondarycontainer-active);
 
 	&.is-actived {
-		background-color: var(--td-bg-color-container-active);
+		background-color: var(--td-bg-color-container);
 		color: var(--td-brand-color);
 
-		&:hover {
-			background-color: var(--td-bg-color-container-active);
+		&::before {
+			content: '';
+			position: absolute;
+			top: 12.5px;
+			left: -1.5px;
+			height: 15px;
+			width: 3px;
+			border-radius: 2px;
+			transition: all var(--td-transition);
+			background-color: var(--td-brand-color);
+			z-index: 1;
 		}
 	}
 
-	&:hover {
+	&:not(.is-actived):hover {
 		background-color: var(--td-bg-color-secondarycontainer-hover);
+	}
+
+	&::before {
+		content: '';
+		height: 0;
+		transition: all var(--td-transition);
 	}
 }
 
@@ -144,5 +159,11 @@ function handleExtraMenuClick(index: number) {
 	flex-direction: column;
 	align-items: center;
 	gap: var(--td-comp-margin-m);
+}
+
+[theme-mode='dark'] {
+	.menu_item {
+		--ripple-color: var();
+	}
 }
 </style>

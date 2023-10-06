@@ -14,6 +14,11 @@
 				<div class="theme_title">{{ t('setting.appearance.theme.dark') }}</div>
 			</div>
 		</Cell>
+		<Cell title="其他">
+			<CellItem label="云母效果" desc="仅 Windows 11 可用，重启后生效">
+				<TSwitch size="large" v-model="appStore.micaEnable" />
+			</CellItem>
+		</Cell>
 	</div>
 </template>
 
@@ -21,6 +26,7 @@
 import { useLocale } from '@/hooks'
 import { Theme, useAppStore } from '@/store'
 import Cell from './modules/Cell'
+import CellItem from './modules/CellItem'
 
 const appStore = useAppStore()
 const { t } = useLocale(false)

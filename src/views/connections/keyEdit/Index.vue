@@ -53,11 +53,6 @@
 			</div>
 			<div class="header_divider" />
 			<div class="header_action">
-				<TTooltip content="刷新" placement="top" :show-arrow="false">
-					<TButton theme="primary" shape="square" variant="text">
-						<Icon height="20" width="20" icon="fluent:arrow-sync-20-regular" />
-					</TButton>
-				</TTooltip>
 				<TTooltip content="删除" placement="top" :show-arrow="false">
 					<TButton theme="danger" shape="square" variant="text" @click="handleRemoveClick()">
 						<Icon height="20" width="20" icon="fluent:delete-20-regular" />
@@ -68,11 +63,7 @@
 		<div class="body">
 			<h1 v-for="item in 20">123</h1>
 		</div>
-		<TTooltip :show-arrow="false" :content="autoRefreshButtonStyle.tooltipContent" placement="left">
-			<button class="auto-refresh" v-ripple @click="handleAutoRefreshClick()">
-				<Icon height="24" width="24" :icon="autoRefreshButtonStyle.icon" />
-			</button>
-		</TTooltip>
+		<AutoRefresh @refresh="handleAutoRefreshClick()" />
 	</div>
 </template>
 
@@ -83,6 +74,7 @@ import { upperFirst } from 'lodash-es'
 import { type KeyType } from '@/utils'
 import { useLoading } from '@/hooks'
 import { keyActivedEventKey, keyRemovedEventKey, keyRenamedEventKey } from '../keys'
+import AutoRefresh from '../components/AutoRefresh.vue'
 
 defineOptions({ name: 'ConnectionsKeyEditIndex' })
 
@@ -208,20 +200,9 @@ function handleRemoveClick() {
 }
 
 // auto refresh
-const autoRefreshEnable = ref(false)
-const autoRefreshButtonStyle = computed(() => ({
-	icon: autoRefreshEnable.value ? 'line-md:loading-loop' : 'fluent:arrow-sync-24-regular',
-	tooltipContent: autoRefreshEnable.value ? '关闭自动刷新' : '开启自动刷新',
-}))
-let autoRefreshInterval: NodeJS.Timeout
 function handleAutoRefreshClick() {
-	autoRefreshEnable.value = !autoRefreshEnable.value
-	clearInterval(autoRefreshInterval)
-	if (autoRefreshEnable.value)
-		autoRefreshInterval = setInterval(async () => {
-			initKeyValue()
-			initKeyTtl()
-		}, 1000)
+	initKeyValue()
+	initKeyTtl()
 }
 </script>
 
@@ -304,36 +285,6 @@ function handleAutoRefreshClick() {
 		&:hover {
 			background-color: var(--td-bg-color-container-active);
 		}
-	}
-}
-
-.auto-refresh {
-	position: fixed;
-	right: var(--td-comp-paddingLR-m);
-	bottom: var(--td-comp-paddingLR-m);
-	width: 32px;
-	height: 32px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	border: 1px solid var(--td-component-border);
-	border-radius: var(--td-radius-medium);
-	background-color: var(--td-bg-color-container);
-	color: var(--td-text-color-primary);
-	box-shadow: var(--td-shadow-3);
-	transition: all var(--td-transition);
-	cursor: pointer;
-	z-index: 500;
-	--ripple-color: var(--td-bg-color-container-active);
-
-	&:hover {
-		background-color: var(--td-bg-color-container-hover);
-	}
-
-	&:focus-visible {
-		outline: none;
-		border-color: var(--td-brand-color);
-		color: var(--td-brand-color);
 	}
 }
 </style>

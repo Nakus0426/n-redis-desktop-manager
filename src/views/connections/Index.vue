@@ -29,7 +29,6 @@
 								:key="item.key"
 								:ref="ref => generateTabRef(item.key, ref)"
 								:title="item.label"
-								v-ripple
 								@click="handleTabClick(item)"
 							>
 								<div class="content_header_center_item_label">
@@ -166,7 +165,10 @@ watch(
 )
 
 // connection disconnected
-useEventBus(connectionDisconnectedEventKey).on(connection => handleTabRemove(connection.id))
+useEventBus(connectionDisconnectedEventKey).on(connection => {
+	const disconnectedIds = tabPanels.value.filter(item => item.id === connection.id)
+	disconnectedIds.forEach(item => handleTabRemove(item.key))
+})
 
 // key removed
 useEventBus(keyRemovedEventKey).on(key => handleTabRemove(key))
@@ -220,7 +222,7 @@ function handleTabClick(value: TabPanel) {
 	&_header {
 		display: flex;
 		align-items: center;
-		padding: 0 var(--td-comp-margin-m) var(--td-comp-margin-m) var(--td-comp-margin-m);
+		padding: 0 var(--td-comp-margin-m);
 		border-bottom: 1px solid var(--td-component-border);
 		-webkit-app-region: drag;
 
@@ -258,26 +260,26 @@ function handleTabClick(value: TabPanel) {
 		&_center {
 			flex: 1;
 			display: flex;
+			align-items: center;
 			gap: var(--td-comp-margin-s);
-			overflow: auto hidden;
+			height: calc(32px + var(--td-comp-margin-m));
+			overflow: auto visible;
 
 			&_item {
 				display: flex;
-				justify-content: center;
 				align-items: center;
 				gap: var(--td-comp-margin-s);
 				flex-shrink: 0;
 				height: 32px;
-				max-width: 180px;
+				width: 150px;
 				overflow: hidden;
 				border-radius: var(--td-radius-default);
-				border: none;
+				border: 1px solid transparent;
 				color: var(--td-text-color-secondary);
 				background-color: transparent;
 				padding: 0 var(--td-comp-paddingLR-s);
 				cursor: pointer;
 				transition: all var(--td-transition);
-				--ripple-color: var(--td-bg-color-secondarycontainer-active);
 				-webkit-app-region: no-drag;
 
 				&:hover {
@@ -292,15 +294,19 @@ function handleTabClick(value: TabPanel) {
 					}
 				}
 
+				&:active {
+					background-color: var(--td-bg-color-secondarycontainer-active);
+				}
+
 				&:focus-visible {
 					outline: none;
-					border: 1px solid var(--td-brand-color);
+					border-color: var(--td-brand-color) !important;
 				}
 
 				&.is-actived {
 					background-color: var(--td-bg-color-container-select);
 					color: var(--td-text-color-primary);
-					--ripple-color: var(--td-bg-color-container-active);
+					border-color: var(--td-component-border);
 				}
 
 				&_label {
@@ -316,6 +322,7 @@ function handleTabClick(value: TabPanel) {
 
 					&_text {
 						flex: 1;
+						text-align: left;
 						text-overflow: ellipsis;
 						white-space: nowrap;
 						overflow: hidden;

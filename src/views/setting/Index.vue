@@ -97,7 +97,6 @@ const appearanceIcon = computed(() =>
 	display: flex;
 	flex-direction: column;
 	gap: var(--td-comp-margin-s);
-	background-color: var(--td-bg-color-container);
 	border-right: 1px solid var(--td-component-stroke);
 	padding: var(--td-comp-paddingLR-s);
 	-webkit-app-region: drag;
@@ -110,17 +109,17 @@ const appearanceIcon = computed(() =>
 		color: var(--td-text-color-primary);
 		padding: var(--td-comp-paddingTB-xs) var(--td-comp-paddingTB-s);
 		border-radius: var(--td-radius-medium);
-		transition: background-color var(--td-transition);
+		transition: all var(--td-transition);
 		cursor: pointer;
 		-webkit-app-region: no-drag;
 		--ripple-color: var(--td-bg-color-container-active);
 
-		&:hover {
-			background-color: var(--td-bg-color-container-hover);
+		&:not(.is-actived):hover {
+			background-color: var(--td-bg-color-secondarycontainer-hover);
 		}
 
 		&.is-actived {
-			background-color: var(--td-bg-color-container-active);
+			background-color: var(--td-bg-color-container);
 			color: var(--td-brand-color);
 		}
 	}

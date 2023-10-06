@@ -1,12 +1,15 @@
-import { BrowserWindow, ipcMain } from 'electron'
+import { type NativeTheme, ipcMain } from 'electron'
+const { MicaBrowserWindow, IS_WINDOWS_11 } = require('mica-electron')
+import { MicaBrowserWindow as MicaBrowserWindowType } from 'mica-electron'
 import path from 'path'
 import { channel } from './channels'
+import { configStore } from '../configStore'
 
 /**
  * setting window
  */
 export class SettingWindow {
-	private settingWindow: BrowserWindow
+	private settingWindow: MicaBrowserWindowType
 
 	constructor() {
 		this.settingWindow = null
@@ -20,7 +23,7 @@ export class SettingWindow {
 			this.settingWindow.show()
 			return
 		}
-		this.settingWindow = new BrowserWindow({
+		this.settingWindow = new MicaBrowserWindow({
 			icon: './src/assets/icons/logo.ico',
 			show: false,
 			width: 800,
@@ -33,11 +36,7 @@ export class SettingWindow {
 				nodeIntegration: true,
 				preload: path.join(__dirname, 'preload.js'),
 			},
-		})
-
-		this.settingWindow.on('ready-to-show', () => {
-			this.settingWindow.show()
-		})
+		}) as MicaBrowserWindowType
 
 		if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
 			this.settingWindow.loadURL(`${MAIN_WINDOW_VITE_DEV_SERVER_URL}/#/setting`)
@@ -47,17 +46,38 @@ export class SettingWindow {
 			})
 		}
 
-		if (import.meta.env.DEV) this.settingWindow.webContents.openDevTools()
+		this.settingWindow.on('ready-to-show', () => this.settingWindow.show())
 
-		this.settingWindow.on('closed', e => {
+		this.initMica()
+		this.initAppTheme()
+
+		const unWatchAppTheme = configStore.onDidChange('appTheme', value => this.initAppTheme(value))
+
+		this.settingWindow.on('closed', () => {
 			this.settingWindow = null
 		})
 
 		ipcMain.on(channel.setting.minimize, () => {
-			if (this.settingWindow) this.settingWindow.minimize()
+			if (!this.settingWindow) return
+			this.settingWindow.minimize()
 		})
 		ipcMain.on(channel.setting.close, () => {
-			if (this.settingWindow) this.settingWindow.close()
+			if (!this.settingWindow) return
+			this.settingWindow.close()
+			unWatchAppTheme()
 		})
+	}
+
+	private initMica() {
+		if (!IS_WINDOWS_11) return
+		const enable = configStore.get('appMicaConfig', false)
+		if (enable) this.settingWindow.setMicaEffect()
+	}
+
+	private initAppTheme(theme?: NativeTheme['themeSource']) {
+		const _theme = theme || configStore.get('appTheme', 'light')
+		if (_theme === 'dark') this.settingWindow.setDarkTheme()
+		if (_theme === 'light') this.settingWindow.setLightTheme()
+		if (_theme === 'system') this.settingWindow.setAutoTheme()
 	}
 }

@@ -1,11 +1,17 @@
-import { ipcMain, BrowserWindow, nativeTheme, app } from 'electron'
+import { ipcMain, BrowserWindow, nativeTheme, app, type NativeTheme } from 'electron'
+const { MicaBrowserWindow, IS_WINDOWS_11 } = require('mica-electron')
+import { MicaBrowserWindow as MicaBrowserWindowType } from 'mica-electron'
 import path from 'path'
 import { SettingWindow } from './setting'
 import { channel } from './channels'
 import { RedisUtil } from '@/utils'
+import { configStore } from '../configStore'
 
 export function createMainWindow() {
-	const mainWindow = new BrowserWindow({
+	const settingWindow = new SettingWindow()
+	const redis = new RedisUtil()
+
+	const mainWindow = new MicaBrowserWindow({
 		icon: './src/assets/icons/logo.ico',
 		show: false,
 		width: 1440,
@@ -18,11 +24,7 @@ export function createMainWindow() {
 			preload: path.join(__dirname, 'preload.js'),
 			nodeIntegration: true,
 		},
-	})
-
-	mainWindow.on('ready-to-show', () => {
-		mainWindow.show()
-	})
+	}) as MicaBrowserWindowType
 
 	if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
 		mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL)
@@ -30,10 +32,23 @@ export function createMainWindow() {
 		mainWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`))
 	}
 
-	if (import.meta.env.DEV) mainWindow.webContents.openDevTools()
+	mainWindow.on('ready-to-show', () => mainWindow.show())
 
-	const settingWindow = new SettingWindow()
-	const redis = new RedisUtil()
+	initMica()
+	initAppTheme()
+
+	function initMica() {
+		if (!IS_WINDOWS_11) return
+		const enable = configStore.get('appMicaConfig', false)
+		if (enable) mainWindow.setMicaEffect()
+	}
+
+	function initAppTheme(theme?: NativeTheme['themeSource']) {
+		const _theme = theme || configStore.get('appTheme', 'light')
+		if (_theme === 'dark') mainWindow.setDarkTheme()
+		if (_theme === 'light') mainWindow.setLightTheme()
+		if (_theme === 'system') mainWindow.setAutoTheme()
+	}
 
 	// window operations
 	ipcMain.on(channel.main.minimize, () => mainWindow.minimize())
@@ -49,8 +64,19 @@ export function createMainWindow() {
 	ipcMain.on(channel.main.getAppTheme, event => {
 		event.returnValue = nativeTheme.shouldUseDarkColors ? 'dark' : 'light'
 	})
+	ipcMain.on(channel.main.setAppTheme, (event, theme) => {
+		nativeTheme.themeSource = theme
+		configStore.set('appTheme', theme)
+	})
 	ipcMain.on(channel.main.getSystemLocale, event => {
 		event.returnValue = app.getSystemLocale()
+	})
+	ipcMain.on(channel.main.getMicaConfig, event => {
+		event.returnValue = configStore.get('appMicaConfig', false)
+	})
+	ipcMain.on(channel.main.setMicaConfig, (event, enable) => configStore.set('appMicaConfig', enable))
+	ipcMain.on(channel.main.isWindows11, event => {
+		event.returnValue = IS_WINDOWS_11
 	})
 
 	// pinia operations

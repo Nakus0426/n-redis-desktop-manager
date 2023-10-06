@@ -37,18 +37,24 @@ export class RedisUtil {
 		this.clients.set(options.id, client)
 	}
 
+	/** get client */
+	private getClient(id: string) {
+		const client = this.clients.get(id)
+		if (!client || !client?.isReady) throw new Error('连接异常，请重新连接')
+		return client
+	}
+
 	/** connect to redis */
 	async connect(id: string) {
 		const client = this.clients.get(id)
-		if (!client) return
-		await this.clients.get(id).connect()
+		if(!client) throw new Error('连接异常，请重新连接')
+		await client.connect()
 	}
 
 	/** disconnect from redis */
 	async disconnect(id: string) {
-		const client = this.clients.get(id)
-		if (!client) return
-		await this.clients.get(id).disconnect()
+		const client = this.getClient(id)
+		await client.disconnect()
 		this.destory(id)
 	}
 
@@ -59,44 +65,42 @@ export class RedisUtil {
 
 	/** is client connected */
 	isConnected(id: string) {
-		const client = this.clients.get(id)
-		if (!client) return false
-		return client.isOpen
+		try {
+			const client = this.getClient(id)
+			return !!client
+		} catch (e) {
+			return false
+		}
 	}
 
 	/** ping */
 	async ping(id: string) {
-		const client = this.clients.get(id)
-		if (!client) return false
+		const client = this.getClient(id)
 		const pingResult = await client.ping('test')
 		return pingResult === 'test'
 	}
 
 	/** config get */
 	configGet(id: string, parameter: string) {
-		const client = this.clients.get(id)
-		if (!client || !client?.isReady) return
+		const client = this.getClient(id)
 		return client.configGet(parameter)
 	}
 
 	/** select */
 	select(id: string, db: number) {
-		const client = this.clients.get(id)
-		if (!client || !client?.isReady) return
+		const client = this.getClient(id)
 		return client.select(db)
 	}
 
 	/** info */
 	info(id: string, section?: string) {
-		const client = this.clients.get(id)
-		if (!client || !client?.isReady) return
+		const client = this.getClient(id)
 		return client.info(section)
 	}
 
 	/** keys */
 	async keys(id: string, pattern?: string) {
-		const client = this.clients.get(id)
-		if (!client || !client?.isReady) return
+		const client = this.getClient(id)
 		const keys: string[] = []
 		for await (const key of client.scanIterator({ MATCH: pattern })) {
 			keys.push(key)
@@ -106,58 +110,50 @@ export class RedisUtil {
 
 	/** set */
 	set(id: string, key: string, value: string | number, expire?: number) {
-		const client = this.clients.get(id)
-		if (!client || !client?.isReady) return
+		const client = this.getClient(id)
 		return client.SET(key, value, { EX: expire, GET: true })
 	}
 
 	/** get */
 	get(id: string, key: string, type: KeyType = 'string') {
-		const client = this.clients.get(id)
-		if (!client || !client?.isReady) return
+		const client = this.getClient(id)
 		if (type === 'string') return client.GET(key)
 		return client.GET(key)
 	}
 
 	/** del */
 	del(id: string, key: string | string[]) {
-		const client = this.clients.get(id)
-		if (!client || !client?.isReady) return
+		const client = this.getClient(id)
 		return client.DEL(key)
 	}
 
 	/** rename */
 	rename(id: string, key: string, newKey: string) {
-		const client = this.clients.get(id)
-		if (!client || !client?.isReady) return
+		const client = this.getClient(id)
 		return client.RENAMENX(key, newKey)
 	}
 
 	/** exists */
 	exists(id: string, key: string) {
-		const client = this.clients.get(id)
-		if (!client || !client?.isReady) return
+		const client = this.getClient(id)
 		return client.EXISTS(key)
 	}
 
 	/** expire */
 	expire(id: string, key: string, expire: number) {
-		const client = this.clients.get(id)
-		if (!client || !client?.isReady) return
+		const client = this.getClient(id)
 		return client.EXPIRE(key, expire)
 	}
 
 	/** type */
 	type(id: string, key: string) {
-		const client = this.clients.get(id)
-		if (!client || !client?.isReady) return
+		const client = this.getClient(id)
 		return client.TYPE(key)
 	}
 
 	/** ttl */
 	ttl(id: string, key: string) {
-		const client = this.clients.get(id)
-		if (!client || !client?.isReady) return
+		const client = this.getClient(id)
 		return client.ttl(key)
 	}
 }
