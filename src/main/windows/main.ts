@@ -55,7 +55,12 @@ export function createMainWindow() {
 	ipcMain.on(channel.main.maximize, () => mainWindow.maximize())
 	ipcMain.on(channel.main.unmaximize, () => mainWindow.unmaximize())
 	ipcMain.on(channel.main.openSetting, () => settingWindow.open())
-	ipcMain.on(channel.main.close, () => BrowserWindow.getAllWindows().forEach(item => item.close()))
+	ipcMain.on(channel.main.close, () =>
+		BrowserWindow.getAllWindows().forEach(item => {
+			item.minimize()
+			item.close()
+		})
+	)
 	mainWindow.on('minimize', () => mainWindow.webContents.send(channel.main.onMinimize))
 	mainWindow.on('maximize', () => mainWindow.webContents.send(channel.main.onMaximize))
 	mainWindow.on('unmaximize', () => mainWindow.webContents.send(channel.main.onUnmaximize))

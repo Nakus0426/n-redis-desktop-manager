@@ -225,7 +225,7 @@ function handleMoreClick(type: keyof ConnectionInfo, icon: string) {
 
 			&:hover {
 				color: var(--td-text-color-primary);
-				background-color: var(--td-bg-color-container-active);
+				background-color: var(--td-bg-color-container-hover);
 			}
 		}
 

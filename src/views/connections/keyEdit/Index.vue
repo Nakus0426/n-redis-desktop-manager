@@ -223,8 +223,7 @@ function handleAutoRefreshClick() {
 	transition: all var(--td-transition);
 
 	&.is-sticky {
-		box-shadow: 0 3px 2px -2px rgba(0, 0, 0, 6%);
-		background-color: var(--td-bg-color-secondarycontainer);
+		border-bottom: 1px solid var(--td-component-stroke);
 	}
 
 	&_title {
@@ -280,11 +279,6 @@ function handleAutoRefreshClick() {
 
 	:deep(.t-button--variant-text) {
 		border: none;
-		--ripple-color: var(--td-bg-color-secondarycontainer-active);
-
-		&:hover {
-			background-color: var(--td-bg-color-container-active);
-		}
 	}
 }
 </style>

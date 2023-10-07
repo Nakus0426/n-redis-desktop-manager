@@ -1,7 +1,7 @@
 <template>
 	<div class="setting">
 		<WindowActionsOverlay :window-api="windowApi" :maximizable="false" />
-		<div class="sider">
+		<div class="sider" :class="siderClass">
 			<div
 				v-ripple
 				class="sider_item"
@@ -41,6 +41,7 @@ import { CommonSettingRoute, AppearanceSettingRoute } from '@/router'
 import { useI18n } from 'vue-i18n'
 import { RouteRecordRaw } from 'vue-router'
 import { OverlayScrollbars } from 'overlayscrollbars'
+import { useAppStore } from '@/store'
 
 defineOptions({ name: 'Setting' })
 
@@ -48,6 +49,10 @@ const windowApi = window.settingWindow
 const router = useRouter()
 const route = useRoute()
 const { t } = useI18n()
+const appStore = useAppStore()
+
+// mica effect
+const siderClass = computed(() => (appStore.micaEnable ? 'sider-mica' : ''))
 
 // scroll bar
 onMounted(() => {
@@ -97,14 +102,19 @@ const appearanceIcon = computed(() =>
 	display: flex;
 	flex-direction: column;
 	gap: var(--td-comp-margin-s);
+	background-color: var(--td-bg-color-secondarycontainer);
 	border-right: 1px solid var(--td-component-stroke);
 	padding: var(--td-comp-paddingLR-s);
 	-webkit-app-region: drag;
 
+	&-mica {
+		background-color: transparent;
+	}
+
 	&_item {
+		position: relative;
 		display: flex;
 		align-items: center;
-		gap: var(--td-comp-margin-s);
 		font: var(--td-font-body-medium);
 		color: var(--td-text-color-primary);
 		padding: var(--td-comp-paddingTB-xs) var(--td-comp-paddingTB-s);
@@ -121,6 +131,29 @@ const appearanceIcon = computed(() =>
 		&.is-actived {
 			background-color: var(--td-bg-color-container);
 			color: var(--td-brand-color);
+
+			&::before {
+				content: '';
+				position: absolute;
+				top: 7.5px;
+				left: -1.5px;
+				height: 15px;
+				width: 3px;
+				border-radius: 2px;
+				transition: all var(--td-transition);
+				background-color: var(--td-brand-color);
+				z-index: 1;
+			}
+		}
+
+		&::before {
+			content: '';
+			height: 0;
+			transition: all var(--td-transition);
+		}
+
+		svg {
+			margin-right: var(--td-comp-margin-s);
 		}
 	}
 }

@@ -1,5 +1,5 @@
 <template>
-	<div class="sider">
+	<div class="sider" :class="siderClass">
 		<div class="header">
 			<img class="header_logo" src="@/assets/icons/logo.svg" />
 		</div>
@@ -46,12 +46,17 @@
 
 <script setup lang="ts">
 import { ConnectionsIndexRoute, TerminalIndexRoute } from '@/router'
+import { useAppStore } from '@/store'
 import { RouteRecordRaw } from 'vue-router'
 
 defineOptions({ name: 'Sider' })
 
 const router = useRouter()
 const route = useRoute()
+const appStore = useAppStore()
+
+// mica effect
+const siderClass = computed(() => (appStore.micaEnable ? 'sider-mica' : ''))
 
 // handling menu click events
 function handleMenuClick(route: RouteRecordRaw) {
@@ -88,9 +93,14 @@ function handleExtraMenuClick(index: number) {
 	width: 60px;
 	display: flex;
 	flex-direction: column;
+	background-color: var(--td-bg-color-secondarycontainer);
 	gap: var(--td-comp-margin-m);
 	padding: var(--window-action-height) 0 var(--td-comp-paddingTB-m) 0;
 	-webkit-app-region: drag;
+
+	&-mica {
+		background-color: transparent;
+	}
 }
 
 .header {

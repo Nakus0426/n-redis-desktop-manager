@@ -260,7 +260,6 @@ function handleTabClick(value: TabPanel) {
 		&_center {
 			flex: 1;
 			display: flex;
-			align-items: center;
 			gap: var(--td-comp-margin-s);
 			height: calc(32px + var(--td-comp-margin-m));
 			overflow: auto visible;
@@ -273,7 +272,7 @@ function handleTabClick(value: TabPanel) {
 				height: 32px;
 				width: 150px;
 				overflow: hidden;
-				border-radius: var(--td-radius-default);
+				border-radius: var(--td-radius-medium);
 				border: 1px solid transparent;
 				color: var(--td-text-color-secondary);
 				background-color: transparent;
@@ -283,7 +282,7 @@ function handleTabClick(value: TabPanel) {
 				-webkit-app-region: no-drag;
 
 				&:hover {
-					background-color: var(--td-bg-color-container-active);
+					background-color: var(--td-bg-color-container-hover);
 
 					.content_header_center_item_label {
 						color: var(--td-text-color-primary);
@@ -294,19 +293,15 @@ function handleTabClick(value: TabPanel) {
 					}
 				}
 
-				&:active {
-					background-color: var(--td-bg-color-secondarycontainer-active);
-				}
-
 				&:focus-visible {
 					outline: none;
 					border-color: var(--td-brand-color) !important;
 				}
 
 				&.is-actived {
-					background-color: var(--td-bg-color-container-select);
+					background-color: var(--td-bg-color-container);
 					color: var(--td-text-color-primary);
-					border-color: var(--td-component-border);
+					border-color: var(--td-component-stroke);
 				}
 
 				&_label {
