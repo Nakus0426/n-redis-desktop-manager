@@ -12,6 +12,17 @@
 	--os-handle-bg-active: var(--td-scrollbar-hover-color) !important;
 }
 
+// monaco editor
+.monaco-scrollable-element > .scrollbar > .slider {
+	background-color: var(--td-scrollbar-color) !important;
+	border-radius: 3px !important;
+	transition: background-color var(--td-transition);
+
+	&:hover {
+		background-color: var(--td-scrollbar-hover-color) !important;
+	}
+}
+
 // button
 .t-button {
 	gap: var(--td-comp-margin-xs) !important;

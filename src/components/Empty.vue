@@ -1,6 +1,6 @@
 <template>
 	<div class="empty" :class="clazz">
-		<img class="empty_icon" :src="iconSrc" />
+		<img class="empty_icon" draggable="false" :src="iconSrc" />
 		<div class="empty_description">{{ description }}</div>
 	</div>
 </template>

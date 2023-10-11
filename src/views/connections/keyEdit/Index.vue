@@ -1,10 +1,9 @@
 <template>
 	<div class="key-edit">
-		<div ref="headerReferenceRef" />
-		<div class="header" :class="headerClass">
+		<div class="header">
 			<div class="header_title">
 				<div class="header_title_key">
-					<TTag variant="light-outline" theme="primary">{{ upperFirst(keyType) }}</TTag>
+					<TTag variant="light" theme="primary">{{ upperFirst(keyType) }}</TTag>
 					<TextEllipsis :content="data" @click="enterKeyEdit()" v-show="!keyEditing" />
 					<div class="header_title_input" v-show="keyEditing">
 						<TInput size="small" ref="keyEditInputRef" v-model="keyEditValue" @enter="handleRenameClick()" />
@@ -25,7 +24,7 @@
 				</div>
 				<div class="header_divider" />
 				<div class="header_title_ttl">
-					<TTag variant="light-outline" theme="primary">TTL</TTag>
+					<TTag variant="light" theme="default">TTL</TTag>
 					<TextEllipsis :content="keyTtl" v-show="!ttlEditing" @click="enterTtlEdit()" />
 					<div class="header_title_input" v-show="ttlEditing">
 						<TInputNumber
@@ -54,27 +53,26 @@
 			<div class="header_divider" />
 			<div class="header_action">
 				<TTooltip content="删除" placement="top" :show-arrow="false">
-					<TButton theme="danger" shape="square" variant="text" @click="handleRemoveClick()">
+					<TButton size="small" theme="danger" shape="square" variant="text" @click="handleRemoveClick()">
 						<Icon height="20" width="20" icon="fluent:delete-20-regular" />
 					</TButton>
 				</TTooltip>
 			</div>
 		</div>
-		<div class="body">
-			<h1 v-for="item in 20">123</h1>
-		</div>
+		<Body />
 		<AutoRefresh @refresh="handleAutoRefreshClick()" />
 	</div>
 </template>
 
 <script setup lang="ts">
 import { DialogPlugin, MessagePlugin } from 'tdesign-vue-next'
-import { useEventBus, useIntersectionObserver } from '@vueuse/core'
+import { useEventBus } from '@vueuse/core'
 import { upperFirst } from 'lodash-es'
 import { type KeyType } from '@/utils'
 import { useLoading } from '@/hooks'
 import { keyActivedEventKey, keyRemovedEventKey, keyRenamedEventKey } from '../keys'
 import AutoRefresh from '../components/AutoRefresh.vue'
+import Body from './Body.vue'
 
 defineOptions({ name: 'ConnectionsKeyEditIndex' })
 
@@ -85,13 +83,6 @@ onMounted(async () => {
 	await initKeyType()
 	initKeyValue()
 	initKeyTtl()
-})
-
-// generate header styles
-const headerReferenceRef = ref<HTMLElement>()
-const headerClass = ref<string>()
-useIntersectionObserver(headerReferenceRef, ([{ isIntersecting }]) => {
-	headerClass.value = isIntersecting ? '' : 'is-sticky'
 })
 
 // init key value
@@ -209,29 +200,25 @@ function handleAutoRefreshClick() {
 <style scoped lang="scss">
 .key-edit {
 	position: relative;
+	flex: 1;
 	display: flex;
 	flex-direction: column;
+	overflow: hidden;
 }
 
 .header {
-	position: sticky;
-	top: 0;
 	display: flex;
 	align-items: center;
 	background-color: var(--td-bg-color-page);
-	border-bottom: 1px solid transparent;
 	transition: all var(--td-transition);
-
-	&.is-sticky {
-		border-bottom: 1px solid var(--td-component-stroke);
-	}
+	border-bottom: 1px solid var(--td-component-border);
 
 	&_title {
 		display: flex;
 		align-items: center;
 		flex: 1;
 		overflow: hidden;
-		padding: var(--td-comp-paddingLR-m) 0 var(--td-comp-paddingLR-m) var(--td-comp-paddingLR-m);
+		padding: var(--td-comp-paddingLR-s) 0 var(--td-comp-paddingLR-s) var(--td-comp-paddingLR-m);
 
 		&_key {
 			display: flex;

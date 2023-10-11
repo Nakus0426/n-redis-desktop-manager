@@ -29,6 +29,7 @@
     "localforage": "^1.10.0",
     "lodash-es": "^4.17.21",
     "mica-electron": "^1.5.1",
+    "monaco-editor": "^0.44.0",
     "nanoid": "^5.0.1",
     "overlayscrollbars": "^2.3.2",
     "overlayscrollbars-vue": "^0.5.5",

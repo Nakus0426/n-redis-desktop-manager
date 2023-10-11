@@ -24,7 +24,7 @@
 							@click="handleCopyClick(value)"
 						>
 							<template #icon>
-								<Icon height="16" width="16" icon="fluent:copy-16-regular" />
+								<Icon height="16" width="16" :icon="generateCopyIcon(value)" />
 							</template>
 						</TButton>
 					</TTooltip>
@@ -38,7 +38,6 @@
 <script setup lang="ts">
 import { useClipboard } from '@vueuse/core'
 import { set, upperFirst } from 'lodash-es'
-import { MessagePlugin } from 'tdesign-vue-next'
 import { useLoading } from '@/hooks'
 import { connectionInfoInjectKey } from '../keys'
 
@@ -69,13 +68,18 @@ const formatedInfo = computed(() => {
 })
 
 // copy value
-const { copy } = useClipboard()
+const { copy, copied, text: copiedText } = useClipboard()
 const { isLoading: isCopyLoading, enter: enterCopyLoading, exit: exitCopyLoading } = useLoading()
+function generateCopyIcon(value: string) {
+	if (copiedText.value !== value) return 'fluent:copy-select-20-regular'
+	if (isCopyLoading.value) return 'line-md:loading-loop'
+	if (!isCopyLoading.value && copied.value) return 'fluent:checkmark-16-regular'
+	return 'fluent:copy-select-20-regular'
+}
 async function handleCopyClick(value: string) {
 	try {
 		enterCopyLoading()
 		await copy(value)
-		MessagePlugin.success('已复制')
 	} finally {
 		exitCopyLoading()
 	}
