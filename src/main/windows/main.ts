@@ -72,6 +72,7 @@ export function createMainWindow() {
 	ipcMain.on(channel.main.setAppTheme, (event, theme) => {
 		nativeTheme.themeSource = theme
 		configStore.set('appTheme', theme)
+		initAppTheme(theme)
 	})
 	ipcMain.on(channel.main.getSystemLocale, event => {
 		event.returnValue = app.getSystemLocale()

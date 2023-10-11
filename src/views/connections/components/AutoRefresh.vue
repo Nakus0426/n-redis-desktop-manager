@@ -37,8 +37,8 @@ function handleAutoRefreshClick(value: boolean) {
 <style scoped lang="scss">
 .auto-refresh {
 	position: fixed;
-	right: var(--td-comp-paddingLR-m);
-	bottom: var(--td-comp-paddingLR-m);
+	right: var(--td-comp-paddingLR-l);
+	bottom: var(--td-comp-paddingLR-l);
 	width: 32px;
 	height: 32px;
 	display: flex;

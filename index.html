@@ -9,53 +9,34 @@
 			}
 
 			.app_loading {
-				position: relative;
 				height: 100vh;
+				width: 100vw;
 				display: flex;
 				align-items: center;
 				justify-content: center;
+				overflow: hidden;
+				-webkit-app-region: drag;
 			}
 
-			.app_loading_icon {
-				animation: spin 1s linear infinite;
-				font-size: 40px;
+			.app_loading_logo {
+				height: 96px;
+				user-select: none;
 			}
 
-			.app_loading_icon-conic {
-				width: 100%;
-				height: 100%;
-				background: conic-gradient(from 90deg at 50% 50%, #fff 0deg, currentcolor 360deg);
-				border-radius: 50%;
-				mask: radial-gradient(transparent calc(50% - 0.5px), #fff 50%);
-				-webkit-mask: radial-gradient(transparent calc(50% - 0.5px), #fff 50%);
+			#light {
+				display: none;
 			}
 
-			@keyframes spin {
-				0% {
-					transform: rotate(0);
-				}
-
-				100% {
-					transform: rotate(360deg);
-				}
+			#dark {
+				display: none;
 			}
 		</style>
 	</head>
 	<body>
 		<div id="app">
 			<div class="app_loading">
-				<svg
-					class="app_loading_icon"
-					viewBox="0 0 12 12"
-					version="1.1"
-					width="1em"
-					height="1em"
-					xmlns="http://www.w3.org/2000/svg"
-				>
-					<foreignObject x="0" y="0" width="12" height="12">
-						<div class="app_loading_icon-conic"></div>
-					</foreignObject>
-				</svg>
+				<img class="app_loading_logo" id="light" draggable="false" src="src/assets/icons/logo-solid.svg" />
+				<img class="app_loading_logo" id="dark" draggable="false" src="src/assets/icons/logo-solid-dark.svg" />
 			</div>
 		</div>
 		<script type="module" src="/src/render.ts"></script>
@@ -63,6 +44,7 @@
 			const app = JSON.parse(localStorage.getItem('STORE_APP') || '{}')
 			const isDarkTheme = app?.theme === 'dark'
 			const micaEnable = window.mainWindow.getMicaConfig()
+			document.getElementById(isDarkTheme ? 'dark' : 'light').style.display = 'block'
 			document.getElementById('app').style.background = micaEnable ? 'transparent' : isDarkTheme ? '#181818' : '#eeeeee'
 			document.getElementsByClassName('app_loading_icon-conic')[0].style.background = isDarkTheme
 				? 'conic-gradient(from 90deg at 50% 50%, transparent 0deg, #0052d9 360deg)'

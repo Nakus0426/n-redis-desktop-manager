@@ -1,6 +1,12 @@
 <template>
 	<TConfigProvider :global-config="config">
-		<RouterView />
+		<RouterView>
+			<template #default="{ Component }">
+				<Transition enter-active-class="animate__animated animate__fadeIn animate__faster" mode="out-in">
+					<component :is="Component" />
+				</Transition>
+			</template>
+		</RouterView>
 	</TConfigProvider>
 </template>
 

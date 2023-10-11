@@ -58,7 +58,7 @@
 					:title="item"
 					@click="handleKeyClick(item)"
 				>
-					<Icon height="16" width="16" icon="fluent:key-16-regular" />
+					<Icon height="16" width="16" color="var(--td-brand-color)" icon="fluent:key-16-regular" />
 					<div class="body_item_label">{{ item }}</div>
 				</div>
 			</div>

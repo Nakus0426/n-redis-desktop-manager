@@ -63,6 +63,7 @@ export class SettingWindow {
 		})
 		ipcMain.on(channel.setting.close, () => {
 			if (!this.settingWindow) return
+			this.settingWindow.minimize()
 			this.settingWindow.close()
 			unWatchAppTheme()
 		})

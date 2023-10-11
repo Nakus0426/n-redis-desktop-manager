@@ -64,7 +64,7 @@
 			>
 				<template #label="{ node }">
 					<div class="tree_node">
-						<Icon height="16" width="16" :icon="keyIcon" v-if="node.data.isLeaf" />
+						<Icon height="16" width="16" color="var(--td-brand-color)" :icon="keyIcon" v-if="node.data.isLeaf" />
 						<div class="tree_node_label">{{ node.label }}</div>
 					</div>
 				</template>

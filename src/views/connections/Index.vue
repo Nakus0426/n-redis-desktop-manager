@@ -3,67 +3,65 @@
 		<template #sider>
 			<Sider />
 		</template>
-		<Transition enter-active-class="animate__animated animate__fadeInUp animate__faster" mode="out-in" appear>
-			<div class="content">
-				<div class="window-header" />
-				<div class="content_header" v-show="!isEmpty">
-					<div
-						class="content_header_prefix"
-						:class="tabsOverflowButtonVisibleClass"
-						v-ripple
-						@click="handleTabsOverflowButtonClick('prefix')"
+		<div class="content">
+			<div class="window-header" />
+			<div class="content_header" v-show="!isEmpty">
+				<div
+					class="content_header_prefix"
+					:class="tabsOverflowButtonVisibleClass"
+					v-ripple
+					@click="handleTabsOverflowButtonClick('prefix')"
+				>
+					<Icon height="20" width="20" icon="fluent:chevron-left-20-regular" />
+				</div>
+				<div class="content_header_divider" v-show="tabsOverlow" />
+				<div class="content_header_center" ref="tabsRef">
+					<TransitionGroup
+						enter-active-class="animate__animated animate__fadeInLeft animate__faster"
+						leave-active-class="animate__animated animate__fadeOut animate__faster tabs-leave-animate"
+						appear
 					>
-						<Icon height="20" width="20" icon="fluent:chevron-left-20-regular" />
-					</div>
-					<div class="content_header_divider" v-show="tabsOverlow" />
-					<div class="content_header_center" ref="tabsRef">
-						<TransitionGroup
-							enter-active-class="animate__animated animate__fadeInLeft animate__faster"
-							leave-active-class="animate__animated animate__fadeOut animate__faster tabs-leave-animate"
-							appear
+						<button
+							class="content_header_center_item"
+							:class="tabActivedClass(item.key)"
+							v-for="item in tabPanels"
+							:key="item.key"
+							:ref="ref => generateTabRef(item.key, ref)"
+							:title="item.label"
+							@click="handleTabClick(item)"
 						>
-							<button
-								class="content_header_center_item"
-								:class="tabActivedClass(item.key)"
-								v-for="item in tabPanels"
-								:key="item.key"
-								:ref="ref => generateTabRef(item.key, ref)"
-								:title="item.label"
-								@click="handleTabClick(item)"
-							>
-								<div class="content_header_center_item_label">
-									<Icon height="16" width="16" :icon="item.icon" />
-									<div class="content_header_center_item_label_text">{{ item.label }}</div>
-								</div>
-								<div class="content_header_center_item_close" @click.stop="handleTabRemove(item.key)">
-									<Icon height="16" width="16" icon="fluent:dismiss-16-regular" />
-								</div>
-							</button>
-						</TransitionGroup>
-					</div>
-					<div class="content_header_divider" v-show="tabsOverlow" />
-					<div
-						class="content_header_suffix"
-						:class="tabsOverflowButtonVisibleClass"
-						v-ripple
-						@click="handleTabsOverflowButtonClick('suffix')"
-					>
-						<Icon height="20" width="20" icon="fluent:chevron-right-20-regular" />
-					</div>
+							<div class="content_header_center_item_label">
+								<Icon height="16" width="16" :icon="item.icon" />
+								<div class="content_header_center_item_label_text">{{ item.label }}</div>
+							</div>
+							<div class="content_header_center_item_close" @click.stop="handleTabRemove(item.key)">
+								<Icon height="16" width="16" icon="fluent:dismiss-16-regular" />
+							</div>
+						</button>
+					</TransitionGroup>
 				</div>
-				<div class="content_body" ref="containerRef">
-					<component
-						v-for="item in tabPanels"
-						:id="item.id"
-						:data="item.key"
-						:key="item.key"
-						:is="item.type === 'Overview' ? Overview : KeyEdit"
-						v-show="item.key === activedTabPanel.key"
-					/>
+				<div class="content_header_divider" v-show="tabsOverlow" />
+				<div
+					class="content_header_suffix"
+					:class="tabsOverflowButtonVisibleClass"
+					v-ripple
+					@click="handleTabsOverflowButtonClick('suffix')"
+				>
+					<Icon height="20" width="20" icon="fluent:chevron-right-20-regular" />
 				</div>
-				<Empty class="content-empty" description="" icon="logo" size="large" v-show="isEmpty" />
 			</div>
-		</Transition>
+			<div class="content_body" ref="containerRef">
+				<component
+					v-for="item in tabPanels"
+					:id="item.id"
+					:data="item.key"
+					:key="item.key"
+					:is="item.type === 'Overview' ? Overview : KeyEdit"
+					v-show="item.key === activedTabPanel.key"
+				/>
+			</div>
+			<Empty class="content-empty" description="" icon="logo" size="large" v-show="isEmpty" />
+		</div>
 	</ContainerWithSider>
 </template>
 
@@ -221,7 +219,6 @@ function handleTabClick(value: TabPanel) {
 
 	&_header {
 		display: flex;
-		align-items: center;
 		padding: 0 var(--td-comp-margin-m);
 		border-bottom: 1px solid var(--td-component-border);
 		-webkit-app-region: drag;
@@ -253,7 +250,7 @@ function handleTabClick(value: TabPanel) {
 			width: 1px;
 			height: 24px;
 			background-color: var(--td-component-border);
-			margin: 0 calc(var(--td-comp-margin-s) / 2);
+			margin: 4px calc(var(--td-comp-margin-s) / 2);
 			-webkit-app-region: no-drag;
 		}
 
@@ -341,7 +338,8 @@ function handleTabClick(value: TabPanel) {
 	&_body {
 		position: relative;
 		flex: 1;
-		// overflow: hidden;
+		display: flex;
+		flex-direction: column;
 	}
 }
 
