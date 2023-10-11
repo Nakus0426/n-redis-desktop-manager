@@ -11,6 +11,12 @@ module.exports = {
 				setupIcon: 'src/assets/icons/logo.ico',
 			},
 		},
+		{
+			name: '@electron-forge/maker-rpm',
+			config: {
+				setupIcon: 'src/assets/icons/logo.ico',
+			},
+		},
 	],
 	plugins: [
 		{
