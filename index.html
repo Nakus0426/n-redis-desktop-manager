@@ -46,9 +46,6 @@
 			const micaEnable = window.mainWindow.getMicaConfig()
 			document.getElementById(isDarkTheme ? 'dark' : 'light').style.display = 'block'
 			document.getElementById('app').style.background = micaEnable ? 'transparent' : isDarkTheme ? '#181818' : '#eeeeee'
-			document.getElementsByClassName('app_loading_icon-conic')[0].style.background = isDarkTheme
-				? 'conic-gradient(from 90deg at 50% 50%, transparent 0deg, #0052d9 360deg)'
-				: 'conic-gradient(from 90deg at 50% 50%, transparent 0deg, #4582e6 360deg)'
 		</script>
 	</body>
 </html>

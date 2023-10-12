@@ -221,8 +221,7 @@ async function handleKeyTreeChange(value: TreeNodeValue[], { node }: { node: Tre
 	flex-direction: column;
 	gap: var(--td-comp-margin-s);
 	padding: var(--td-comp-paddingLR-s) var(--td-comp-paddingLR-m);
-	min-height: 60px;
-	max-height: calc(100vh - 150px);
+	height: 100%;
 }
 
 .header {

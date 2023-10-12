@@ -115,7 +115,6 @@ async function init() {
 		loading.value = false
 	}
 }
-onMounted(() => init())
 
 // init database
 const { isLoading: databasesLoading, enter: enterDatabaseLoading, exit: exitDatabaseLoading } = useLoading()
@@ -183,6 +182,8 @@ function handleKeyClick(key: string) {
 function keyActivedClass(key: string) {
 	return activedKey.value?.key === key ? 'is-actived' : ''
 }
+
+defineExpose({ init })
 </script>
 
 <style scoped lang="scss">
@@ -192,8 +193,6 @@ function keyActivedClass(key: string) {
 	flex-direction: column;
 	gap: var(--td-comp-margin-s);
 	padding: var(--td-comp-paddingLR-s) var(--td-comp-paddingLR-m);
-	min-height: 60px;
-	max-height: calc(100vh - 150px);
 }
 
 .header {

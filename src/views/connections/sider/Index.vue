@@ -11,21 +11,20 @@
 			</TTooltip>
 		</div>
 		<div class="body">
-			<TCollapse v-model="expandedConnections" borderless expand-mutex>
-				<TCollapsePanel
-					v-for="(item, index) in filteredConnections"
-					:key="item.id"
-					destroy-on-collapse
-					:value="item.id"
-					:header="item.name"
-					class="connection"
-					:class="{ 'is-top': item.top, 'is-connected': item.connected === 'connected' }"
-				>
-					<template #headerRightContent>
-						<div class="connection_actions" @click.stop>
+			<TransitionGroup name="body">
+				<div class="body_item" v-for="item in filteredConnections" :key="item.id" :id="item.id">
+					<div
+						class="body_item_header"
+						:class="generateConnectionClass(item)"
+						v-ripple
+						@click="handleConnectionClick(item.id)"
+					>
+						<Icon class="body_item_header_arrow" height="16" width="16" icon="fluent:chevron-down-16-regular" />
+						<TextEllipsis class="body_item_header_title" :content="item.name" />
+						<div class="body_item_header_actions">
 							<TDropdown>
 								<Icon
-									class="connection_actions_item is-hide"
+									class="body_item_header_actions_item"
 									height="16"
 									width="16"
 									icon="fluent:more-vertical-16-regular"
@@ -62,10 +61,17 @@
 								</TDropdownMenu>
 							</TDropdown>
 						</div>
-					</template>
-					<component :is="item.display === 'tree' ? Tree : List" :connection="item" @error="handleConnectionError" />
-				</TCollapsePanel>
-			</TCollapse>
+					</div>
+					<div class="body_item_content">
+						<component
+							:is="item.display === 'tree' ? ContentTree : ContentList"
+							:ref="el => generateContentRef(el, item.id)"
+							:connection="item"
+							@error="handleConnectionError"
+						/>
+					</div>
+				</div>
+			</TransitionGroup>
 			<Empty
 				class="body_empty"
 				:description="emptyStatus.description"
@@ -82,11 +88,10 @@
 <script setup lang="ts">
 import { DialogPlugin, MessagePlugin } from 'tdesign-vue-next'
 import { useEventBus } from '@vueuse/core'
-import { pull } from 'lodash-es'
 import { Connection, useConnectionsStore } from '@/store'
 import EditDialog from './EditDialog.vue'
-import Tree from './Tree.vue'
-import List from './List.vue'
+import ContentTree from './Tree.vue'
+import ContentList from './List.vue'
 import { connectionDisconnectedEventKey } from '../keys'
 import { useLoading } from '@/hooks'
 
@@ -123,6 +128,28 @@ function handleEditConnectionClick(id?: string) {
 
 // connection update
 function handleConnectionUpdate() {}
+
+// generate content refs
+const contentRefs = new Map<string, any>()
+function generateContentRef(el, id: string) {
+	contentRefs.set(id, el)
+}
+
+// connection click
+const activedConnectionId = ref<string>()
+function handleConnectionClick(id: string) {
+	activedConnectionId.value = activedConnectionId.value === id ? null : id
+	if (activedConnectionId.value) contentRefs.get(activedConnectionId.value).init()
+}
+
+// generate connection class
+function generateConnectionClass(connection: Connection) {
+	return {
+		'is-top': connection.top,
+		'is-connected': connection.connected,
+		'is-actived': connection.id === activedConnectionId.value,
+	}
+}
 
 // top connection
 function generateConnectionTopDropdownItem(top: boolean) {
@@ -170,17 +197,13 @@ function handleConnectionRemoveClick(id: string) {
 }
 
 // disconnect connection
-const expandedConnections = ref<string[]>([])
 async function handleConnectionDisconnectClick(id: string) {
 	await connectionsStore.disconnectConnection(id)
-	pull(expandedConnections.value, id)
 	useEventBus(connectionDisconnectedEventKey).emit(filteredConnections.value.find(item => item.id === id))
 }
 
 // connection connecting error
-function handleConnectionError(id: string) {
-	pull(expandedConnections.value, id)
-}
+function handleConnectionError(id: string) {}
 </script>
 
 <style scoped lang="scss">
@@ -207,87 +230,125 @@ function handleConnectionError(id: string) {
 	flex: 1;
 	overflow-y: auto;
 
-	&_empty {
-		height: 100%;
-	}
+	&_item {
+		width: 100%;
 
-	:deep(.t-collapse-panel__wrapper) {
-		overflow: visible;
-	}
-
-	:deep(.t-collapse-panel__header) {
-		position: sticky;
-		top: 0;
-		z-index: 3;
-		background-color: var(--td-bg-color-container);
-		transition: background-color var(--td-transition);
-
-		&:hover {
-			background-color: var(--td-bg-color-container-hover);
-
-			.connection_actions_item {
-				opacity: 1;
-			}
-		}
-	}
-
-	:deep(.t-collapse-panel__body) {
-		border-bottom: 1px solid var(--td-component-stroke);
-	}
-
-	:deep(.t-collapse-panel__content) {
-		position: relative;
-		padding: 0;
-	}
-}
-
-.connection {
-	&.is-top {
-		:deep(.t-collapse-panel__header::before) {
-			content: '';
-			position: absolute;
-			left: 0;
+		&_header {
+			position: sticky;
 			top: 0;
-			background-color: var(--td-brand-color);
-			width: 14px;
-			height: 14px;
-			clip-path: polygon(0 0, 0% 100%, 100% 0);
-		}
-	}
-
-	&.is-connected {
-		:deep(.t-collapse-panel__header::after) {
-			content: '';
-			position: absolute;
-			right: var(--td-comp-paddingLR-s);
-			top: var(--td-comp-paddingLR-s);
-			background-color: var(--td-success-color);
-			width: 5px;
-			height: 5px;
-			border-radius: 50%;
-		}
-	}
-
-	&_actions {
-		display: flex;
-		gap: var(--td-comp-margin-s);
-
-		&_item {
+			height: 50px;
 			display: flex;
 			align-items: center;
-			justify-content: center;
-			color: var(--td-text-color-primary);
-			padding: var(--td-comp-paddingLR-xxs);
+			gap: var(--td-comp-margin-s);
+			padding: 0 var(--td-comp-paddingLR-m);
 			transition: all var(--td-transition);
-
-			&.is-hide {
-				opacity: 0;
-			}
+			color: var(--td-text-color-primary);
+			background-color: var(--td-bg-color-container);
+			cursor: pointer;
+			z-index: 3;
+			--ripple-color: var(--td-bg-color-container-active);
 
 			&:hover {
-				color: var(--td-brand-color);
+				background-color: var(--td-bg-color-container-hover);
+
+				.body_item_header_actions_item {
+					opacity: 1;
+				}
+			}
+
+			&.is-actived {
+				.body_item_header_arrow {
+					transform: rotate(180deg);
+				}
+
+				+ .body_item_content {
+					grid-template-rows: 1fr;
+					opacity: 1;
+					max-height: calc(100vh - 174px);
+				}
+			}
+
+			&.is-top::before {
+				content: '';
+				position: absolute;
+				left: 0;
+				top: 0;
+				background-color: var(--td-brand-color);
+				width: 14px;
+				height: 14px;
+				clip-path: polygon(0 0, 0% 100%, 100% 0);
+			}
+
+			&.is-connected::after {
+				content: '';
+				position: absolute;
+				right: var(--td-comp-paddingLR-s);
+				top: var(--td-comp-paddingLR-s);
+				background-color: var(--td-success-color);
+				width: 5px;
+				height: 5px;
+				border-radius: 50%;
+			}
+
+			&_arrow {
+				transition: all var(--td-transition);
+			}
+
+			&_title {
+				flex: 1;
+				font: var(--td-font-mark-medium);
+			}
+
+			&_actions {
+				display: flex;
+				gap: var(--td-comp-margin-s);
+
+				&_item {
+					display: flex;
+					align-items: center;
+					justify-content: center;
+					color: var(--td-text-color-primary);
+					padding: var(--td-comp-paddingLR-xxs);
+					transition: all var(--td-transition);
+					opacity: 0;
+
+					&:hover {
+						color: var(--td-brand-color);
+					}
+				}
 			}
 		}
+
+		&_content {
+			position: relative;
+			display: grid;
+			grid-template-rows: 0fr;
+			transition: all var(--td-transition);
+			opacity: 0;
+			max-height: 0;
+			overflow: hidden;
+		}
+	}
+
+	&-enter-active,
+	&-leave-active,
+	&-move {
+		transition: all var(--td-transition);
+	}
+
+	&-enter-from,
+	&-leave-to {
+		opacity: 0;
+		transform: scaleY(0.01) translate(30px, 0);
+	}
+
+	&-leave-active {
+		position: absolute;
+		z-index: 99;
+	}
+
+	&_empty {
+		height: 100%;
 	}
 }
 </style>

@@ -1,6 +1,6 @@
 import { acceptHMRUpdate, defineStore } from 'pinia'
 import localForage from 'localforage'
-import { cloneDeep, set } from 'lodash-es'
+import { set } from 'lodash-es'
 
 export interface Connection {
 	id: string
@@ -37,102 +37,98 @@ enum ConnectionKeys {
 /** connections store */
 export const useConnectionsStore = defineStore('Connections', () => {
 	/* array of connections */
-	const connections = computed<Connection[]>(() => topConnections.value.concat(normalConnections.value))
+	const connections = ref<Connection[]>([])
 
-	/** array of top connections */
-	const topConnections = ref<Connection[]>([])
+	/** get stored connections */
+	async function getStoredConnections() {
+		const normalConnectionsStr = await localForage.getItem<string>(ConnectionKeys.NormalConnections)
+		const topConnectionsStr = await localForage.getItem<string>(ConnectionKeys.TopConnections)
+		const normalConnections = normalConnectionsStr ? (JSON.parse(normalConnectionsStr) as Connection[]) : []
+		const topConnections = topConnectionsStr ? (JSON.parse(topConnectionsStr) as Connection[]) : []
+		return [normalConnections, topConnections]
+	}
 
-	/** array of normal connections */
-	const normalConnections = ref<Connection[]>([])
+	/** update connections */
+	function generateConnections(topConnection: Connection[], normalConnections: Connection[]) {
+		connections.value = topConnection.concat(normalConnections)
+	}
 
 	/** sync stored connections data */
 	async function syncConnections() {
-		const storedNormalLiks = await localForage.getItem<string>(ConnectionKeys.NormalConnections)
-		const storedTopLiks = await localForage.getItem<string>(ConnectionKeys.TopConnections)
-		const normalConnectionsArr = storedNormalLiks ? (JSON.parse(storedNormalLiks) as Connection[]) : []
-		const topConnectionsArr = storedTopLiks ? (JSON.parse(storedTopLiks) as Connection[]) : []
-		normalConnectionsArr.forEach(connection => {
+		const [normalConnections, topConnections] = await getStoredConnections()
+		normalConnections.forEach(connection => {
 			connection.connected = window.mainWindow.redis.isConnected(connection.id) ? 'connected' : 'disconnected'
 		})
-		topConnectionsArr.forEach(connection => {
+		topConnections.forEach(connection => {
 			connection.connected = window.mainWindow.redis.isConnected(connection.id) ? 'connected' : 'disconnected'
 		})
-		normalConnections.value = normalConnectionsArr
-		topConnections.value = topConnectionsArr
+		generateConnections(topConnections, normalConnections)
 	}
 
 	/** add connections */
 	async function addConnections(connection: Connection) {
-		const clonedConnections = cloneDeep(normalConnections.value)
-		clonedConnections.push(connection)
-		const res = await localForage.setItem(ConnectionKeys.NormalConnections, JSON.stringify(clonedConnections))
-		if (res) normalConnections.value = clonedConnections
+		const [normalConnections, topConnections] = await getStoredConnections()
+		normalConnections.push(connection)
+		const res = await localForage.setItem(ConnectionKeys.NormalConnections, JSON.stringify(normalConnections))
+		if (res) generateConnections(topConnections, normalConnections)
 	}
 
 	/** remove connection */
 	async function removeConnection(id: string) {
-		const clonedConnections = cloneDeep(normalConnections.value)
-		const connectionIndex = clonedConnections.findIndex(connection => connection.id === id)
-		clonedConnections.splice(connectionIndex, 1)
-		const res = await localForage.setItem(ConnectionKeys.NormalConnections, JSON.stringify(clonedConnections))
-		if (res) normalConnections.value = clonedConnections
+		const [normalConnections, topConnections] = await getStoredConnections()
+		const normalConnectionIndex = normalConnections.findIndex(item => item.id === id)
+		const topConnectionIndex = topConnections.findIndex(item => item.id === id)
+		if (normalConnectionIndex !== -1) {
+			normalConnections.splice(normalConnectionIndex, 1)
+			const res = await localForage.setItem(ConnectionKeys.NormalConnections, JSON.stringify(normalConnections))
+			if (res) generateConnections(topConnections, normalConnections)
+		}
+		if (topConnectionIndex !== -1) {
+			topConnections.splice(topConnectionIndex, 1)
+			const res = await localForage.setItem(ConnectionKeys.TopConnections, JSON.stringify(topConnections))
+			if (res) generateConnections(topConnections, normalConnections)
+		}
 	}
 
 	/** update connection */
 	async function updateConnection(connection: Connection) {
-		const clonedConnections = cloneDeep(connection.top ? topConnections.value : normalConnections.value)
-		const connectionIndex = clonedConnections.findIndex(item => item.id === connection.id)
-		clonedConnections.splice(connectionIndex, 1, connection)
-		const res = await localForage.setItem(
-			connection.top ? ConnectionKeys.TopConnections : ConnectionKeys.NormalConnections,
-			JSON.stringify(clonedConnections)
-		)
-		if (res) {
-			if (connection.top) topConnections.value = clonedConnections
-			else normalConnections.value = clonedConnections
-		}
+		const [normalConnections, topConnections] = await getStoredConnections()
+		const connectionIndex = connection.top
+			? topConnections.findIndex(item => item.id === connection.id)
+			: normalConnections.findIndex(item => item.id === connection.id)
+		connection.top
+			? topConnections.splice(connectionIndex, 1, connection)
+			: normalConnections.splice(connectionIndex, 1, connection)
+		const key = connection.top ? ConnectionKeys.TopConnections : ConnectionKeys.NormalConnections
+		const value = JSON.stringify(connection.top ? topConnections : normalConnections)
+		const res = await localForage.setItem(key, value)
+		if (res) generateConnections(topConnections, normalConnections)
 	}
 
 	/** placing connection on top */
 	async function topConnection(id: string) {
-		const clonedTopConnections = cloneDeep(topConnections.value)
-		const clonedNormalConnections = cloneDeep(normalConnections.value)
-		const connectionIndex = clonedNormalConnections.findIndex(connection => connection.id === id)
-		const connection = normalConnections.value[connectionIndex]
+		const [normalConnections, topConnections] = await getStoredConnections()
+		const connectionIndex = normalConnections.findIndex(item => item.id === id)
+		const connection = normalConnections[connectionIndex]
 		connection.top = true
-		clonedTopConnections.push(connection)
-		const addTopConnectionRes = await localForage.setItem(
-			ConnectionKeys.TopConnections,
-			JSON.stringify(clonedTopConnections)
-		)
-		if (addTopConnectionRes) topConnections.value = clonedTopConnections
-		clonedNormalConnections.splice(connectionIndex, 1)
-		const removeNormalConnectionRes = await localForage.setItem(
-			ConnectionKeys.NormalConnections,
-			JSON.stringify(clonedNormalConnections)
-		)
-		if (removeNormalConnectionRes) normalConnections.value.splice(connectionIndex, 1)
+		topConnections.push(connection)
+		normalConnections.splice(connectionIndex, 1)
+		const normalRes = await localForage.setItem(ConnectionKeys.NormalConnections, JSON.stringify(normalConnections))
+		const topRes = await localForage.setItem(ConnectionKeys.TopConnections, JSON.stringify(topConnections))
+		if (normalRes && topRes) generateConnections(topConnections, normalConnections)
 	}
 
 	/** cancel placing connection on top */
 	async function cancelTopConnection(id: string) {
-		const clonedTopConnections = cloneDeep(topConnections.value)
-		const clonedNormalConnections = cloneDeep(normalConnections.value)
-		const connectionIndex = clonedTopConnections.findIndex(connection => connection.id === id)
-		const connection = topConnections.value[connectionIndex]
+		const [normalConnections, topConnections] = await getStoredConnections()
+		const connectionIndex = topConnections.findIndex(item => item.id === id)
+		const connection = topConnections[connectionIndex]
 		connection.top = false
-		clonedNormalConnections.push(connection)
-		const addNormalConnectionRes = await localForage.setItem(
-			ConnectionKeys.NormalConnections,
-			JSON.stringify(clonedNormalConnections)
-		)
-		if (addNormalConnectionRes) normalConnections.value = clonedNormalConnections
-		clonedTopConnections.splice(connectionIndex, 1)
-		const removeTopConnectionRes = await localForage.setItem(
-			ConnectionKeys.TopConnections,
-			JSON.stringify(clonedTopConnections)
-		)
-		if (removeTopConnectionRes) topConnections.value.splice(connectionIndex, 1)
+		normalConnections.push(connection)
+		topConnections.splice(connectionIndex, 1)
+		const normalRes = await localForage.setItem(ConnectionKeys.NormalConnections, JSON.stringify(normalConnections))
+		const topRes = await localForage.setItem(ConnectionKeys.TopConnections, JSON.stringify(topConnections))
+		if (normalRes && topRes) generateConnections(topConnections, normalConnections)
 	}
 
 	/** connection connect test */
