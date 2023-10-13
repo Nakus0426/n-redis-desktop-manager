@@ -61,8 +61,11 @@
 					<Icon height="16" width="16" color="var(--td-brand-color)" icon="fluent:key-16-regular" />
 					<div class="body_item_label">{{ item }}</div>
 				</div>
+				<div class="body_empty" v-if="isEmpty">
+					<Icon class="body_empty_icon" height="64" width="64" icon="custom-empty" />
+					<div class="body_empty_desc">暂无数据</div>
+				</div>
 			</div>
-			<Empty class="body-empty" icon="nothingHere" description="暂无数据" v-show="isEmpty" />
 		</TSkeleton>
 	</div>
 	<BackTop :target="containerRef" size="small" offset="large" />
@@ -247,8 +250,22 @@ defineExpose({ init })
 		}
 	}
 
-	&-empty {
-		padding: var(--td-comp-paddingTB-m) 0;
+	&_empty {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: var(--td-comp-margin-m);
+		padding: var(--td-comp-margin-xxl) 0;
+
+		&_icon {
+			color: var(--td-bg-color-secondarycomponent);
+		}
+
+		&_desc {
+			color: var(--td-text-color-placeholder);
+			font: var(--td-font-body-small);
+		}
 	}
 }
 </style>

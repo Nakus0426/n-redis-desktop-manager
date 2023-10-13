@@ -11,6 +11,12 @@ export const useAppStore = defineStore(
 		/** app theme */
 		const theme = ref<Theme>('light')
 
+		/** is dark theme */
+		const isDarkTheme = computed(() => {
+			const _theme = theme.value === 'system' ? window.mainWindow.getAppTheme() : theme.value
+			return _theme === 'dark'
+		})
+
 		/** app locale */
 		const locale = ref<string>()
 
@@ -62,6 +68,7 @@ export const useAppStore = defineStore(
 
 		return {
 			theme,
+			isDarkTheme,
 			locale,
 			micaEnable,
 			setTheme,

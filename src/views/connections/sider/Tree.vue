@@ -69,7 +69,10 @@
 					</div>
 				</template>
 				<template #empty>
-					<Empty class="header-empty" icon="nothingHere" description="暂无数据" />
+					<div class="body_empty">
+						<Icon class="body_empty_icon" height="64" width="64" icon="custom-empty" />
+						<div class="body_empty_desc">暂无数据</div>
+					</div>
 				</template>
 			</TTree>
 		</TSkeleton>
@@ -135,7 +138,6 @@ async function init() {
 		loading.value = false
 	}
 }
-onMounted(() => init())
 
 // init database
 const { isLoading: databasesLoading, enter: enterDatabaseLoading, exit: exitDatabaseLoading } = useLoading()
@@ -212,6 +214,8 @@ async function handleKeyTreeChange(value: TreeNodeValue[], { node }: { node: Tre
 		exitKeyChangeLoading()
 	}
 }
+
+defineExpose({ init })
 </script>
 
 <style scoped lang="scss">
@@ -245,8 +249,22 @@ async function handleKeyTreeChange(value: TreeNodeValue[], { node }: { node: Tre
 }
 
 .body {
-	&-empty {
-		padding: var(--td-comp-paddingTB-m) 0;
+	&_empty {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: var(--td-comp-margin-m);
+		padding: var(--td-comp-margin-xxl) 0;
+
+		&_icon {
+			color: var(--td-bg-color-secondarycomponent);
+		}
+
+		&_desc {
+			color: var(--td-text-color-placeholder);
+			font: var(--td-font-body-small);
+		}
 	}
 
 	.tree_node {

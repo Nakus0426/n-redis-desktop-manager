@@ -17,9 +17,9 @@
 						class="body_item_header"
 						:class="generateConnectionClass(item)"
 						v-ripple
-						@click="handleConnectionClick(item.id)"
+						@click="handleConnectionClick(item)"
 					>
-						<Icon class="body_item_header_arrow" height="16" width="16" icon="fluent:chevron-down-16-regular" />
+						<Icon class="body_item_header_arrow" height="16" width="16" :icon="connectionIcon" />
 						<TextEllipsis class="body_item_header_title" :content="item.name" />
 						<div class="body_item_header_actions">
 							<TDropdown>
@@ -65,21 +65,17 @@
 					<div class="body_item_content">
 						<component
 							:is="item.display === 'tree' ? ContentTree : ContentList"
-							:ref="el => generateContentRef(el, item.id)"
+							:ref="el => generateContentRef(el, item.id, item.display)"
 							:connection="item"
 							@error="handleConnectionError"
 						/>
 					</div>
 				</div>
 			</TransitionGroup>
-			<Empty
-				class="body_empty"
-				:description="emptyStatus.description"
-				:icon="emptyStatus.icon"
-				:clickable="emptyStatus.clickable"
-				v-if="emptyStatus.visible"
-				@click="handleEmptyClick()"
-			/>
+			<div class="body_empty" :class="emptyStatus.class" v-if="emptyStatus.visible" @click="handleEmptyClick()">
+				<Icon class="body_empty_icon" height="72" width="72" :icon="emptyStatus.icon" />
+				<div class="body_empty_desc">{{ emptyStatus.description }}</div>
+			</div>
 		</div>
 		<EditDialog ref="editDialogRef" @update="handleConnectionUpdate" />
 	</div>
@@ -111,12 +107,14 @@ const emptyStatus = computed(() => {
 	const visible = filteredConnections.value.length === 0
 	const clickable = !keyword.value
 	const description = clickable ? '点击添加连接' : '没有找到相关连接'
-	const icon = clickable ? 'addToInbox' : 'nothingHere'
-	return { visible, clickable, description, icon }
+	const icon = clickable ? 'custom-add-connection' : 'custom-search-empty'
+	const clazz = clickable ? 'body_empty-clickable' : ''
+	return { visible, clickable, description, icon, class: clazz }
 })
 
 // empty click
 function handleEmptyClick() {
+	if (!emptyStatus.value.clickable) return
 	handleEditConnectionClick()
 }
 
@@ -130,26 +128,38 @@ function handleEditConnectionClick(id?: string) {
 function handleConnectionUpdate() {}
 
 // generate content refs
-const contentRefs = new Map<string, any>()
-function generateContentRef(el, id: string) {
-	contentRefs.set(id, el)
+const contentRefs = ref(new Map<string, any>())
+function generateContentRef(el, id: string, display: string) {
+	if (!el) return
+	contentRefs.value.set(`${display}-${id}`, el)
 }
 
 // connection click
 const activedConnectionId = ref<string>()
-function handleConnectionClick(id: string) {
-	activedConnectionId.value = activedConnectionId.value === id ? null : id
-	if (activedConnectionId.value) contentRefs.get(activedConnectionId.value).init()
+const { isLoading: connectionLoading, enter: enterConnectionLoading, exit: exitConnectionLoading } = useLoading()
+async function handleConnectionClick(connection: Connection) {
+	try {
+		enterConnectionLoading()
+		activedConnectionId.value = activedConnectionId.value === connection.id ? null : connection.id
+		await contentRefs.value.get(`${connection.display}-${connection.id}`).init()
+	} finally {
+		exitConnectionLoading()
+	}
 }
 
 // generate connection class
 function generateConnectionClass(connection: Connection) {
 	return {
 		'is-top': connection.top,
-		'is-connected': connection.connected,
+		'is-connected': connection.connected === 'connected',
 		'is-actived': connection.id === activedConnectionId.value,
 	}
 }
+
+// connection icon
+const connectionIcon = computed(() =>
+	connectionLoading.value ? 'line-md:loading-loop' : 'fluent:chevron-down-16-regular'
+)
 
 // top connection
 function generateConnectionTopDropdownItem(top: boolean) {
@@ -173,6 +183,7 @@ function generateDisplayDropdownItem(display: Connection['display']) {
 function handleConnectionDisplayChange(connection: Connection) {
 	connection.display = connection.display === 'tree' ? 'list' : 'tree'
 	connectionsStore.updateConnection(connection)
+	nextTick(() => contentRefs.value.get(`${connection.display}-${connection.id}`).init())
 }
 
 // remove connection
@@ -200,10 +211,13 @@ function handleConnectionRemoveClick(id: string) {
 async function handleConnectionDisconnectClick(id: string) {
 	await connectionsStore.disconnectConnection(id)
 	useEventBus(connectionDisconnectedEventKey).emit(filteredConnections.value.find(item => item.id === id))
+	if(activedConnectionId.value === id) activedConnectionId.value = null
 }
 
 // connection connecting error
-function handleConnectionError(id: string) {}
+function handleConnectionError(id: string) {
+	if (activedConnectionId.value === id) activedConnectionId.value = null
+}
 </script>
 
 <style scoped lang="scss">
@@ -349,6 +363,24 @@ function handleConnectionError(id: string) {}
 
 	&_empty {
 		height: 100%;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: var(--td-comp-margin-m);
+
+		&-clickable {
+			cursor: pointer;
+		}
+
+		&_icon {
+			color: var(--td-bg-color-secondarycomponent);
+		}
+
+		&_desc {
+			color: var(--td-text-color-placeholder);
+			font: var(--td-font-body-small);
+		}
 	}
 }
 </style>

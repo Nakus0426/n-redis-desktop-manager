@@ -1,7 +1,7 @@
 <template>
 	<div class="sider" :class="siderClass">
 		<div class="header">
-			<img class="header_logo" src="@/assets/icons/logo.svg" />
+			<Icon height="30" width="30" icon="custom-logo" />
 		</div>
 		<div class="body">
 			<TTooltip content="连接" placement="right" :show-arrow="false">
@@ -106,11 +106,6 @@ function handleExtraMenuClick(index: number) {
 .header {
 	display: flex;
 	justify-content: center;
-
-	&_logo {
-		height: 30px;
-		width: 30px;
-	}
 }
 
 .menu_item {

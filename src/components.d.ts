@@ -11,7 +11,6 @@ declare module 'vue' {
     ContainerWithSider: typeof import('./components/ContainerWithSider.vue')['default']
     Dialog: typeof import('./components/Dialog.vue')['default']
     Editor: typeof import('./components/Editor.vue')['default']
-    Empty: typeof import('./components/Empty.vue')['default']
     HelpTooltip: typeof import('./components/HelpTooltip.vue')['default']
     Icon: typeof import('@iconify/vue')['Icon']
     RouterLink: typeof import('vue-router')['RouterLink']

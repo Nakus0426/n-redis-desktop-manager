@@ -1,5 +1,5 @@
 import { acceptHMRUpdate, defineStore } from 'pinia'
-import localForage from 'localforage'
+import { setItem, getItem } from 'localforage'
 import { set } from 'lodash-es'
 
 export interface Connection {
@@ -41,35 +41,47 @@ export const useConnectionsStore = defineStore('Connections', () => {
 
 	/** get stored connections */
 	async function getStoredConnections() {
-		const normalConnectionsStr = await localForage.getItem<string>(ConnectionKeys.NormalConnections)
-		const topConnectionsStr = await localForage.getItem<string>(ConnectionKeys.TopConnections)
+		const normalConnectionsStr = await getItem<string>(ConnectionKeys.NormalConnections)
+		const topConnectionsStr = await getItem<string>(ConnectionKeys.TopConnections)
 		const normalConnections = normalConnectionsStr ? (JSON.parse(normalConnectionsStr) as Connection[]) : []
 		const topConnections = topConnectionsStr ? (JSON.parse(topConnectionsStr) as Connection[]) : []
 		return [normalConnections, topConnections]
 	}
 
-	/** update connections */
+	/** generate connections */
 	function generateConnections(topConnection: Connection[], normalConnections: Connection[]) {
 		connections.value = topConnection.concat(normalConnections)
+		syncConnectionConnectStatus()
+	}
+
+	/** sync connection connect status */
+	function syncConnectionConnectStatus() {
+		connections.value.forEach(item => {
+			item.connected = window.mainWindow.redis.isConnected(item.id) ? 'connected' : 'disconnected'
+		})
 	}
 
 	/** sync stored connections data */
 	async function syncConnections() {
 		const [normalConnections, topConnections] = await getStoredConnections()
-		normalConnections.forEach(connection => {
-			connection.connected = window.mainWindow.redis.isConnected(connection.id) ? 'connected' : 'disconnected'
-		})
-		topConnections.forEach(connection => {
-			connection.connected = window.mainWindow.redis.isConnected(connection.id) ? 'connected' : 'disconnected'
-		})
 		generateConnections(topConnections, normalConnections)
 	}
 
 	/** add connections */
 	async function addConnections(connection: Connection) {
 		const [normalConnections, topConnections] = await getStoredConnections()
+		const { name, host, port, username, password } = connection
+		const isNormalExist = normalConnections.some(item => {
+			const { name: _name, host: _host, port: _port, username: _username, password: _password } = item
+			return name === _name && host === _host && port === _port && username === _username && password === _password
+		})
+		const isTopExist = normalConnections.some(item => {
+			const { name: _name, host: _host, port: _port, username: _username, password: _password } = item
+			return name === _name && host === _host && port === _port && username === _username && password === _password
+		})
+		if (isNormalExist || isTopExist) throw new Error('该连接已存在')
 		normalConnections.push(connection)
-		const res = await localForage.setItem(ConnectionKeys.NormalConnections, JSON.stringify(normalConnections))
+		const res = await setItem(ConnectionKeys.NormalConnections, JSON.stringify(normalConnections))
 		if (res) generateConnections(topConnections, normalConnections)
 	}
 
@@ -80,12 +92,12 @@ export const useConnectionsStore = defineStore('Connections', () => {
 		const topConnectionIndex = topConnections.findIndex(item => item.id === id)
 		if (normalConnectionIndex !== -1) {
 			normalConnections.splice(normalConnectionIndex, 1)
-			const res = await localForage.setItem(ConnectionKeys.NormalConnections, JSON.stringify(normalConnections))
+			const res = await setItem(ConnectionKeys.NormalConnections, JSON.stringify(normalConnections))
 			if (res) generateConnections(topConnections, normalConnections)
 		}
 		if (topConnectionIndex !== -1) {
 			topConnections.splice(topConnectionIndex, 1)
-			const res = await localForage.setItem(ConnectionKeys.TopConnections, JSON.stringify(topConnections))
+			const res = await setItem(ConnectionKeys.TopConnections, JSON.stringify(topConnections))
 			if (res) generateConnections(topConnections, normalConnections)
 		}
 	}
@@ -101,7 +113,7 @@ export const useConnectionsStore = defineStore('Connections', () => {
 			: normalConnections.splice(connectionIndex, 1, connection)
 		const key = connection.top ? ConnectionKeys.TopConnections : ConnectionKeys.NormalConnections
 		const value = JSON.stringify(connection.top ? topConnections : normalConnections)
-		const res = await localForage.setItem(key, value)
+		const res = await setItem(key, value)
 		if (res) generateConnections(topConnections, normalConnections)
 	}
 
@@ -113,8 +125,8 @@ export const useConnectionsStore = defineStore('Connections', () => {
 		connection.top = true
 		topConnections.push(connection)
 		normalConnections.splice(connectionIndex, 1)
-		const normalRes = await localForage.setItem(ConnectionKeys.NormalConnections, JSON.stringify(normalConnections))
-		const topRes = await localForage.setItem(ConnectionKeys.TopConnections, JSON.stringify(topConnections))
+		const normalRes = await setItem(ConnectionKeys.NormalConnections, JSON.stringify(normalConnections))
+		const topRes = await setItem(ConnectionKeys.TopConnections, JSON.stringify(topConnections))
 		if (normalRes && topRes) generateConnections(topConnections, normalConnections)
 	}
 
@@ -126,8 +138,8 @@ export const useConnectionsStore = defineStore('Connections', () => {
 		connection.top = false
 		normalConnections.push(connection)
 		topConnections.splice(connectionIndex, 1)
-		const normalRes = await localForage.setItem(ConnectionKeys.NormalConnections, JSON.stringify(normalConnections))
-		const topRes = await localForage.setItem(ConnectionKeys.TopConnections, JSON.stringify(topConnections))
+		const normalRes = await setItem(ConnectionKeys.NormalConnections, JSON.stringify(normalConnections))
+		const topRes = await setItem(ConnectionKeys.TopConnections, JSON.stringify(topConnections))
 		if (normalRes && topRes) generateConnections(topConnections, normalConnections)
 	}
 

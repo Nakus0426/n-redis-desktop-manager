@@ -5,7 +5,7 @@
 		</template>
 		<div class="content">
 			<div class="window-header" />
-			<div class="content_header" v-show="!isEmpty">
+			<div class="content_header" v-if="!emptyStatus.visible">
 				<div
 					class="content_header_prefix"
 					:class="tabsOverflowButtonVisibleClass"
@@ -50,7 +50,7 @@
 					<Icon height="20" width="20" icon="fluent:chevron-right-20-regular" />
 				</div>
 			</div>
-			<div class="content_body" ref="containerRef">
+			<div class="content_body" ref="containerRef" v-show="!emptyStatus.visible">
 				<component
 					v-for="item in tabPanels"
 					:id="item.id"
@@ -60,7 +60,7 @@
 					v-show="item.key === activedTabPanel.key"
 				/>
 			</div>
-			<Empty class="content-empty" description="" icon="logo" size="large" v-show="isEmpty" />
+			<Icon class="content_empty" height="72" width="72" :icon="emptyStatus.icon" v-if="emptyStatus.visible" />
 		</div>
 	</ContainerWithSider>
 </template>
@@ -80,6 +80,7 @@ import Sider from './sider/Index.vue'
 import Overview from './overview/Index.vue'
 import KeyEdit from './keyEdit/Index.vue'
 import { useScrollbar } from '@/hooks'
+import { useAppStore } from '@/store'
 
 defineOptions({ name: 'ConnectionsIndex' })
 
@@ -190,7 +191,11 @@ function handleTabRemove(key: string) {
 }
 
 // is empty
-const isEmpty = computed(() => tabPanels.value.length === 0)
+const emptyStatus = computed(() => {
+	const visible = tabPanels.value.length === 0
+	const icon = useAppStore().isDarkTheme ? 'custom-logo-soild-dark' : 'custom-logo-soild'
+	return { icon, visible }
+})
 
 // is tab actived
 function tabActivedClass(key: string) {
@@ -206,10 +211,6 @@ function handleTabClick(value: TabPanel) {
 </script>
 
 <style scoped lang="scss">
-.content-empty {
-	height: 100%;
-}
-
 .content {
 	display: flex;
 	flex-direction: column;
@@ -340,6 +341,11 @@ function handleTabClick(value: TabPanel) {
 		flex: 1;
 		display: flex;
 		flex-direction: column;
+	}
+
+	&:has(.content_empty) {
+		justify-content: center;
+		align-items: center;
 	}
 }
 

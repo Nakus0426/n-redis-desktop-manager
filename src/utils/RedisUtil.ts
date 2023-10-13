@@ -67,7 +67,7 @@ export class RedisUtil {
 	isConnected(id: string) {
 		try {
 			const client = this.getClient(id)
-			return !!client
+			return client.isReady
 		} catch (e) {
 			return false
 		}
