@@ -279,6 +279,8 @@ function handleConnectionError(id: string) {
 					grid-template-rows: 1fr;
 					opacity: 1;
 					max-height: calc(100vh - 174px);
+					border-top: 1px solid var(--td-component-stroke);
+					border-bottom: 1px solid var(--td-component-stroke);
 				}
 			}
 
@@ -341,6 +343,8 @@ function handleConnectionError(id: string) {
 			opacity: 0;
 			max-height: 0;
 			overflow: hidden;
+			border-top: 1px solid transparent;
+			border-bottom: 1px solid transparent;
 		}
 	}
 

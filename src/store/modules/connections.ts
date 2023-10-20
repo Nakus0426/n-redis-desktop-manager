@@ -73,11 +73,11 @@ export const useConnectionsStore = defineStore('Connections', () => {
 		const { name, host, port, username, password } = connection
 		const isNormalExist = normalConnections.some(item => {
 			const { name: _name, host: _host, port: _port, username: _username, password: _password } = item
-			return name === _name && host === _host && port === _port && username === _username && password === _password
+			return name === _name || (host === _host && port === _port && username === _username && password === _password)
 		})
 		const isTopExist = normalConnections.some(item => {
 			const { name: _name, host: _host, port: _port, username: _username, password: _password } = item
-			return name === _name && host === _host && port === _port && username === _username && password === _password
+			return name === _name || (host === _host && port === _port && username === _username && password === _password)
 		})
 		if (isNormalExist || isTopExist) throw new Error('该连接已存在')
 		normalConnections.push(connection)

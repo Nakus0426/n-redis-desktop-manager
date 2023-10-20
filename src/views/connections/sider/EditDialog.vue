@@ -211,6 +211,8 @@ async function handleConfirmClick() {
 		}
 		MessagePlugin.success('保存成功')
 		visible.value = false
+	} catch (error) {
+		MessagePlugin.error(error.message)
 	} finally {
 		exitConfirmLoading()
 	}
