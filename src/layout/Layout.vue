@@ -8,8 +8,12 @@
 <script setup lang="ts">
 import Sider from './Sider.vue'
 import Content from './Content.vue'
+import { useWindowShortcut } from '@/hooks'
 
 defineOptions({ name: 'Layout' })
+
+// init main window shortcut
+useWindowShortcut('mainWindow')
 </script>
 
 <style scoped lang="scss">

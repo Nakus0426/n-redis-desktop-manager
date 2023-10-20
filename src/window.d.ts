@@ -5,6 +5,7 @@ export interface MainWindow {
 	maximize: () => void
 	unmaximize: () => void
 	openSettingWindow: () => void
+	openDevtools: () => void
 	close: () => void
 	onMinimize: (callback: () => void) => void
 	onMaximize: (callback: () => void) => void

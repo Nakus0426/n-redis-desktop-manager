@@ -8,6 +8,7 @@ contextBridge.exposeInMainWorld('mainWindow', {
 	maximize: () => ipcRenderer.send(channel.main.maximize),
 	unmaximize: () => ipcRenderer.send(channel.main.unmaximize),
 	openSettingWindow: () => ipcRenderer.send(channel.main.openSetting),
+	openDevtools: () => ipcRenderer.send(channel.main.openDevtools),
 	close: () => ipcRenderer.send(channel.main.close),
 	onMinimize: callback => ipcRenderer.on(channel.main.onMinimize, callback),
 	onMaximize: callback => ipcRenderer.on(channel.main.onMaximize, callback),

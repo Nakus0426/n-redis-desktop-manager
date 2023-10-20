@@ -26,6 +26,8 @@ export function createMainWindow() {
 		},
 	}) as MicaBrowserWindowType
 
+	mainWindow.removeMenu()
+
 	if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
 		mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL)
 	} else {
@@ -55,6 +57,7 @@ export function createMainWindow() {
 	ipcMain.on(channel.main.maximize, () => mainWindow.maximize())
 	ipcMain.on(channel.main.unmaximize, () => mainWindow.unmaximize())
 	ipcMain.on(channel.main.openSetting, () => settingWindow.open())
+	ipcMain.on(channel.main.openDevtools, () => mainWindow.webContents.openDevTools())
 	ipcMain.on(channel.main.close, () =>
 		BrowserWindow.getAllWindows().forEach(item => {
 			item.minimize()

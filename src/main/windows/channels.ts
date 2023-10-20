@@ -5,6 +5,7 @@ export const channel = {
 		maximize: 'main:maximize',
 		unmaximize: 'main:unmaximize',
 		openSetting: 'main:openSetting',
+		openDevtools: 'main:openDevtools',
 		close: 'main:close',
 		onMinimize: 'main:onMinimize',
 		onMaximize: 'main:onMaximize',
