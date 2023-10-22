@@ -131,4 +131,5 @@ export function createMainWindow() {
 	ipcMain.handle(channel.main.redis.expire, (event, id, key, expire) => redis.expire(id, key, expire))
 	ipcMain.handle(channel.main.redis.type, (event, id, key) => redis.type(id, key))
 	ipcMain.handle(channel.main.redis.ttl, (event, id, key) => redis.ttl(id, key))
+	ipcMain.handle(channel.main.redis.memoryUsage, (event, id, key) => redis.memoryUsage(id, key))
 }

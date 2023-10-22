@@ -16,8 +16,6 @@ declare module 'vue' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     TButton: typeof import('tdesign-vue-next')['Button']
-    TCollapse: typeof import('tdesign-vue-next')['Collapse']
-    TCollapsePanel: typeof import('tdesign-vue-next')['CollapsePanel']
     TConfigProvider: typeof import('tdesign-vue-next')['ConfigProvider']
     TDialog: typeof import('tdesign-vue-next')['Dialog']
     TDropdown: typeof import('tdesign-vue-next')['Dropdown']

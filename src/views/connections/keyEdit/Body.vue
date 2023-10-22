@@ -6,7 +6,9 @@
 					<TOption label="Text" value="" />
 					<TOption label="JSON" value="json" />
 				</TSelect>
-				<TTag theme="primary" variant="light">128MB</TTag>
+				<TTooltip :show-arrow="false" content="内存占用">
+					<TTag theme="primary" variant="light">{{ memoryUsageText }}</TTag>
+				</TTooltip>
 			</div>
 			<div class="header_suffix"><CopyButton /></div>
 		</div>
@@ -15,13 +17,35 @@
 </template>
 
 <script setup lang="ts">
-import { useCopyButton } from '@/hooks'
+import { useCopyButton, useLoading } from '@/hooks'
+import { keyEditInjectKey } from '../keys'
 
 defineOptions({ name: 'ConnectionsKeyEditBody' })
+
+// inject data
+const data = inject(keyEditInjectKey)
 
 const { CopyButton } = useCopyButton({ source: '123', autoCopy: true, buttonProps: { size: 'small' } })
 
 const language = ref('')
+
+// memeory usage
+const memoryUsage = ref<string>()
+const memoryUsageText = computed(() => (memeoryUsageLoading.value ? '正在计算' : memoryUsage.value))
+const { isLoading: memeoryUsageLoading, enter: enterMemoryUsageLoading, exit: exitMemoryUsageLoading } = useLoading()
+async function getMemoryUsage() {
+	try {
+		enterMemoryUsageLoading()
+		const { id, key } = data.value
+		const memory = await window.mainWindow.redis.memoryUsage(id, key)
+		if (!memory) memoryUsage.value = '-'
+		const kb = memory / 1024
+		memoryUsage.value = kb > 1024 ? `${(kb / 1024).toFixed(1)}MB` : `${kb.toFixed(1)}KB`
+	} finally {
+		exitMemoryUsageLoading()
+	}
+}
+onMounted(() => getMemoryUsage())
 </script>
 
 <style scoped lang="scss">

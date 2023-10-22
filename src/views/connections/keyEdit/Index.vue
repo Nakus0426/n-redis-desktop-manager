@@ -70,13 +70,17 @@ import { useEventBus } from '@vueuse/core'
 import { upperFirst } from 'lodash-es'
 import { type KeyType } from '@/utils'
 import { useLoading } from '@/hooks'
-import { keyActivedEventKey, keyRemovedEventKey, keyRenamedEventKey } from '../keys'
+import { keyActivedEventKey, keyEditInjectKey, keyRemovedEventKey, keyRenamedEventKey } from '../keys'
 import AutoRefresh from '../components/AutoRefresh.vue'
 import Body from './Body.vue'
 
 defineOptions({ name: 'ConnectionsKeyEditIndex' })
 
 const props = defineProps<{ data: string; id: string }>()
+
+// provide data
+const injectData = computed(() => ({ id: props.id, key: props.data }))
+provide(keyEditInjectKey, injectData)
 
 // init data
 onMounted(async () => {

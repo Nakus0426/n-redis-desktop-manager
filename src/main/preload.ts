@@ -46,6 +46,7 @@ contextBridge.exposeInMainWorld('mainWindow', {
 		expire: (...args) => ipcRenderer.invoke(channel.main.redis.expire, ...args),
 		type: (...args) => ipcRenderer.invoke(channel.main.redis.type, ...args),
 		ttl: (...args) => ipcRenderer.invoke(channel.main.redis.ttl, ...args),
+		memoryUsage: (...args) => ipcRenderer.invoke(channel.main.redis.memoryUsage, ...args),
 		onReady: callback => ipcRenderer.on(channel.main.redis.onReady, (e, ...args) => callback(...args)),
 		onError: callback => ipcRenderer.on(channel.main.redis.onError, (e, ...args) => callback(...args)),
 		onEnd: callback => ipcRenderer.on(channel.main.redis.onEnd, (e, ...args) => callback(...args)),

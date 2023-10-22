@@ -47,7 +47,7 @@ export class RedisUtil {
 	/** connect to redis */
 	async connect(id: string) {
 		const client = this.clients.get(id)
-		if(!client) throw new Error('连接异常，请重新连接')
+		if (!client) throw new Error('连接异常，请重新连接')
 		await client.connect()
 	}
 
@@ -73,29 +73,29 @@ export class RedisUtil {
 		}
 	}
 
-	/** ping */
+	/** Returns the server's liveliness response */
 	async ping(id: string) {
 		const client = this.getClient(id)
-		const pingResult = await client.ping('test')
+		const pingResult = await client.PING('test')
 		return pingResult === 'test'
 	}
 
-	/** config get */
+	/** Returns the effective values of configuration parameters */
 	configGet(id: string, parameter: string) {
 		const client = this.getClient(id)
-		return client.configGet(parameter)
+		return client.CONFIG_GET(parameter)
 	}
 
-	/** select */
+	/** Changes the selected database */
 	select(id: string, db: number) {
 		const client = this.getClient(id)
-		return client.select(db)
+		return client.SELECT(db)
 	}
 
-	/** info */
+	/** Returns information and statistics about the server */
 	info(id: string, section?: string) {
 		const client = this.getClient(id)
-		return client.info(section)
+		return client.INFO(section)
 	}
 
 	/** keys */
@@ -108,52 +108,58 @@ export class RedisUtil {
 		return keys
 	}
 
-	/** set */
+	/** Sets the string value of a key, ignoring its type. The key is created if it doesn't exist */
 	set(id: string, key: string, value: string | number, expire?: number) {
 		const client = this.getClient(id)
 		return client.SET(key, value, { EX: expire, GET: true })
 	}
 
-	/** get */
+	/** Returns the string value of a key */
 	get(id: string, key: string, type: KeyType = 'string') {
 		const client = this.getClient(id)
 		if (type === 'string') return client.GET(key)
 		return client.GET(key)
 	}
 
-	/** del */
+	/** Deletes one or more keys */
 	del(id: string, key: string | string[]) {
 		const client = this.getClient(id)
 		return client.DEL(key)
 	}
 
-	/** rename */
+	/** Renames a key only when the target key name doesn't exist */
 	rename(id: string, key: string, newKey: string) {
 		const client = this.getClient(id)
 		return client.RENAMENX(key, newKey)
 	}
 
-	/** exists */
+	/** Determines whether one or more keys exist */
 	exists(id: string, key: string) {
 		const client = this.getClient(id)
 		return client.EXISTS(key)
 	}
 
-	/** expire */
+	/** Sets the expiration time of a key in seconds */
 	expire(id: string, key: string, expire: number) {
 		const client = this.getClient(id)
 		return client.EXPIRE(key, expire)
 	}
 
-	/** type */
+	/** Determines the type of value stored at a key */
 	type(id: string, key: string) {
 		const client = this.getClient(id)
 		return client.TYPE(key)
 	}
 
-	/** ttl */
+	/** Returns the expiration time in seconds of a key */
 	ttl(id: string, key: string) {
 		const client = this.getClient(id)
-		return client.ttl(key)
+		return client.TTL(key)
+	}
+
+	/** Estimates the memory usage of a key */
+	memoryUsage(id: string, key: string) {
+		const client = this.getClient(id)
+		return client.MEMORY_USAGE(key)
 	}
 }

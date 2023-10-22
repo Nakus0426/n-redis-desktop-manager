@@ -42,6 +42,7 @@ export interface MainWindow {
 		expire: typeof import('./utils')['RedisUtil']['prototype']['expire']
 		type: typeof import('./utils')['RedisUtil']['prototype']['type']
 		ttl: typeof import('./utils')['RedisUtil']['prototype']['ttl']
+		memoryUsage: typeof import('./utils')['RedisUtil']['prototype']['memoryUsage']
 		onError: (callback: (id: string, error: Error) => void) => void
 		onReady: (callback: (id: string) => void) => void
 		onEnd: (callback: (id: string) => void) => void

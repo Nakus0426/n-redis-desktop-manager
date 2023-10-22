@@ -52,10 +52,7 @@
 		<template #footer>
 			<div class="footer">
 				<div class="prefix">
-					<TPopup
-						:visible="connectTestResultPopupVisible"
-						:overlay-class-name="`connect-test-result-popup ${connectTestResultPopupStatus.class}`"
-					>
+					<TPopup :visible="connectTestResultPopupVisible" overlay-class-name="connect-test-result-popup">
 						<template #content>
 							<div class="connect-test-result-popup_content" ref="connectTestResultPopupContentRef">
 								<div class="connect-test-result-popup_content_header">
@@ -66,14 +63,13 @@
 										<Icon height="16" width="16" :icon="connectTestResultPopupStatus.icon"></Icon>
 										<span>{{ connectTestResultPopupStatus.title }}</span>
 									</div>
-									<div
+									<button
 										class="connect-test-result-popup_content_header_close"
-										:class="connectTestResultPopupStatus.class"
 										v-ripple
 										@click="connectTestResultPopupVisible = false"
 									>
-										<Icon height="16" width="16" icon="fluent:dismiss-16-regular" />
-									</div>
+										<Icon height="12" width="12" icon="fluent:dismiss-12-regular" />
+									</button>
 								</div>
 								<div class="connect-test-result-popup_content_body" v-show="connectTestResultError">
 									{{ connectTestResultError }}
@@ -327,23 +323,19 @@ defineExpose({
 			display: flex;
 			align-items: center;
 			justify-content: center;
-			width: 16px;
-			height: 16px;
+			width: 20px;
+			height: 20px;
 			color: var(--td-text-color-secondary);
+			background-color: transparent;
 			border-radius: var(--td-radius-default);
+			border: none;
+			padding: 0;
 			transition: all var(--td-transition);
 			cursor: pointer;
+			--ripple-color: var(--td-bg-color-container-active);
 
 			&:hover {
-				color: var(--td-text-color-primary);
-			}
-
-			&.is-success {
-				--ripple-color: var(--td-success-color-light-hover);
-			}
-
-			&.is-error {
-				--ripple-color: var(--td-error-color-light-hover);
+				background-color: var(--td-bg-color-container-hover);
 			}
 		}
 	}
@@ -351,15 +343,5 @@ defineExpose({
 	&_body {
 		color: var(--td-text-color-secondary);
 	}
-}
-
-:global(.connect-test-result-popup.is-success .t-popup__content) {
-	background-color: var(--td-success-color-light);
-	border: 1px solid var(--td-success-color);
-}
-
-:global(.connect-test-result-popup.is-error .t-popup__content) {
-	background-color: var(--td-error-color-light);
-	border: 1px solid var(--td-error-color);
 }
 </style>

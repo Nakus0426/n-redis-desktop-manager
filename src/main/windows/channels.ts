@@ -43,6 +43,7 @@ export const channel = {
 			expire: 'main:redis:expire',
 			type: 'main:redis:type',
 			ttl: 'main:redis:ttl',
+			memoryUsage: 'main:redis:memoryUsage',
 			onError: 'main:redis:onError',
 			onReady: 'main:redis:onReady',
 			onEnd: 'main:redis:onEnd',
