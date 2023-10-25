@@ -15,7 +15,7 @@
 <script setup lang="ts">
 defineOptions({ name: 'ConnectionAutoRefresh' })
 
-const emit = defineEmits<{ (event: 'refresh'): void }>()
+const emit = defineEmits<{ refresh: [] }>()
 
 // generate button icon
 const autoRefreshEnable = ref(false)

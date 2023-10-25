@@ -77,7 +77,7 @@ const formatedKeyspace = computed(() => {
 .body {
 	background-color: var(--td-bg-color-container);
 	border-radius: var(--td-radius-medium);
-	padding: var(--td-comp-paddingLR-m);
+	border: 1px solid var(--td-component-stroke);
 	overflow: hidden;
 }
 </style>

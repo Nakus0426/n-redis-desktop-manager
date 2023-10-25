@@ -105,7 +105,7 @@ import { useKeyTree } from '../hooks'
 defineOptions({ name: 'SiderTree' })
 
 const props = defineProps<{ connection: Connection }>()
-const emit = defineEmits<{ (event: 'error', id: string) }>()
+const emit = defineEmits<{ error: [id: string] }>()
 
 const connectionsStore = useConnectionsStore()
 

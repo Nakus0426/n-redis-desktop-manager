@@ -103,7 +103,7 @@ import { type Connection, useConnectionsStore } from '@/store'
 
 defineOptions({ name: 'ConnectionsSiderEditDialog' })
 
-const emit = defineEmits<{ (event: 'update', id: string) }>()
+const emit = defineEmits<{ update: [id: string] }>()
 
 const { t } = useLocale()
 const connectionsStore = useConnectionsStore()

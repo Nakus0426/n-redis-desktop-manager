@@ -102,7 +102,7 @@ defineExpose({ open })
 	flex-direction: column;
 	gap: var(--td-comp-margin-s);
 	border-radius: var(--td-radius-medium);
-	border: 1px solid var(--td-component-border);
+	border: 1px solid var(--td-component-stroke);
 	padding: var(--td-comp-paddingLR-s);
 	background-image: linear-gradient(120deg, var(--td-bg-color-container) 45%, var(--td-bg-color-container-hover));
 	transition: all var(--td-transition);

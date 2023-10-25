@@ -233,6 +233,7 @@ function handleMoreClick(type: keyof ConnectionInfo, icon: string) {
 			flex: 1;
 			background-color: var(--td-bg-color-container);
 			border-radius: var(--td-radius-medium);
+			border: 1px solid var(--td-component-stroke);
 			padding: var(--td-comp-paddingLR-m);
 			overflow: hidden;
 		}

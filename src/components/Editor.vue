@@ -1,7 +1,5 @@
 <template>
-	<div class="editor">
-		<div class="container" ref="containerRef" />
-	</div>
+	<div class="editor" ref="containerRef"></div>
 </template>
 
 <script setup lang="ts">
@@ -11,12 +9,13 @@ import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
 import { useAppStore } from '@/store'
 
 defineOptions({ name: 'Editor' })
+
 const props = withDefaults(
 	defineProps<{
 		value?: string
 		language?: string
 	}>(),
-	{}
+	{},
 )
 const emit = defineEmits<{}>()
 
@@ -64,13 +63,13 @@ watch(
 	() => {
 		const theme = window.mainWindow.getAppTheme()
 		editorInstance.updateOptions({ theme: editorThemeMap[theme] })
-	}
+	},
 )
 
 // edit language
 watch(
 	() => props.language,
-	value => editor.setModelLanguage(editorInstance.getModel(), value)
+	value => editor.setModelLanguage(editorInstance.getModel(), value),
 )
 </script>
 
@@ -78,9 +77,5 @@ watch(
 .editor {
 	height: 100%;
 	width: 100%;
-}
-
-.container {
-	height: 100%;
 }
 </style>

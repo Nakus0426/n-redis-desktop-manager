@@ -89,7 +89,7 @@ import { useLoading, useScrollbar } from '@/hooks'
 defineOptions({ name: 'SiderList' })
 
 const props = defineProps<{ connection: Connection }>()
-const emit = defineEmits<{ (event: 'error', id: string) }>()
+const emit = defineEmits<{ error: [id: string] }>()
 
 const connectionsStore = useConnectionsStore()
 

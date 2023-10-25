@@ -5,25 +5,20 @@ import path from 'path'
 import { channel } from './channels'
 import { configStore } from '../configStore'
 
-/**
- * setting window
- */
+/** setting window */
 export class SettingWindow {
-	private settingWindow: MicaBrowserWindowType
+	private static instance: MicaBrowserWindowType = null
 
-	constructor() {
-		this.settingWindow = null
-	}
+	private constructor() {}
 
-	/**
-	 * open setting window
-	 */
-	open() {
-		if (this.settingWindow) {
-			this.settingWindow.show()
-			return
+	/** open setting window */
+	static open() {
+		if (SettingWindow.instance) {
+			SettingWindow.instance.show()
+			return SettingWindow.instance
 		}
-		this.settingWindow = new MicaBrowserWindow({
+
+		SettingWindow.instance = new MicaBrowserWindow({
 			icon: './src/assets/icons/logo.ico',
 			show: false,
 			width: 800,
@@ -39,46 +34,58 @@ export class SettingWindow {
 		}) as MicaBrowserWindowType
 
 		if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-			this.settingWindow.loadURL(`${MAIN_WINDOW_VITE_DEV_SERVER_URL}/#/setting`)
+			SettingWindow.instance.loadURL(`${MAIN_WINDOW_VITE_DEV_SERVER_URL}/#/setting`)
 		} else {
-			this.settingWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`), {
+			SettingWindow.instance.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`), {
 				hash: '#/setting',
 			})
 		}
 
-		this.settingWindow.on('ready-to-show', () => this.settingWindow.show())
+		SettingWindow.instance.on('ready-to-show', () => SettingWindow.instance.show())
 
-		this.initMica()
-		this.initAppTheme()
+		initMica()
+		initAppTheme()
 
-		const unWatchAppTheme = configStore.onDidChange('appTheme', value => this.initAppTheme(value))
+		const unWatchAppTheme = configStore.onDidChange('appTheme', value => initAppTheme(value))
 
-		this.settingWindow.on('closed', () => {
-			this.settingWindow = null
+		SettingWindow.instance.on('closed', () => {
+			SettingWindow.instance = null
 		})
 
+		// window operations
 		ipcMain.on(channel.setting.minimize, () => {
-			if (!this.settingWindow) return
-			this.settingWindow.minimize()
+			if (!SettingWindow.instance) return
+			SettingWindow.instance.minimize()
 		})
 		ipcMain.on(channel.setting.close, () => {
-			if (!this.settingWindow) return
-			this.settingWindow.minimize()
-			this.settingWindow.close()
+			if (!SettingWindow.instance) return
+			SettingWindow.instance.minimize()
+			SettingWindow.instance.close()
+			SettingWindow.instance = null
 			unWatchAppTheme()
 		})
-	}
+		ipcMain.on(channel.setting.openDevtools, () => {
+			if (!SettingWindow.instance) return
+			SettingWindow.instance.webContents.openDevTools()
+		})
+		ipcMain.on(channel.setting.reload, () => {
+			if (!SettingWindow.instance) return
+			SettingWindow.instance.reload()
+		})
 
-	private initMica() {
-		if (!IS_WINDOWS_11) return
-		const enable = configStore.get('appMicaConfig', false)
-		if (enable) this.settingWindow.setMicaEffect()
-	}
+		function initMica() {
+			if (!IS_WINDOWS_11) return
+			const enable = configStore.get('appMicaConfig', false)
+			if (enable) SettingWindow.instance.setMicaEffect()
+		}
 
-	private initAppTheme(theme?: NativeTheme['themeSource']) {
-		const _theme = theme || configStore.get('appTheme', 'light')
-		if (_theme === 'dark') this.settingWindow.setDarkTheme()
-		if (_theme === 'light') this.settingWindow.setLightTheme()
-		if (_theme === 'system') this.settingWindow.setAutoTheme()
+		function initAppTheme(theme?: NativeTheme['themeSource']) {
+			const _theme = theme || configStore.get('appTheme', 'light')
+			if (_theme === 'dark') SettingWindow.instance.setDarkTheme()
+			if (_theme === 'light') SettingWindow.instance.setLightTheme()
+			if (_theme === 'system') SettingWindow.instance.setAutoTheme()
+		}
+
+		return SettingWindow.instance
 	}
 }

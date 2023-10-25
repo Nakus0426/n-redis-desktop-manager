@@ -20,6 +20,7 @@ import { useScrollbar } from '@/hooks'
 defineOptions({ name: 'Dialog' })
 
 const props = defineProps<{ title: string; icon?: string }>()
+const emit = defineEmits<{ opened: [] }>()
 
 // scrollbar
 const scrollWrapperRef = ref()
@@ -28,6 +29,7 @@ const { init: initScrollbar } = useScrollbar(scrollWrapperRef)
 // dialog opened
 function handleDialogOpened() {
 	nextTick(() => initScrollbar())
+	emit('opened')
 }
 </script>
 
