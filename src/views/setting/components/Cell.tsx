@@ -16,7 +16,7 @@ export default function Cell(props: CellProps, { slots }) {
 Cell.props = {
 	title: {
 		type: String,
-		required: true,
+		required: false,
 	},
 	direction: {
 		type: String,
