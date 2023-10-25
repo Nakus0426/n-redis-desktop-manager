@@ -1,4 +1,4 @@
-export {}
+import { type ConfigStore } from './main/configStore'
 
 export interface MainWindow {
 	minimize: () => void
@@ -14,8 +14,8 @@ export interface MainWindow {
 	getAppTheme: () => 'light' | 'dark'
 	setAppTheme: (theme: 'light' | 'dark' | 'system') => void
 	getSystemLocale: () => string
-	getMicaConfig: () => boolean
-	setMicaConfig: (enable: boolean) => void
+	getConfig: (key: keyof ConfigStore) => any
+	setConfig: (key: keyof ConfigStore, value: any) => void
 	isWindows11: () => boolean
 
 	pinia: {
@@ -24,25 +24,25 @@ export interface MainWindow {
 	}
 
 	redis: {
-		create: typeof import('./utils')['RedisUtil']['prototype']['create']
-		connect: typeof import('./utils')['RedisUtil']['prototype']['connect']
-		disconnect: typeof import('./utils')['RedisUtil']['prototype']['disconnect']
-		destory: typeof import('./utils')['RedisUtil']['prototype']['destory']
-		isConnected: typeof import('./utils')['RedisUtil']['prototype']['isConnected']
-		configGet: typeof import('./utils')['RedisUtil']['prototype']['configGet']
-		ping: typeof import('./utils')['RedisUtil']['prototype']['ping']
-		select: typeof import('./utils')['RedisUtil']['prototype']['select']
-		info: typeof import('./utils')['RedisUtil']['prototype']['info']
-		keys: typeof import('./utils')['RedisUtil']['prototype']['keys']
-		set: typeof import('./utils')['RedisUtil']['prototype']['set']
-		get: typeof import('./utils')['RedisUtil']['prototype']['get']
-		del: typeof import('./utils')['RedisUtil']['prototype']['del']
-		rename: typeof import('./utils')['RedisUtil']['prototype']['rename']
-		exists: typeof import('./utils')['RedisUtil']['prototype']['exists']
-		expire: typeof import('./utils')['RedisUtil']['prototype']['expire']
-		type: typeof import('./utils')['RedisUtil']['prototype']['type']
-		ttl: typeof import('./utils')['RedisUtil']['prototype']['ttl']
-		memoryUsage: typeof import('./utils')['RedisUtil']['prototype']['memoryUsage']
+		create: (typeof import('./utils'))['RedisUtil']['prototype']['create']
+		connect: (typeof import('./utils'))['RedisUtil']['prototype']['connect']
+		disconnect: (typeof import('./utils'))['RedisUtil']['prototype']['disconnect']
+		destory: (typeof import('./utils'))['RedisUtil']['prototype']['destory']
+		isConnected: (typeof import('./utils'))['RedisUtil']['prototype']['isConnected']
+		configGet: (typeof import('./utils'))['RedisUtil']['prototype']['configGet']
+		ping: (typeof import('./utils'))['RedisUtil']['prototype']['ping']
+		select: (typeof import('./utils'))['RedisUtil']['prototype']['select']
+		info: (typeof import('./utils'))['RedisUtil']['prototype']['info']
+		keys: (typeof import('./utils'))['RedisUtil']['prototype']['keys']
+		set: (typeof import('./utils'))['RedisUtil']['prototype']['set']
+		get: (typeof import('./utils'))['RedisUtil']['prototype']['get']
+		del: (typeof import('./utils'))['RedisUtil']['prototype']['del']
+		rename: (typeof import('./utils'))['RedisUtil']['prototype']['rename']
+		exists: (typeof import('./utils'))['RedisUtil']['prototype']['exists']
+		expire: (typeof import('./utils'))['RedisUtil']['prototype']['expire']
+		type: (typeof import('./utils'))['RedisUtil']['prototype']['type']
+		ttl: (typeof import('./utils'))['RedisUtil']['prototype']['ttl']
+		memoryUsage: (typeof import('./utils'))['RedisUtil']['prototype']['memoryUsage']
 		onError: (callback: (id: string, error: Error) => void) => void
 		onReady: (callback: (id: string) => void) => void
 		onEnd: (callback: (id: string) => void) => void

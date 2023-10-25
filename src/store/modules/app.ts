@@ -21,7 +21,10 @@ export const useAppStore = defineStore(
 		const locale = ref<string>()
 
 		/** mica enable */
-		const micaEnable = ref<boolean>(window.mainWindow.getMicaConfig())
+		const micaEnable = ref<boolean>(window.mainWindow.getConfig('appMicaConfig'))
+
+		/** show differences before saving */
+		const showDiffBeforeSave = ref<boolean>(window.mainWindow.getConfig('showDiffBeforeSave'))
 
 		/** change theme */
 		function setTheme(_theme: Theme) {
@@ -36,7 +39,7 @@ export const useAppStore = defineStore(
 				if (['dark', 'light'].includes(value)) setAppTheme(value)
 				if (value === 'system') setAppTheme(window.mainWindow.getAppTheme())
 			},
-			{ immediate: true }
+			{ immediate: true },
 		)
 		function setAppTheme(theme: Theme) {
 			const css = document.createElement('style')
@@ -48,8 +51,8 @@ export const useAppStore = defineStore(
 					 -o-transition: none !important;
 					 -ms-transition: none !important;
 					 transition: none !important;
-				}`
-				)
+				}`,
+				),
 			)
 			document.head.appendChild(css)
 			document.documentElement.setAttribute('theme-mode', theme)
@@ -63,19 +66,21 @@ export const useAppStore = defineStore(
 			locale.value = locale.value || systemLocale
 		}
 
-		// watch Mica config change
-		watch(micaEnable, value => window.mainWindow.setMicaConfig(value))
+		// watch config change
+		watch(micaEnable, value => window.mainWindow.setConfig('appMicaConfig', value))
+		watch(showDiffBeforeSave, value => window.mainWindow.setConfig('showDiffBeforeSave', value))
 
 		return {
 			theme,
 			isDarkTheme,
 			locale,
 			micaEnable,
+			showDiffBeforeSave,
 			setTheme,
 			initAppLocale,
 		}
 	},
-	{ persist: true }
+	{ persist: true },
 )
 
 if (import.meta.hot) import.meta.hot.accept(acceptHMRUpdate(useAppStore, import.meta.hot))

@@ -7,6 +7,7 @@ export const channel = {
 		openSetting: 'main:openSetting',
 		openDevtools: 'main:openDevtools',
 		close: 'main:close',
+		reload: 'main:reload',
 		onMinimize: 'main:onMinimize',
 		onMaximize: 'main:onMaximize',
 		onUnmaximize: 'main:onUnmaximize',
@@ -15,8 +16,8 @@ export const channel = {
 		getAppTheme: 'main:getAppTheme',
 		setAppTheme: 'main:setAppTheme',
 		getSystemLocale: 'main:getSystemLocale',
-		getMicaConfig: 'main:getMicaConfig',
-		setMicaConfig: 'main:setMicaConfig',
+		getConfig: 'main:getConfig',
+		setConfig: 'main:setConfig',
 		isWindows11: 'main:isWindows11',
 		// pinia operations
 		pinia: {
@@ -55,5 +56,7 @@ export const channel = {
 		// window operations
 		minimize: 'setting:minimize',
 		close: 'setting:close',
+		openDevtools: 'setting:openDevtools',
+		reload: 'setting:reload',
 	},
 }

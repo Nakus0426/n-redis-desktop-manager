@@ -25,8 +25,10 @@
 <script setup lang="ts">
 import { useLocale } from '@/hooks'
 import { Theme, useAppStore } from '@/store'
-import Cell from './modules/Cell'
-import CellItem from './modules/CellItem'
+import Cell from './components/Cell'
+import CellItem from './components/CellItem'
+
+defineOptions({ name: 'SettingAppearance' })
 
 const appStore = useAppStore()
 const { t } = useLocale(false)

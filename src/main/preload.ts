@@ -10,6 +10,7 @@ contextBridge.exposeInMainWorld('mainWindow', {
 	openSettingWindow: () => ipcRenderer.send(channel.main.openSetting),
 	openDevtools: () => ipcRenderer.send(channel.main.openDevtools),
 	close: () => ipcRenderer.send(channel.main.close),
+	reload: () => ipcRenderer.send(channel.main.reload),
 	onMinimize: callback => ipcRenderer.on(channel.main.onMinimize, callback),
 	onMaximize: callback => ipcRenderer.on(channel.main.onMaximize, callback),
 	onUnMaximize: callback => ipcRenderer.on(channel.main.onUnmaximize, callback),
@@ -18,8 +19,8 @@ contextBridge.exposeInMainWorld('mainWindow', {
 	getAppTheme: () => ipcRenderer.sendSync(channel.main.getAppTheme),
 	setAppTheme: (...args) => ipcRenderer.send(channel.main.setAppTheme, ...args),
 	getSystemLocale: () => ipcRenderer.sendSync(channel.main.getSystemLocale),
-	getMicaConfig: () => ipcRenderer.sendSync(channel.main.getMicaConfig),
-	setMicaConfig: (...args) => ipcRenderer.send(channel.main.setMicaConfig, ...args),
+	getConfig: (...args) => ipcRenderer.sendSync(channel.main.getConfig, ...args),
+	setConfig: (...args) => ipcRenderer.send(channel.main.setConfig, ...args),
 	isWindows11: () => ipcRenderer.sendSync(channel.main.isWindows11),
 	// pinia operations
 	pinia: {

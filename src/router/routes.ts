@@ -39,13 +39,21 @@ export const AppearanceSettingRoute: RouteRecordRaw = {
 	meta: { title: 'setting.appearance.title' },
 }
 
+// function setting
+export const FunctionSettingRoute: RouteRecordRaw = {
+	name: 'FunctionSetting',
+	path: '/setting/function',
+	component: () => import('@/views/setting/Function.vue'),
+	meta: { title: 'setting.function.title' },
+}
+
 // setting
 export const SettingRoute: RouteRecordRaw = {
 	name: 'Setting',
 	path: '/setting',
 	redirect: CommonSettingRoute,
 	component: () => import('@/views/setting/Index.vue'),
-	children: [CommonSettingRoute, AppearanceSettingRoute],
+	children: [CommonSettingRoute, AppearanceSettingRoute, FunctionSettingRoute],
 }
 
 export const routes = [IndexRoute, SettingRoute]

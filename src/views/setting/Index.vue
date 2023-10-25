@@ -20,6 +20,15 @@
 				<Icon height="16" width="16" :icon="appearanceIcon" />
 				<div>{{ t('setting.appearance.title') }}</div>
 			</div>
+			<div
+				v-ripple
+				class="sider_item"
+				:class="menuClass(FunctionSettingRoute.path)"
+				@click="handleMenuClick(FunctionSettingRoute)"
+			>
+				<Icon height="16" width="16" :icon="functionIcon" />
+				<div>{{ t('setting.function.title') }}</div>
+			</div>
 		</div>
 		<div class="body">
 			<div class="body_header">{{ title }}</div>
@@ -37,7 +46,7 @@
 </template>
 
 <script setup lang="ts">
-import { CommonSettingRoute, AppearanceSettingRoute } from '@/router'
+import { CommonSettingRoute, AppearanceSettingRoute, FunctionSettingRoute } from '@/router'
 import { useI18n } from 'vue-i18n'
 import { RouteRecordRaw } from 'vue-router'
 import { OverlayScrollbars } from 'overlayscrollbars'
@@ -82,10 +91,13 @@ function menuClass(path: string) {
 
 // generate menu icon
 const commonIcon = computed(() =>
-	isMenuActived(CommonSettingRoute.path) ? 'fluent:options-16-filled' : 'fluent:options-16-regular'
+	isMenuActived(CommonSettingRoute.path) ? 'fluent:options-16-filled' : 'fluent:options-16-regular',
 )
 const appearanceIcon = computed(() =>
-	isMenuActived(AppearanceSettingRoute.path) ? 'fluent:color-16-filled' : 'fluent:color-16-regular'
+	isMenuActived(AppearanceSettingRoute.path) ? 'fluent:color-16-filled' : 'fluent:color-16-regular',
+)
+const functionIcon = computed(() =>
+	isMenuActived(FunctionSettingRoute.path) ? 'fluent:apps-16-filled' : 'fluent:apps-16-regular',
 )
 </script>
 
@@ -193,9 +205,10 @@ const appearanceIcon = computed(() =>
 
 	&_content {
 		display: flex;
-		border-radius: var(--td-radius-medium);
 		background-color: var(--td-bg-color-container);
 		padding: var(--td-comp-paddingTB-m);
+		border-radius: var(--td-radius-medium);
+		border: 1px solid var(--td-component-stroke);
 
 		&-horizontal {
 			flex-direction: row;
