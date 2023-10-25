@@ -114,10 +114,12 @@ export class RedisUtil {
 		return client.SET(key, value, { EX: expire, GET: true })
 	}
 
-	/** Returns the string value of a key */
+	/** Returns the value of a key */
 	get(id: string, key: string, type: KeyType = 'string') {
 		const client = this.getClient(id)
 		if (type === 'string') return client.GET(key)
+		if (type === 'set') return client.SMEMBERS(key)
+		if (type === 'hash') return client.HGETALL(key)
 		return client.GET(key)
 	}
 

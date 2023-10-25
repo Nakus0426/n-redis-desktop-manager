@@ -20,4 +20,6 @@ export const keyUpdatedEventKey: EventBusKey<string> = Symbol()
 
 export const keyRenamedEventKey: EventBusKey<string> = Symbol()
 
-export const keyEditInjectKey = Symbol() as InjectionKey<Ref<{ id: string; key: string }>>
+export const keyEditInjectKey = Symbol() as InjectionKey<
+	Ref<{ id: string; key: string; type: string; memoryUsage: number }>
+>

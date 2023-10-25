@@ -26,6 +26,21 @@
 // button
 .t-button {
 	gap: var(--td-comp-margin-xs) !important;
+
+	&--variant-text {
+		border: none !important;
+	}
+}
+
+// table
+.t-table {
+	&__header {
+		&--fixed {
+			& > tr > th {
+				background-color: var(--td-bg-color-container) !important;
+			}
+		}
+	}
 }
 
 // dialog
