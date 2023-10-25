@@ -7,3 +7,11 @@ declare interface Window {
 	mainWindow: ElectronAPI.MainWindow
 	settingWindow: ElectronAPI.SettingWindow
 }
+
+interface ImportMetaEnv {
+	readonly VITE_DEVTOOLS_ENABLED: string
+}
+
+interface ImportMeta {
+	readonly env: ImportMetaEnv
+}
