@@ -22,11 +22,13 @@ const props = withDefaults(
 		language: 'text/plain',
 	},
 )
+const emit = defineEmits<{ update: [] }>()
 
+// init editor
 const containerRef = ref()
 let editorInstance: editor.IStandaloneDiffEditor
 function init(originalModel?: string, modifiedModel?: string, language?: string) {
-	if (!editorInstance)
+	if (!editorInstance) {
 		editorInstance = editor.createDiffEditor(containerRef.value, {
 			readOnly: true,
 			automaticLayout: true,
@@ -41,6 +43,8 @@ function init(originalModel?: string, modifiedModel?: string, language?: string)
 				horizontalScrollbarSize: 0,
 			},
 		})
+		editorInstance.onDidUpdateDiff(() => emit('update'))
+	}
 	const _originalModel = originalModel || props.originalModel
 	const _modifiedModel = modifiedModel || props.modifiedModel
 	const _language = language || props.language
@@ -63,7 +67,19 @@ watch(
 	},
 )
 
-defineExpose({ init })
+// get line changes
+function getLineChanges() {
+	const lineChanges = editorInstance.getLineChanges()
+	let addedLineCount = 0
+	let deletedLineCount = 0
+	lineChanges.forEach(item => {
+		addedLineCount += item.modifiedEndLineNumber - item.modifiedStartLineNumber + 1
+		deletedLineCount += item.originalEndLineNumber - item.originalStartLineNumber + 1
+	})
+	return { addedLineCount, deletedLineCount }
+}
+
+defineExpose({ init, getLineChanges })
 </script>
 
 <style scoped lang="scss">

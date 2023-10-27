@@ -3,31 +3,19 @@
 		<TSwiper :autoplay="false" :duration="1000" theme="light">
 			<TSwiperItem>
 				<div class="cells">
-					<Cell
-						title="Server"
-						icon="fluent:server-16-regular"
-						@on-more-click="handleMoreClick('Server', 'fluent:server-24-regular')"
-					>
+					<Cell title="Server" @on-more-click="handleMoreClick('Server', 'fluent:server-24-regular')">
 						<CellItem label="Redis Version" :value="connectionInfo?.Server?.redis_version ?? '-'" />
 						<CellItem label="Tcp Port" :value="connectionInfo?.Server?.tcp_port ?? '-'" />
 						<CellItem label="Redis Mode" :value="connectionInfo?.Server?.redis_mode ?? '-'" />
 						<CellItem label="OS" :value="connectionInfo?.Server?.os ?? '-'" />
 					</Cell>
-					<Cell
-						title="Memory"
-						icon="fluent:memory-16-regular"
-						@on-more-click="handleMoreClick('Memory', 'fluent:memory-16-regular')"
-					>
+					<Cell title="Memory" @on-more-click="handleMoreClick('Memory', 'fluent:memory-16-regular')">
 						<CellItem label="Used Memory" :value="connectionInfo?.Memory?.used_memory_human ?? '-'" />
 						<CellItem label="Used Memory Peak" :value="connectionInfo?.Memory?.used_memory_peak_human ?? '-'" />
 						<CellItem label="Total System Memory" :value="connectionInfo?.Memory?.total_system_memory_human ?? '-'" />
 						<CellItem label="Used Memory Dataset" :value="connectionInfo?.Memory?.used_memory_dataset_perc ?? '-'" />
 					</Cell>
-					<Cell
-						title="Clients"
-						icon="fluent:calendar-ltr-16-regular"
-						@on-more-click="handleMoreClick('Clients', 'fluent:calendar-ltr-24-regular')"
-					>
+					<Cell title="Clients" @on-more-click="handleMoreClick('Clients', 'fluent:calendar-ltr-24-regular')">
 						<CellItem label="Connected Clients" :value="connectionInfo?.Clients?.connected_clients ?? '-'" />
 						<CellItem label="Cluster Connections" :value="connectionInfo?.Clients?.cluster_connections ?? '-'" />
 						<CellItem label="Maxclients" :value="connectionInfo?.Clients?.maxclients ?? '-'" />
@@ -123,14 +111,11 @@ defineOptions({ name: 'ConnectionsOverviewHeader' })
 const connectionInfo = inject(connectionInfoInjectKey)
 
 // connection info cell component
-function Cell(props: { title: string; icon: string }, context: SetupContext) {
+function Cell(props: { title: string }, context: SetupContext) {
 	return (
 		<div class="cell">
 			<div class="cell_header">
-				<div class="cell_header_prefix">
-					<Icon class="cell_header_prefix_icon" height="16" width="16" icon={props.icon} />
-					<div class="cell_header_prefix_title">{props.title}</div>
-				</div>
+				<div class="cell_header_prefix">{props.title}</div>
 				<div class="cell_header_suffix" v-ripple onClick={() => context.emit('onMoreClick')}>
 					<Icon height="14" width="14" icon="fluent:more-vertical-24-regular" />
 				</div>
@@ -192,16 +177,6 @@ function handleMoreClick(type: keyof ConnectionInfo, icon: string) {
 		}
 
 		:deep(.cell_header_prefix) {
-			display: flex;
-			align-items: center;
-			gap: var(--td-comp-margin-xs);
-		}
-
-		:deep(.cell_header_prefix_icon) {
-			color: var(--td-brand-color);
-		}
-
-		:deep(.cell_header_prefix_title) {
 			font: var(--td-font-body-medium);
 			color: var(--td-text-color-secondary);
 		}

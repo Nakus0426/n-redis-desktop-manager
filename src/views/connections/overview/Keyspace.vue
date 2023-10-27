@@ -1,9 +1,6 @@
 <template>
 	<div class="keyspace">
-		<div class="header">
-			<Icon class="header_icon" height="16" width="16" icon="fluent:key-multiple-16-regular" />
-			<div class="header_title">Keyspace</div>
-		</div>
+		<div class="header">Keyspace</div>
 		<div class="body">
 			<TPrimaryTable
 				:columns="columns"
@@ -60,18 +57,8 @@ const formatedKeyspace = computed(() => {
 }
 
 .header {
-	display: flex;
-	align-items: center;
-	gap: var(--td-comp-margin-xs);
-
-	&_icon {
-		color: var(--td-brand-color);
-	}
-
-	&_title {
-		font: var(--td-font-body-medium);
-		color: var(--td-text-color-secondary);
-	}
+	font: var(--td-font-body-medium);
+	color: var(--td-text-color-secondary);
 }
 
 .body {

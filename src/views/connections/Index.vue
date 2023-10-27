@@ -221,7 +221,7 @@ function handleTabClick(value: TabPanel) {
 	&_header {
 		display: flex;
 		padding: 0 var(--td-comp-margin-m);
-		border-bottom: 1px solid var(--td-component-border);
+		border-bottom: 1px solid var(--td-component-stroke);
 		-webkit-app-region: drag;
 
 		&_prefix,
@@ -258,7 +258,7 @@ function handleTabClick(value: TabPanel) {
 		&_center {
 			flex: 1;
 			display: flex;
-			gap: var(--td-comp-margin-s);
+			gap: var(--td-comp-margin-xs);
 			height: calc(32px + var(--td-comp-margin-m));
 			overflow: auto visible;
 

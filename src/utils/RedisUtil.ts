@@ -114,12 +114,24 @@ export class RedisUtil {
 		return client.SET(key, value, { EX: expire, GET: true })
 	}
 
+	/** Creates or modifies the value of a field in a hash */
+	hset(id: string, key: string, field: string, value: string | number) {
+		const client = this.getClient(id)
+		return client.HSET(key, field, value)
+	}
+
 	/** Returns the value of a key */
-	get(id: string, key: string, type: KeyType = 'string') {
+	async get(id: string, key: string, type: KeyType = 'string') {
 		const client = this.getClient(id)
 		if (type === 'string') return client.GET(key)
 		if (type === 'set') return client.SMEMBERS(key)
-		if (type === 'hash') return client.HGETALL(key)
+		if (type === 'hash') {
+			const res: Array<{ field: string; value: string }> = []
+			for await (const field of client.hScanIterator(key)) {
+				res.push(field)
+			}
+			return res
+		}
 		return client.GET(key)
 	}
 
@@ -127,6 +139,12 @@ export class RedisUtil {
 	del(id: string, key: string | string[]) {
 		const client = this.getClient(id)
 		return client.DEL(key)
+	}
+
+	/** Deletes one or more fields and their values from a hash. Deletes the hash if no fields remain */
+	hdel(id: string, key: string, field: string | string[]) {
+		const client = this.getClient(id)
+		return client.HDEL(key, field)
 	}
 
 	/** Renames a key only when the target key name doesn't exist */

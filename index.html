@@ -106,7 +106,7 @@
 		<script>
 			const app = JSON.parse(localStorage.getItem('STORE_APP') || '{}')
 			const isDarkTheme = app?.theme === 'dark'
-			const micaEnable = window.mainWindow.getMicaConfig()
+			const micaEnable = window.mainWindow.getConfig('appMicaConfig')
 			document.getElementById(isDarkTheme ? 'dark' : 'light').style.display = 'block'
 			document.getElementById('app').style.background = micaEnable ? 'transparent' : isDarkTheme ? '#181818' : '#eeeeee'
 		</script>
