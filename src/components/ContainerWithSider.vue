@@ -71,9 +71,7 @@ function handleResize(e: MouseEvent) {
 
 .sider {
 	position: relative;
-	border-right: 1px solid var(--td-component-stroke);
-	background-color: var(--td-bg-color-container);
-
+	
 	&-resize-bar {
 		position: absolute;
 		right: -2.5px;

@@ -1,6 +1,6 @@
 <template>
 	<div class="setting">
-		<WindowActionsOverlay :window-api="windowApi" :maximizable="false" />
+		<WindowActionsOverlay window="settingWindow" :maximizable="false" />
 		<div class="sider" :class="siderClass">
 			<div
 				v-ripple
@@ -54,7 +54,6 @@ import { useAppStore } from '@/store'
 
 defineOptions({ name: 'Setting' })
 
-const windowApi = window.settingWindow
 const router = useRouter()
 const route = useRoute()
 const { t } = useI18n()

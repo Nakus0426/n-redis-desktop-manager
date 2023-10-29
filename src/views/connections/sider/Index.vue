@@ -1,11 +1,11 @@
 <template>
 	<div class="sider">
 		<div class="header">
-			<TInput v-model="keyword" placeholder="搜索" clearable>
+			<TInput v-model="keyword" size="small" placeholder="搜索" clearable>
 				<template #prefixIcon><Icon height="16" width="16" icon="fluent:search-16-regular" /></template>
 			</TInput>
 			<TTooltip content="添加连接" :show-arrow="false" placement="right">
-				<TButton variant="dashed" theme="default" shape="square" @click="handleEditConnectionClick()">
+				<TButton size="small" variant="dashed" theme="default" shape="square" @click="handleEditConnectionClick()">
 					<template #icon><Icon height="16" width="16" icon="fluent:add-16-regular" /></template>
 				</TButton>
 			</TTooltip>
@@ -158,7 +158,7 @@ function generateConnectionClass(connection: Connection) {
 
 // connection icon
 const connectionIcon = computed(() =>
-	connectionLoading.value ? 'line-md:loading-loop' : 'fluent:chevron-down-16-regular'
+	connectionLoading.value ? 'line-md:loading-loop' : 'fluent:chevron-down-16-regular',
 )
 
 // top connection
@@ -211,7 +211,7 @@ function handleConnectionRemoveClick(id: string) {
 async function handleConnectionDisconnectClick(id: string) {
 	await connectionsStore.disconnectConnection(id)
 	useEventBus(connectionDisconnectedEventKey).emit(filteredConnections.value.find(item => item.id === id))
-	if(activedConnectionId.value === id) activedConnectionId.value = null
+	if (activedConnectionId.value === id) activedConnectionId.value = null
 }
 
 // connection connecting error
@@ -231,17 +231,28 @@ function handleConnectionError(id: string) {
 .header {
 	display: flex;
 	gap: var(--td-comp-margin-s);
-	padding: var(--window-action-height) var(--td-comp-paddingTB-m) var(--td-comp-paddingTB-m) var(--td-comp-paddingTB-m);
+	padding: var(--td-comp-paddingTB-m) 0 var(--td-comp-paddingTB-s) 0;
 	-webkit-app-region: drag;
 
-	div,
-	button {
+	:deep(.t-input),
+	:deep(.t-button) {
+		border-radius: var(--td-radius-medium);
 		-webkit-app-region: no-drag;
+	}
+
+	:deep(.t-input:not(:hover, :focus, .t-input--focused)),
+	:deep(.t-button:not(:hover, :focus, .t-button--focused)) {
+		border-color: var(--td-component-stroke);
 	}
 }
 
 .body {
 	flex: 1;
+	border-top: 1px solid var(--td-component-stroke);
+	border-left: 1px solid var(--td-component-stroke);
+	border-right: 1px solid var(--td-component-stroke);
+	border-top-left-radius: var(--td-radius-large);
+	background-color: var(--td-bg-color-container);
 	overflow-y: auto;
 
 	&_item {

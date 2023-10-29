@@ -1,20 +1,17 @@
 <template>
 	<ContainerWithSider class="connections">
-		<template #sider>
-			<Sider />
-		</template>
+		<template #sider><Sider /></template>
 		<div class="content">
-			<div class="window-header" />
-			<div class="content_header" v-if="!emptyStatus.visible">
+			<div class="content_header">
 				<div
 					class="content_header_prefix"
 					:class="tabsOverflowButtonVisibleClass"
 					v-ripple
+					v-show="tabsOverlow"
 					@click="handleTabsOverflowButtonClick('prefix')"
 				>
-					<Icon height="20" width="20" icon="fluent:chevron-left-20-regular" />
+					<Icon height="16" width="16" icon="fluent:chevron-left-16-regular" />
 				</div>
-				<div class="content_header_divider" v-show="tabsOverlow" />
 				<div class="content_header_center" ref="tabsRef">
 					<TransitionGroup
 						enter-active-class="animate__animated animate__fadeInLeft animate__faster"
@@ -22,32 +19,33 @@
 						appear
 					>
 						<button
-							class="content_header_center_item"
+							class="tab"
 							:class="tabActivedClass(item.key)"
 							v-for="item in tabPanels"
 							:key="item.key"
 							:ref="ref => generateTabRef(item.key, ref)"
 							:title="item.label"
+							v-ripple
 							@click="handleTabClick(item)"
 						>
-							<div class="content_header_center_item_label">
+							<div class="tab_label">
 								<Icon height="16" width="16" :icon="item.icon" />
-								<div class="content_header_center_item_label_text">{{ item.label }}</div>
+								<div class="tab_label_text">{{ item.label }}</div>
 							</div>
-							<div class="content_header_center_item_close" @click.stop="handleTabRemove(item.key)">
+							<div class="tab_close" @click.stop="handleTabRemove(item.key)">
 								<Icon height="16" width="16" icon="fluent:dismiss-16-regular" />
 							</div>
 						</button>
 					</TransitionGroup>
 				</div>
-				<div class="content_header_divider" v-show="tabsOverlow" />
 				<div
 					class="content_header_suffix"
 					:class="tabsOverflowButtonVisibleClass"
 					v-ripple
+					v-show="tabsOverlow"
 					@click="handleTabsOverflowButtonClick('suffix')"
 				>
-					<Icon height="20" width="20" icon="fluent:chevron-right-20-regular" />
+					<Icon height="16" width="16" icon="fluent:chevron-right-16-regular" />
 				</div>
 			</div>
 			<div class="content_body" ref="containerRef" v-show="!emptyStatus.visible">
@@ -60,7 +58,9 @@
 					v-show="item.key === activedTabPanel.key"
 				/>
 			</div>
-			<Icon class="content_empty" height="72" width="72" :icon="emptyStatus.icon" v-if="emptyStatus.visible" />
+			<div class="content_empty" v-if="emptyStatus.visible">
+				<Icon height="72" width="72" :icon="emptyStatus.icon" />
+			</div>
 		</div>
 	</ContainerWithSider>
 </template>
@@ -160,7 +160,7 @@ useResizeObserver(tabsRef, calcTabsOverflow)
 watch(
 	() => tabPanels.value.length,
 	value => value > 0 && calcTabsOverflow(),
-	{ immediate: true }
+	{ immediate: true },
 )
 
 // connection disconnected
@@ -219,18 +219,30 @@ function handleTabClick(value: TabPanel) {
 	overflow: hidden;
 
 	&_header {
+		position: relative;
 		display: flex;
-		padding: 0 var(--td-comp-margin-m);
+		gap: var(--td-comp-paddingLR-s);
+		padding: 0 calc(120px + var(--td-comp-paddingLR-m)) 0 var(--td-comp-paddingLR-m);
 		border-bottom: 1px solid var(--td-component-stroke);
 		-webkit-app-region: drag;
+
+		&::after {
+			content: '';
+			position: absolute;
+			right: 0;
+			top: 0;
+			width: 120px;
+			height: 30px;
+			-webkit-app-region: no-drag;
+		}
 
 		&_prefix,
 		&_suffix {
 			display: flex;
 			justify-content: center;
 			align-items: center;
-			height: 32px;
-			width: 0;
+			margin-top: var(--td-comp-paddingTB-m);
+			height: 24px;
 			border-radius: var(--td-radius-default);
 			color: var(--td-text-color-primary);
 			cursor: pointer;
@@ -243,94 +255,118 @@ function handleTabClick(value: TabPanel) {
 			}
 
 			&.is-show {
-				width: 32px;
+				width: 24px;
 			}
-		}
-
-		&_divider {
-			width: 1px;
-			height: 24px;
-			background-color: var(--td-component-border);
-			margin: 4px calc(var(--td-comp-margin-s) / 2);
-			-webkit-app-region: no-drag;
 		}
 
 		&_center {
 			flex: 1;
 			display: flex;
 			gap: var(--td-comp-margin-xs);
-			height: calc(32px + var(--td-comp-margin-m));
-			overflow: auto visible;
+			height: 33px;
+			margin: var(--td-comp-paddingTB-m) 0 -1px 0;
+			padding: 0 var(--td-radius-medium);
+			overflow: auto hidden;
+		}
 
-			&_item {
+		.tab {
+			position: relative;
+			display: flex;
+			align-items: center;
+			width: 130px;
+			background-color: transparent;
+			border-width: 1px 1px 0 1px;
+			border-color: transparent;
+			border-style: solid;
+			border-top-left-radius: var(--td-radius-medium);
+			border-top-right-radius: var(--td-radius-medium);
+			padding: 0 var(--td-comp-paddingTB-s);
+			cursor: pointer;
+			transition: all var(--td-transition);
+			-webkit-app-region: no-drag;
+			--ripple-color: var(--td-bg-color-secondarycontainer-active);
+
+			&.is-actived {
+				background-color: var(--td-bg-color-container);
+				border-color: var(--td-component-stroke);
+
+				.tab_label_text {
+					color: var(--td-text-color-primary);
+				}
+
+				&::before {
+					box-shadow:
+						inset 0 0 0 1px var(--td-component-stroke),
+						0 0 0 calc(var(--td-radius-medium) * 4) var(--td-bg-color-container);
+				}
+
+				&::after {
+					box-shadow:
+						inset 0 0 0 1px var(--td-component-stroke),
+						0 0 0 calc(var(--td-radius-medium) * 4) var(--td-bg-color-container);
+				}
+			}
+
+			&::before {
+				content: '';
+				position: absolute;
+				left: calc(-2 * var(--td-radius-medium));
+				bottom: 0;
+				border-radius: 100%;
+				background-color: transparent;
+				width: calc(2 * var(--td-radius-medium));
+				height: calc(2 * var(--td-radius-medium));
+				transition: all var(--td-transition);
+				clip-path: inset(50% calc(0px - 2 * var(--td-radius-medium)) 0 50%);
+			}
+
+			&::after {
+				content: '';
+				position: absolute;
+				right: calc(-2 * var(--td-radius-medium));
+				bottom: 0;
+				border-radius: 100%;
+				background-color: transparent;
+				width: calc(2 * var(--td-radius-medium));
+				height: calc(2 * var(--td-radius-medium));
+				transition: all var(--td-transition);
+				clip-path: inset(50% 50% 0 calc(var(--td-radius-medium) * -1));
+			}
+
+			&:not(.is-actived):hover {
+				background-color: var(--td-bg-color-secondarycontainer-hover);
+			}
+
+			&_label {
+				flex: 1;
 				display: flex;
 				align-items: center;
 				gap: var(--td-comp-margin-s);
-				flex-shrink: 0;
-				height: 32px;
-				width: 150px;
 				overflow: hidden;
-				border-radius: var(--td-radius-medium);
-				border: 1px solid transparent;
+
+				svg {
+					color: var(--td-brand-color);
+				}
+
+				&_text {
+					flex: 1;
+					font: var(--td-font-body-medium);
+					color: var(--td-text-color-secondary);
+					text-align: start;
+					overflow: hidden;
+					text-overflow: ellipsis;
+					white-space: nowrap;
+					transition: all var(--td-transition);
+				}
+			}
+
+			&_close {
+				height: 16px;
 				color: var(--td-text-color-secondary);
-				background-color: transparent;
-				padding: 0 var(--td-comp-paddingLR-s);
-				cursor: pointer;
 				transition: all var(--td-transition);
-				-webkit-app-region: no-drag;
 
 				&:hover {
-					background-color: var(--td-bg-color-container-hover);
-
-					.content_header_center_item_label {
-						color: var(--td-text-color-primary);
-					}
-
-					.content_header_center_item_close {
-						width: 14px;
-					}
-				}
-
-				&:focus-visible {
-					outline: none;
-					border-color: var(--td-brand-color) !important;
-				}
-
-				&.is-actived {
-					background-color: var(--td-bg-color-container);
-					color: var(--td-text-color-primary);
-					border-color: var(--td-component-stroke);
-				}
-
-				&_label {
-					flex: 1;
-					display: flex;
-					align-items: center;
-					gap: var(--td-comp-margin-xs);
-					overflow: hidden;
-
-					svg {
-						color: var(--td-brand-color);
-					}
-
-					&_text {
-						flex: 1;
-						text-align: left;
-						text-overflow: ellipsis;
-						white-space: nowrap;
-						overflow: hidden;
-					}
-				}
-
-				&_close {
-					display: flex;
-					align-items: center;
-					width: 0;
-					transition: all var(--td-transition);
-
-					&:hover {
-						color: var(--td-error-color);
-					}
+					color: var(--td-error-color);
 				}
 			}
 		}
@@ -341,18 +377,16 @@ function handleTabClick(value: TabPanel) {
 		flex: 1;
 		display: flex;
 		flex-direction: column;
+		background-color: var(--td-bg-color-container);
 	}
 
-	&:has(.content_empty) {
-		justify-content: center;
+	&_empty {
+		display: flex;
 		align-items: center;
+		justify-content: center;
+		flex: 1;
+		background-color: var(--td-bg-color-container);
 	}
-}
-
-.window-header {
-	height: var(--window-action-height);
-	width: calc(100% - 120px);
-	-webkit-app-region: drag;
 }
 
 .tabs-leave-animate {

@@ -63,7 +63,7 @@ function handleAddRipple(e: MouseEvent, el: HTMLElement) {
 		right: `${width}px`,
 		width: `${width + 20}px`,
 		height: '100%',
-		transition: `transform ${period}ms cubic-bezier(.38, 0, .24, 1), background ${period * 2}ms linear`,
+		transition: `transform ${period}ms cubic-bezier(.38, 0, .24, 1), background ${period * 0.7}ms cubic-bezier(0.38, 0, 0.24, 1)`,
 		transform: 'skewX(-8deg)',
 		pointerEvents: 'none',
 		position: 'absolute',

@@ -19,7 +19,7 @@ export const IndexRoute: RouteRecordRaw = {
 	name: 'Index',
 	path: '/',
 	redirect: ConnectionsIndexRoute,
-	component: () => import('@/layout/Layout.vue'),
+	component: () => import('@/layout/MainLayout.vue'),
 	children: [ConnectionsIndexRoute, TerminalIndexRoute],
 }
 

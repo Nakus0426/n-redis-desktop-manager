@@ -20,7 +20,7 @@ const props = withDefaults(
 		/**
 		 * window api
 		 */
-		windowApi: any
+		window: string
 		/**
 		 * window minimizable
 		 * @default true
@@ -35,20 +35,20 @@ const props = withDefaults(
 	{
 		maximizable: true,
 		minimizable: true,
-	}
+	},
 )
 
 const isMaximize = ref(false)
 const maximizeIcon = computed(() =>
-	isMaximize.value ? 'fluent:square-multiple-16-regular' : 'fluent:maximize-16-regular'
+	isMaximize.value ? 'fluent:square-multiple-16-regular' : 'fluent:maximize-16-regular',
 )
-if (props.windowApi?.onMaximize) {
-	props.windowApi.onMaximize(() => {
+if (window?.[props.window]?.onMaximize) {
+	window[props.window].onMaximize(() => {
 		isMaximize.value = true
 	})
 }
-if (props.windowApi?.onUnMaximize) {
-	props.windowApi.onUnMaximize(() => {
+if (window?.[props.window]?.onUnMaximize) {
+	window[props.window].onUnMaximize(() => {
 		isMaximize.value = false
 	})
 }
@@ -57,21 +57,21 @@ if (props.windowApi?.onUnMaximize) {
  * handle minimize button click
  */
 function handleMinimizeClick() {
-	props.windowApi.minimize()
+	window[props.window].minimize()
 }
 
 /**
  * handle maximize button click
  */
 function handleMaximizeClick() {
-	isMaximize.value ? props.windowApi.unmaximize() : props.windowApi.maximize()
+	isMaximize.value ? window[props.window].unmaximize() : window[props.window].maximize()
 }
 
 /**
  * handle close button click
  */
 function handleCloseClick() {
-	props.windowApi.close()
+	window[props.window].close()
 }
 </script>
 
