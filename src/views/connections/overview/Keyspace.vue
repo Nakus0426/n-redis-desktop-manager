@@ -2,14 +2,7 @@
 	<div class="keyspace">
 		<div class="header">Keyspace</div>
 		<div class="body">
-			<TPrimaryTable
-				:columns="columns"
-				:data="formatedKeyspace"
-				row-key="database"
-				size="small"
-				hover
-				stripe
-			></TPrimaryTable>
+			<TPrimaryTable :columns="columns" :data="formatedKeyspace" row-key="database" size="small" hover stripe />
 		</div>
 	</div>
 </template>
@@ -51,20 +44,30 @@ const formatedKeyspace = computed(() => {
 .keyspace {
 	display: flex;
 	flex-direction: column;
-	gap: var(--td-comp-margin-xs);
-	margin-top: var(--td-comp-paddingTB-m);
-	padding: 0 var(--td-comp-paddingLR-m);
 }
 
 .header {
-	font: var(--td-font-body-medium);
-	color: var(--td-text-color-secondary);
+	position: sticky;
+	top: 0;
+	font: var(--td-font-title-medium);
+	color: var(--td-text-color-primary);
+	padding: var(--td-comp-paddingTB-m);
+	background-color: var(--td-bg-color-container-opacity);
+	backdrop-filter: blur(15px);
+	z-index: 3;
+
+	&::after {
+		content: '';
+		position: absolute;
+		bottom: 0;
+		left: var(--td-comp-paddingLR-m);
+		height: 1px;
+		width: calc(100% - var(--td-comp-paddingLR-m) * 2);
+		background-color: var(--td-component-stroke);
+	}
 }
 
 .body {
-	background-color: var(--td-bg-color-container);
-	border-radius: var(--td-radius-medium);
-	border: 1px solid var(--td-component-stroke);
-	overflow: hidden;
+	padding: var(--td-comp-paddingTB-m);
 }
 </style>

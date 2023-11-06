@@ -52,7 +52,7 @@ export const SettingRoute: RouteRecordRaw = {
 	name: 'Setting',
 	path: '/setting',
 	redirect: CommonSettingRoute,
-	component: () => import('@/views/setting/Index.vue'),
+	component: () => import('@/layout/SettingLayout.vue'),
 	children: [CommonSettingRoute, AppearanceSettingRoute, FunctionSettingRoute],
 }
 

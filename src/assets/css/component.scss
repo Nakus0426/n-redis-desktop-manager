@@ -10,6 +10,7 @@
 	--os-handle-bg: var(--td-scrollbar-color) !important;
 	--os-handle-bg-hover: var(--td-scrollbar-hover-color) !important;
 	--os-handle-bg-active: var(--td-scrollbar-hover-color) !important;
+	z-index: 2000;
 }
 
 // monaco editor

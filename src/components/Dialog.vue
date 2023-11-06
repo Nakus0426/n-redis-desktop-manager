@@ -2,8 +2,8 @@
 	<TDialog v-bind="$props" title="" destroy-on-close placement="center" @opened="handleDialogOpened()">
 		<template #header>
 			<div class="header">
-				<Icon class="header_icon" height="24" width="24" :icon="icon" v-if="icon" />
-				<div class="header_title">{{ title }}</div>
+				<Icon class="header_icon" height="24" width="24" :icon="props.icon" v-if="props.icon" />
+				<div class="header_title">{{ props.title }}</div>
 			</div>
 		</template>
 		<div class="scroll-wrapper" ref="scrollWrapperRef">

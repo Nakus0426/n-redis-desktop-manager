@@ -4,7 +4,7 @@
 			<TInput v-model="keyword" size="small" placeholder="搜索" clearable>
 				<template #prefixIcon><Icon height="16" width="16" icon="fluent:search-16-regular" /></template>
 			</TInput>
-			<TTooltip content="添加连接" :show-arrow="false" placement="right">
+			<TTooltip content="新建连接" :show-arrow="false" placement="bottom-right">
 				<TButton size="small" variant="dashed" theme="default" shape="square" @click="handleEditConnectionClick()">
 					<template #icon><Icon height="16" width="16" icon="fluent:add-16-regular" /></template>
 				</TButton>
@@ -13,22 +13,21 @@
 		<div class="body">
 			<TransitionGroup name="body">
 				<div class="body_item" v-for="item in filteredConnections" :key="item.id" :id="item.id">
-					<div
-						class="body_item_header"
-						:class="generateConnectionClass(item)"
-						v-ripple
-						@click="handleConnectionClick(item)"
-					>
+					<div class="body_item_header" :class="generateConnectionClass(item)" @click="handleConnectionClick(item)">
 						<Icon class="body_item_header_arrow" height="16" width="16" :icon="connectionIcon" />
 						<TextEllipsis class="body_item_header_title" :content="item.name" />
 						<div class="body_item_header_actions">
 							<TDropdown>
-								<Icon
-									class="body_item_header_actions_item"
-									height="16"
-									width="16"
-									icon="fluent:more-vertical-16-regular"
-								/>
+								<TButton class="body_item_header_actions_item" variant="text" square="shape" size="small" @click.stop>
+									<template #icon>
+										<Icon
+											class="body_item_header_actions_item"
+											height="16"
+											width="16"
+											icon="fluent:more-vertical-16-regular"
+										/>
+									</template>
+								</TButton>
 								<TDropdownMenu>
 									<TDropdownItem @click="handleConnectionTopClick(item.id, item.top)">
 										<template #prefixIcon>
@@ -256,7 +255,19 @@ function handleConnectionError(id: string) {
 	overflow-y: auto;
 
 	&_item {
+		position: relative;
 		width: 100%;
+
+		&:not(:last-child)::after {
+			content: '';
+			position: absolute;
+			bottom: 0;
+			left: var(--td-comp-paddingLR-m);
+			width: calc(100% - var(--td-comp-paddingLR-m) * 2);
+			height: 1px;
+			background-color: var(--td-component-stroke);
+			z-index: 3;
+		}
 
 		&_header {
 			position: sticky;
@@ -268,20 +279,21 @@ function handleConnectionError(id: string) {
 			padding: 0 var(--td-comp-paddingLR-m);
 			transition: all var(--td-transition);
 			color: var(--td-text-color-primary);
-			background-color: var(--td-bg-color-container);
+			background-color: var(--td-bg-color-container-opacity);
+			backdrop-filter: blur(15px);
+			border-bottom: 1px solid transparent;
 			cursor: pointer;
 			z-index: 3;
-			--ripple-color: var(--td-bg-color-container-active);
 
 			&:hover {
-				background-color: var(--td-bg-color-container-hover);
-
 				.body_item_header_actions_item {
 					opacity: 1;
 				}
 			}
 
 			&.is-actived {
+				border-bottom: 1px solid var(--td-component-stroke);
+
 				.body_item_header_arrow {
 					transform: rotate(180deg);
 				}
@@ -289,9 +301,7 @@ function handleConnectionError(id: string) {
 				+ .body_item_content {
 					grid-template-rows: 1fr;
 					opacity: 1;
-					max-height: calc(100vh - 174px);
-					border-top: 1px solid var(--td-component-stroke);
-					border-bottom: 1px solid var(--td-component-stroke);
+					max-height: calc(100vh - 96px);
 				}
 			}
 
@@ -331,17 +341,8 @@ function handleConnectionError(id: string) {
 				gap: var(--td-comp-margin-s);
 
 				&_item {
-					display: flex;
-					align-items: center;
-					justify-content: center;
-					color: var(--td-text-color-primary);
-					padding: var(--td-comp-paddingLR-xxs);
 					transition: all var(--td-transition);
 					opacity: 0;
-
-					&:hover {
-						color: var(--td-brand-color);
-					}
 				}
 			}
 		}
@@ -354,8 +355,6 @@ function handleConnectionError(id: string) {
 			opacity: 0;
 			max-height: 0;
 			overflow: hidden;
-			border-top: 1px solid transparent;
-			border-bottom: 1px solid transparent;
 		}
 	}
 

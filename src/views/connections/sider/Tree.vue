@@ -69,7 +69,7 @@
 					</div>
 				</template>
 				<template #empty>
-					<div class="body_empty">
+					<div class="body_empty" v-show="isEmpty">
 						<Icon class="body_empty_icon" height="64" width="64" icon="custom-empty" />
 						<div class="body_empty_desc">暂无数据</div>
 					</div>
@@ -122,6 +122,9 @@ const skeletonRowCol: SkeletonRowCol = [
 	{ width: '80%', marginLeft: '20%' },
 	{ width: '60%', marginLeft: '40%' },
 ]
+
+// is keys empty
+const isEmpty = computed(() => !loading.value && keysTree.value?.length === 0)
 
 // init data
 const loading = ref(false)

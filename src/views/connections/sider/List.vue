@@ -101,7 +101,7 @@ const { init: initScrollbar } = useScrollbar(containerRef)
 onMounted(() => nextTick(() => initScrollbar()))
 
 // is keys empty
-const isEmpty = computed(() => filterKeysList.value.length === 0)
+const isEmpty = computed(() => !loading.value && filterKeysList.value.length === 0)
 
 // init data
 const loading = ref(false)

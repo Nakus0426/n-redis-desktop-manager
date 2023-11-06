@@ -1,17 +1,19 @@
 <template>
 	<div class="appearance">
 		<Cell :title="t('setting.appearance.theme.title')">
-			<div class="theme" :class="isThemeActived('system')" v-ripple>
-				<div class="theme_icon system" v-ripple @click="handleThemeClick('system')"></div>
-				<div class="theme_title">{{ t('setting.appearance.theme.system') }}</div>
-			</div>
-			<div class="theme" :class="isThemeActived('light')">
-				<div class="theme_icon light" v-ripple @click="handleThemeClick('light')"></div>
-				<div class="theme_title">{{ t('setting.appearance.theme.light') }}</div>
-			</div>
-			<div class="theme" :class="isThemeActived('dark')">
-				<div class="theme_icon dark" v-ripple @click="handleThemeClick('dark')"></div>
-				<div class="theme_title">{{ t('setting.appearance.theme.dark') }}</div>
+			<div class="themes">
+				<div class="theme" :class="isThemeActived('system')" v-ripple>
+					<div class="theme_icon system" v-ripple @click="handleThemeClick('system')"></div>
+					<div class="theme_title">{{ t('setting.appearance.theme.system') }}</div>
+				</div>
+				<div class="theme" :class="isThemeActived('light')">
+					<div class="theme_icon light" v-ripple @click="handleThemeClick('light')"></div>
+					<div class="theme_title">{{ t('setting.appearance.theme.light') }}</div>
+				</div>
+				<div class="theme" :class="isThemeActived('dark')">
+					<div class="theme_icon dark" v-ripple @click="handleThemeClick('dark')"></div>
+					<div class="theme_title">{{ t('setting.appearance.theme.dark') }}</div>
+				</div>
 			</div>
 		</Cell>
 		<Cell title="其他">
@@ -25,8 +27,7 @@
 <script setup lang="ts">
 import { useLocale } from '@/hooks'
 import { Theme, useAppStore } from '@/store'
-import Cell from './components/Cell'
-import CellItem from './components/CellItem'
+import { Cell, CellItem } from './components'
 
 defineOptions({ name: 'SettingAppearance' })
 
@@ -51,48 +52,52 @@ function handleThemeClick(theme: Theme) {
 	display: flex;
 	flex-direction: column;
 	gap: var(--td-comp-margin-m);
-	padding: var(--td-comp-paddingTB-m);
 }
 
-.theme {
+.themes {
 	display: flex;
-	flex-direction: column;
-	border-radius: var(--td-radius-medium);
+	gap: var(--td-comp-margin-m);
 
-	&_icon {
-		height: 80px;
-		width: 128px;
+	.theme {
+		display: flex;
+		flex-direction: column;
 		border-radius: var(--td-radius-medium);
-		border: 1px solid var(--td-component-stroke);
-		outline: solid 2px transparent;
-		transition: outline var(--td-transition);
-		cursor: pointer;
-		--ripple-color: var(--td-bg-color-container-active);
 
-		&:hover {
-			outline: solid 2px var(--td-brand-color-focus);
+		&_icon {
+			height: 80px;
+			width: 128px;
+			border-radius: var(--td-radius-medium);
+			border: 1px solid var(--td-component-stroke);
+			outline: solid 2px transparent;
+			transition: outline var(--td-transition);
+			cursor: pointer;
+			--ripple-color: var(--td-bg-color-container-active);
+
+			&:hover {
+				outline: solid 2px var(--td-brand-color-focus);
+			}
+
+			&.system {
+				background: url(@/assets/images/theme_system.svg) no-repeat center center;
+			}
+
+			&.light {
+				background: url(@/assets/images/theme_light.svg) no-repeat center center;
+			}
+
+			&.dark {
+				background: url(@/assets/images/theme_dark.svg) no-repeat center center;
+			}
 		}
 
-		&.system {
-			background: url(@/assets/images/theme_system.svg) no-repeat center center;
+		&_title {
+			font: var(--td-font-body-small);
+			color: var(--td-text-color-secondary);
 		}
 
-		&.light {
-			background: url(@/assets/images/theme_light.svg) no-repeat center center;
+		&.is-actived .theme_icon {
+			border: 2px solid var(--td-brand-color);
 		}
-
-		&.dark {
-			background: url(@/assets/images/theme_dark.svg) no-repeat center center;
-		}
-	}
-
-	&_title {
-		font: var(--td-font-body-small);
-		color: var(--td-text-color-secondary);
-	}
-
-	&.is-actived .theme_icon {
-		border: 2px solid var(--td-brand-color);
 	}
 }
 </style>

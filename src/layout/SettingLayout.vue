@@ -1,7 +1,7 @@
 <template>
-	<div class="setting">
+	<div class="setting-layout" :class="containerClass">
 		<WindowActionsOverlay window="settingWindow" :maximizable="false" />
-		<div class="sider" :class="siderClass">
+		<div class="sider">
 			<div
 				v-ripple
 				class="sider_item"
@@ -9,7 +9,7 @@
 				@click="handleMenuClick(CommonSettingRoute)"
 			>
 				<Icon height="16" width="16" :icon="commonIcon" />
-				<div>{{ t('setting.common.title') }}</div>
+				<div>通用</div>
 			</div>
 			<div
 				v-ripple
@@ -18,7 +18,7 @@
 				@click="handleMenuClick(AppearanceSettingRoute)"
 			>
 				<Icon height="16" width="16" :icon="appearanceIcon" />
-				<div>{{ t('setting.appearance.title') }}</div>
+				<div>外观</div>
 			</div>
 			<div
 				v-ripple
@@ -27,12 +27,12 @@
 				@click="handleMenuClick(FunctionSettingRoute)"
 			>
 				<Icon height="16" width="16" :icon="functionIcon" />
-				<div>{{ t('setting.function.title') }}</div>
+				<div>高级</div>
 			</div>
 		</div>
-		<div class="body">
-			<div class="body_header">{{ title }}</div>
-			<div class="body_content" id="bodyContent">
+		<div class="content">
+			<div class="content_header">{{ title }}</div>
+			<div class="content_body" ref="contentRef">
 				<RouterView>
 					<template #default="{ Component }">
 						<Transition enter-active-class="animate__animated animate__fadeInUp animate__faster" mode="out-in">
@@ -46,29 +46,25 @@
 </template>
 
 <script setup lang="ts">
-import { CommonSettingRoute, AppearanceSettingRoute, FunctionSettingRoute } from '@/router'
-import { useI18n } from 'vue-i18n'
-import { RouteRecordRaw } from 'vue-router'
-import { OverlayScrollbars } from 'overlayscrollbars'
+import { type RouteRecordRaw } from 'vue-router'
+import { AppearanceSettingRoute, CommonSettingRoute, FunctionSettingRoute } from '@/router'
 import { useAppStore } from '@/store'
+import { useLocale, useScrollbar } from '@/hooks'
 
 defineOptions({ name: 'Setting' })
 
 const router = useRouter()
 const route = useRoute()
-const { t } = useI18n()
 const appStore = useAppStore()
+const { t } = useLocale(false)
 
 // mica effect
-const siderClass = computed(() => (appStore.micaEnable ? 'sider-mica' : ''))
+const containerClass = computed(() => (appStore.micaEnable ? 'setting-layout-mica' : ''))
 
 // scroll bar
-onMounted(() => {
-	OverlayScrollbars(document.getElementById('bodyContent'), {
-		overflow: { x: 'hidden', y: 'scroll' },
-		scrollbars: { autoHide: 'leave' },
-	})
-})
+const contentRef = ref()
+const { init: initScrollbar } = useScrollbar(contentRef)
+onMounted(() => initScrollbar())
 
 // title
 const title = computed(() => t(route.meta.title as string))
@@ -101,26 +97,25 @@ const functionIcon = computed(() =>
 </script>
 
 <style scoped lang="scss">
-.setting {
-	height: 100%;
+.setting-layout {
 	width: 100%;
-	display: flex;
-}
-
-.sider {
 	height: 100%;
-	width: 20%;
 	display: flex;
-	flex-direction: column;
-	gap: var(--td-comp-margin-s);
+	overflow: hidden;
 	background-color: var(--td-bg-color-secondarycontainer);
-	border-right: 1px solid var(--td-component-stroke);
-	padding: var(--td-comp-paddingLR-s);
-	-webkit-app-region: drag;
 
 	&-mica {
 		background-color: transparent;
 	}
+}
+
+.sider {
+	width: 150px;
+	display: flex;
+	flex-direction: column;
+	gap: var(--td-comp-margin-s);
+	padding: var(--td-comp-paddingTB-m) var(--td-comp-paddingTB-s);
+	-webkit-app-region: drag;
 
 	&_item {
 		position: relative;
@@ -169,97 +164,36 @@ const functionIcon = computed(() =>
 	}
 }
 
-.body {
+.content {
 	flex: 1;
 	display: flex;
 	flex-direction: column;
-	background-color: var(--td-bg-color-page);
 
 	&_header {
-		padding: var(--td-comp-paddingTB-m);
-		margin-right: 80px;
+		position: relative;
 		font: var(--td-font-body-large);
+		font-size: var(--td-font-size-title-large);
 		color: var(--td-text-color-primary);
+		padding: var(--td-comp-paddingTB-m) 80px var(--td-comp-paddingTB-m) var(--td-comp-paddingTB-m);
 		-webkit-app-region: drag;
+
+		&::after {
+			content: '';
+			position: absolute;
+			right: 0;
+			top: 0;
+			width: 80px;
+			height: 30px;
+			-webkit-app-region: no-drag;
+		}
 	}
 
-	&_content {
+	&_body {
 		flex: 1;
-		border-top: 1px solid var(--td-component-border);
-		overflow: hidden;
-	}
-}
-</style>
-
-<style lang="scss">
-.cell {
-	display: flex;
-	flex-direction: column;
-	gap: var(--td-comp-margin-s);
-
-	&_title {
-		font: var(--td-font-body-medium);
-		color: var(--td-text-color-secondary);
-	}
-
-	&_content {
-		display: flex;
 		background-color: var(--td-bg-color-container);
-		padding: var(--td-comp-paddingTB-m);
-		border-radius: var(--td-radius-medium);
-		border: 1px solid var(--td-component-stroke);
-
-		&-horizontal {
-			flex-direction: row;
-			gap: var(--td-comp-margin-m);
-		}
-
-		&-vertical {
-			flex-direction: column;
-		}
-
-		&_item {
-			flex: 1;
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			gap: var(--td-comp-margin-m);
-			font: var(--td-font-body-medium);
-			color: var(--td-text-color-primary);
-			padding: var(--td-comp-paddingTB-m) 0;
-
-			&:first-child {
-				padding-top: 0;
-			}
-
-			&:last-child {
-				padding-bottom: 0;
-			}
-
-			&:not(:last-child) {
-				border-bottom: 1px solid var(--td-component-stroke);
-			}
-
-			&_label {
-				display: flex;
-				flex-direction: column;
-
-				&_title {
-					font: var(--td-font-body-medium);
-					color: var(--td-text-color-primary);
-				}
-
-				&_desc {
-					font: var(--td-font-body-small);
-					color: var(--td-text-color-secondary);
-				}
-			}
-
-			&_value {
-				display: flex;
-				justify-content: flex-end;
-			}
-		}
+		border-top-left-radius: var(--td-radius-large);
+		border-top: 1px solid var(--td-component-stroke);
+		border-left: 1px solid var(--td-component-stroke);
 	}
 }
 </style>

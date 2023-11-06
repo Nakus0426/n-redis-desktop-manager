@@ -25,6 +25,5 @@ const appStore = useAppStore()
 	display: flex;
 	flex-direction: column;
 	gap: var(--td-comp-margin-m);
-	padding: var(--td-comp-paddingTB-m);
 }
 </style>

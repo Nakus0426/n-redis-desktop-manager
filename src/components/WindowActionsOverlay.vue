@@ -82,6 +82,7 @@ function handleCloseClick() {
 	right: 0;
 	height: var(--window-action-height);
 	display: flex;
+	z-index: 1;
 
 	&_item {
 		display: flex;

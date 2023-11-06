@@ -2,7 +2,7 @@
 	<div class="common">
 		<Cell :title="t('setting.common.language.title')" direction="vertical">
 			<CellItem :label="t('setting.common.language.displayLanguage.label')">
-				<TSelect :options="locales" v-model="locale" @change="handleLocaleChange">
+				<TSelect :options="locales" v-model="locale" auto-width @change="handleLocaleChange">
 					<template #prefixIcon>
 						<Icon height="16" width="16" icon="fluent:local-language-20-regular" />
 					</template>
@@ -49,6 +49,5 @@ function handleLocaleChange(value: string) {
 	display: flex;
 	flex-direction: column;
 	gap: var(--td-comp-margin-m);
-	padding: var(--td-comp-paddingTB-m);
 }
 </style>

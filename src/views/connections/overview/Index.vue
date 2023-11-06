@@ -67,7 +67,6 @@ function handleAutoRefreshClick() {
 .overview {
 	display: flex;
 	flex-direction: column;
-	padding: var(--td-comp-paddingLR-m) 0;
 }
 
 :deep(.t-skeleton__col) {
