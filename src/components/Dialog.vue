@@ -9,7 +9,7 @@
 		<div class="scroll-wrapper" ref="scrollWrapperRef">
 			<slot name="default" />
 		</div>
-		<template v-if="$slots?.footer" #footer>
+		<template v-if="slots?.footer" #footer>
 			<slot name="footer" />
 		</template>
 	</TDialog>
@@ -17,7 +17,9 @@
 
 <script setup lang="ts">
 import { useScrollbar } from '@/hooks'
+
 defineOptions({ name: 'Dialog' })
+const slots = defineSlots<{ footer(): any; default(): any }>()
 
 const props = defineProps<{ title: string; icon?: string }>()
 const emit = defineEmits<{ opened: [] }>()

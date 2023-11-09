@@ -2,7 +2,7 @@
  * loading state with delay
  * @param delay delay duration, default to 500ms
  */
-export function useLoading(delay = 500) {
+export function useLoading(delay = 300) {
 	const loading = ref(false)
 	const delayLoading = ref(false)
 

@@ -2,7 +2,15 @@
 	<div class="keyspace">
 		<div class="header">Keyspace</div>
 		<div class="body">
-			<TPrimaryTable :columns="columns" :data="formatedKeyspace" row-key="database" size="small" hover stripe />
+			<TPrimaryTable
+				:columns="columns"
+				:data="formatedKeyspace"
+				:loading="isLoading"
+				row-key="database"
+				size="small"
+				hover
+				stripe
+			/>
 		</div>
 	</div>
 </template>
@@ -13,7 +21,7 @@ import { connectionInfoInjectKey } from '../keys'
 
 defineOptions({ name: 'ConnectionsOverviewKeyspace' })
 
-const connectionInfo = inject(connectionInfoInjectKey)
+const { data, isLoading } = inject(connectionInfoInjectKey)
 
 // table columns config
 const columns: PrimaryTableCol[] = [
@@ -27,8 +35,8 @@ const columns: PrimaryTableCol[] = [
 // format keyspace data
 const formatedKeyspace = computed(() => {
 	const keyspace = []
-	for (const db in connectionInfo.value?.Keyspace) {
-		const dbInfoArray = connectionInfo.value.Keyspace[db].split(',')
+	for (const db in data.value?.Keyspace) {
+		const dbInfoArray = data.value.Keyspace[db].split(',')
 		const column = { database: db }
 		dbInfoArray.forEach(item => {
 			const [key, value] = item.split('=')

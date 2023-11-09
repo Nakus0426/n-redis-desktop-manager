@@ -27,9 +27,8 @@
 				<div class="header_divider" />
 				<div class="header_title_ttl">
 					<TTooltip :show-arrow="false" content="过期时间">
-						<TTag variant="light" theme="default">TTL</TTag>
+						<TextEllipsis :content="`${keyTtl}s`" v-show="!ttlEditing" @click="enterTtlEdit()" />
 					</TTooltip>
-					<TextEllipsis :content="keyTtl" v-show="!ttlEditing" @click="enterTtlEdit()" />
 					<div class="header_title_input" v-show="ttlEditing">
 						<TInputNumber
 							size="small"
@@ -208,7 +207,6 @@ const bodyComponent = computed(() => {
 	flex: 1;
 	display: flex;
 	flex-direction: column;
-	gap: var(--td-comp-margin-s);
 	overflow: hidden;
 	padding: var(--td-comp-paddingLR-m);
 }
@@ -217,9 +215,8 @@ const bodyComponent = computed(() => {
 	display: flex;
 	align-items: center;
 	background-color: var(--td-bg-color-container);
-	border-radius: var(--td-radius-medium);
-	border: 1px solid var(--td-component-stroke);
-	padding: var(--td-comp-paddingLR-s);
+	padding-bottom: var(--td-comp-paddingTB-m);
+	border-bottom: 1px solid var(--td-component-stroke);
 
 	&_title {
 		display: flex;

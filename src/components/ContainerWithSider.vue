@@ -79,7 +79,7 @@ function handleResize(e: MouseEvent) {
 		bottom: 0;
 		width: 5px;
 		cursor: col-resize;
-		z-index: 3;
+		z-index: 4;
 		transition: all var(--td-transition);
 
 		&:hover {

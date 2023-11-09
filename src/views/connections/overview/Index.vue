@@ -1,15 +1,12 @@
 <template>
 	<div class="overview">
-		<TSkeleton :loading="connectionInfoLoading" :row-col="skeletonRowCol" animation="gradient">
-			<Header />
-			<Keyspace />
-		</TSkeleton>
+		<Header />
+		<Keyspace />
 		<AutoRefresh @refresh="handleAutoRefreshClick()" />
 	</div>
 </template>
 
 <script setup lang="ts">
-import { type SkeletonRowCol } from 'tdesign-vue-next'
 import { useLoading } from '@/hooks'
 import { type ConnectionInfo, useConnectionsStore } from '@/store'
 import Header from './Header.vue'
@@ -22,22 +19,6 @@ defineOptions({ name: 'ConnectionsOverviewIndex' })
 const props = defineProps<{ id: string }>()
 
 const connectionStore = useConnectionsStore()
-
-// skeleton rows
-const skeletonRowCol: SkeletonRowCol = [
-	[
-		{ width: '8%', marginRight: '26%', marginLeft: '12px' },
-		{ width: '8%', marginRight: '26%' },
-		{ width: '8%', marginRight: '25%' },
-	],
-	[
-		{ width: '33%', height: '200px', marginLeft: '12px' },
-		{ width: '33%', height: '200px' },
-		{ width: '33%', height: '200px', marginRight: '12px' },
-	],
-	{ width: '8%', marginLeft: '12px' },
-	{ height: '200px', marginLeft: '12px', marginRight: '12px' },
-]
 
 // init connection info
 const connectionInfo = ref<ConnectionInfo>()
@@ -55,7 +36,7 @@ async function initConnectionInfo(showLoading = true) {
 	}
 }
 onMounted(() => initConnectionInfo())
-provide(connectionInfoInjectKey, connectionInfo)
+provide(connectionInfoInjectKey, { isLoading: connectionInfoLoading, data: connectionInfo })
 
 // auto refresh
 function handleAutoRefreshClick() {

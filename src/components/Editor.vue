@@ -14,10 +14,13 @@ const props = withDefaults(
 	defineProps<{
 		value?: string
 		language?: string
+		immediate?: boolean
 	}>(),
-	{},
+	{
+		immediate: true,
+		language: 'text/plain',
+	},
 )
-const emit = defineEmits<{}>()
 
 const appStore = useAppStore()
 
@@ -35,13 +38,20 @@ self.MonacoEnvironment = {
 // init editor
 const containerRef = ref()
 let editorInstance: editor.IStandaloneCodeEditor
-function initEditor() {
+function init() {
+	if (editorInstance) {
+		editorInstance.dispose()
+		return
+	}
 	editorInstance = editor.create(containerRef.value, {
+		value: props.value,
 		language: props.language,
 		theme: editorThemeMap[window.mainWindow.getAppTheme()],
 		automaticLayout: true,
 		smoothScrolling: true,
 		fixedOverflowWidgets: true,
+		wordWrap: 'on',
+		wordBreak: 'normal',
 		scrollbar: {
 			useShadows: false,
 			verticalScrollbarSize: 12,
@@ -54,7 +64,7 @@ function initEditor() {
 		},
 	})
 }
-onMounted(() => initEditor())
+onMounted(() => props.immediate && init())
 
 // editor theme
 const editorThemeMap = { light: 'vs', dark: 'vs-dark' }
@@ -66,11 +76,29 @@ watch(
 	},
 )
 
-// edit language
+// editor language
 watch(
 	() => props.language,
 	value => editor.setModelLanguage(editorInstance.getModel(), value),
 )
+
+// editor value
+watch(
+	() => props.value,
+	value => editorInstance.setValue(value),
+)
+
+// get editor value
+function getValue() {
+	return editorInstance.getValue()
+}
+
+// destroy editor
+function destroy() {
+	editorInstance.dispose()
+}
+
+defineExpose({ init, destroy, getValue })
 </script>
 
 <style scoped lang="scss">

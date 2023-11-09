@@ -24,8 +24,7 @@
 import { SelectOption } from 'tdesign-vue-next'
 import { useLocale } from '@/hooks'
 import { useAppStore } from '@/store'
-import Cell from './components/Cell'
-import CellItem from './components/CellItem'
+import { Cell, CellItem } from './components'
 
 defineOptions({ name: 'SettingCommon' })
 

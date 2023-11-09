@@ -1,43 +1,43 @@
 <template>
 	<div class="overview_header">
-		<div class="header">Server Information</div>
+		<div class="header">Server Information {{ isLoading }}</div>
 		<TTabs class="body" placement="left" default-value="server">
 			<TTabPanel value="server" label="Server">
-				<TabPanelContent :data="connectionInfo?.Server ?? {}" />
+				<TabPanelContent :data="data?.Server ?? {}" />
 			</TTabPanel>
 			<TTabPanel value="clients" label="Clients">
-				<TabPanelContent :data="connectionInfo?.Clients ?? {}" />
+				<TabPanelContent :data="data?.Clients ?? {}" />
 			</TTabPanel>
 			<TTabPanel value="memory" label="Memory">
-				<TabPanelContent :data="connectionInfo?.Memory ?? {}" />
+				<TabPanelContent :data="data?.Memory ?? {}" />
 			</TTabPanel>
 			<TTabPanel value="persistence" label="Persistence">
-				<TabPanelContent :data="connectionInfo?.Persistence ?? {}" />
+				<TabPanelContent :data="data?.Persistence ?? {}" />
 			</TTabPanel>
 			<TTabPanel value="stats" label="Stats">
-				<TabPanelContent :data="connectionInfo?.Stats ?? {}" />
+				<TabPanelContent :data="data?.Stats ?? {}" />
 			</TTabPanel>
 			<TTabPanel value="replication" label="Replication">
-				<TabPanelContent :data="connectionInfo?.Replication ?? {}" />
+				<TabPanelContent :data="data?.Replication ?? {}" />
 			</TTabPanel>
 			<TTabPanel value="cpu" label="Cpu">
-				<TabPanelContent :data="connectionInfo?.CPU ?? {}" />
+				<TabPanelContent :data="data?.CPU ?? {}" />
 			</TTabPanel>
 			<TTabPanel value="cluster" label="Cluster">
-				<TabPanelContent :data="connectionInfo?.Cluster ?? {}" />
+				<TabPanelContent :data="data?.Cluster ?? {}" />
 			</TTabPanel>
 			<TTabPanel value="modules" label="Modules">
-				<TabPanelContent :data="connectionInfo?.Modules ?? {}" />
+				<TabPanelContent :data="data?.Modules ?? {}" />
 			</TTabPanel>
 			<TTabPanel value="errorstats" label="Errorstats">
-				<TabPanelContent :data="connectionInfo?.Errorstats ?? {}" />
+				<TabPanelContent :data="data?.Errorstats ?? {}" />
 			</TTabPanel>
 		</TTabs>
 	</div>
 </template>
 
 <script setup lang="tsx">
-import { Button as TButton, Tooltip as TTooltip } from 'tdesign-vue-next'
+import { Button as TButton, Tooltip as TTooltip, Loading as TLoading } from 'tdesign-vue-next'
 import { useClipboard } from '@vueuse/core'
 import { connectionInfoInjectKey } from '../keys'
 import TextEllipsis from '@/components/TextEllipsis.vue'
@@ -46,12 +46,12 @@ import { useLoading } from '@/hooks'
 
 defineOptions({ name: 'ConnectionsOverviewHeader' })
 
-const connectionInfo = inject(connectionInfoInjectKey)
+const { data, isLoading } = inject(connectionInfoInjectKey)
 
 // tab panel content
 function TabPanelContent(props: { data: Record<string, string> }) {
 	return (
-		<div class="tab-panel-content">
+		<TLoading class="tab-panel-content" loading={isLoading.value}>
 			{Object.entries(props.data).map(([key, value]) => (
 				<div class="tab-panel-content-item">
 					<div class="tab-panel-content-item-label">
@@ -74,7 +74,7 @@ function TabPanelContent(props: { data: Record<string, string> }) {
 					<div class="tab-panel-content-item-value">{value || '-'}</div>
 				</div>
 			))}
-		</div>
+		</TLoading>
 	)
 }
 

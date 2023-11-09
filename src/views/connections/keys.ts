@@ -10,7 +10,7 @@ export const activedKeyInjectKey = Symbol() as InjectionKey<Ref<{ key: string; i
 
 export const keyActivedEventKey: EventBusKey<{ key: string; id: string }> = Symbol()
 
-export const connectionInfoInjectKey = Symbol() as InjectionKey<Ref<ConnectionInfo>>
+export const connectionInfoInjectKey = Symbol() as InjectionKey<{ isLoading: Ref<boolean>; data: Ref<ConnectionInfo> }>
 
 export const keyRemovedEventKey: EventBusKey<string> = Symbol()
 

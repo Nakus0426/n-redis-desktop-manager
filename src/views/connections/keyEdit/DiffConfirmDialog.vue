@@ -1,9 +1,9 @@
 <template>
 	<Dialog
 		title="修改确认"
-		width="800px"
-		v-model:visible="visible"
 		icon="fluent:split-hint-20-regular"
+		v-model:visible="visible"
+		width="800px"
 		:close-on-overlay-click="false"
 		placement="center"
 		@opened="handleDialogOpened()"

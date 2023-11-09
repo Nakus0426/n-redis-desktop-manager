@@ -15,7 +15,4 @@ export function useWindowShortcut(browserWindowType: BrowserWindowType) {
 
 	// refresh
 	whenever(keys['Ctrl+R'], () => import.meta.env.VITE_DEVTOOLS_ENABLED === 'true' && browserWindow.reload())
-
-	// minimize window
-	whenever(keys['Escape'], () => browserWindow.minimize())
 }
