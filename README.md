@@ -12,11 +12,11 @@
 
 ## 📸 Screenshots
 
-<center>
-  <figure>
-    <img alt="index" src="https://raw.githubusercontent.com/Nakus0426/my-images/main/tdesign-redis-manager/index-empty.png" width="400"/>
-    <img alt="index" src="https://raw.githubusercontent.com/Nakus0426/my-images/main/tdesign-redis-manager/index-empty-dark.png" width="400"/>
-    <img alt="index" src="https://raw.githubusercontent.com/Nakus0426/my-images/main/tdesign-redis-manager/setting.png" width="400"/>
-    <img alt="index" src="https://raw.githubusercontent.com/Nakus0426/my-images/main/tdesign-redis-manager/connection.png" width="400"/>
-  </figure>
-</center>
+<p align="center">
+    <img alt="index" src="https://raw.githubusercontent.com/Nakus0426/my-images/main/tdesign-redis-manager/connection-index-empty.webp"/>
+    <img alt="index" src="https://raw.githubusercontent.com/Nakus0426/my-images/main/tdesign-redis-manager/connection-index.webp"/>
+    <img alt="index" src="https://raw.githubusercontent.com/Nakus0426/my-images/main/tdesign-redis-manager/setting.webp"/>
+    <img alt="index" src="https://raw.githubusercontent.com/Nakus0426/my-images/main/tdesign-redis-manager/connection-index-empty-dark.webp"/>
+    <img alt="index" src="https://raw.githubusercontent.com/Nakus0426/my-images/main/tdesign-redis-manager/connection-index-dark.webp"/>
+    <img alt="index" src="https://raw.githubusercontent.com/Nakus0426/my-images/main/tdesign-redis-manager/setting-dark.webp"/>
+</p>
