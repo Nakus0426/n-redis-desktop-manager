@@ -1,7 +1,11 @@
 <template>
 	<div class="hash-editor" ref="containerRef">
 		<div class="header">
-			<div class="header_prefix">{{ formatedMemoryUsage }}</div>
+			<div class="header_prefix">
+				<TTooltip content="大小" :show-arrow="false" placement="right">
+					<TTag>{{ formatedMemoryUsage }}</TTag>
+				</TTooltip>
+			</div>
 			<div class="header_suffix"></div>
 		</div>
 		<TPrimaryTable
@@ -37,7 +41,7 @@
 							theme="success"
 							shape="square"
 							:loading="isFieldNameRenameLoading"
-							@click="handleFieldNameRenameClick(row[col.colKey])"
+							@click="handleFieldNameRenameClick(row[col.colKey], row.fieldValue)"
 						>
 							<template #icon>
 								<Icon height="14" width="14" icon="fluent:checkmark-16-regular" />
@@ -62,7 +66,7 @@
 								shape="square"
 								@click="enterFieldNameEdit(row[col.colKey])"
 							>
-								<Icon height="16" width="16" icon="fluent:edit-16-regular" />
+								<Icon height="16" width="16" icon="fluent:document-edit-16-regular" />
 							</TButton>
 						</TTooltip>
 						<FieldNameCopyButton @click="handleFieldNameCopyClick(row[col.colKey])" />
@@ -76,8 +80,14 @@
 					</TTooltip>
 					<div class="table-cell_actions">
 						<TTooltip :show-arrow="false" content="编辑">
-							<TButton size="small" theme="primary" variant="text" shape="square">
-								<Icon height="16" width="16" icon="fluent:edit-16-regular" />
+							<TButton
+								size="small"
+								theme="primary"
+								variant="text"
+								shape="square"
+								@click="handleFieldValueEditClick(row.fieldName, row[col.colKey])"
+							>
+								<Icon height="16" width="16" icon="fluent:document-edit-16-regular" />
 							</TButton>
 						</TTooltip>
 						<FieldValueCopyButton @click="handleFieldValueCopyClick(row[col.colKey])" />
@@ -85,11 +95,7 @@
 				</div>
 			</template>
 		</TPrimaryTable>
-		<DiffConfirmDialog
-			ref="diffConfirmDialogRef"
-			@close="handleDiffConfirmDialogClose()"
-			@confirm="handleDiffConfirmDialogConfirm"
-		/>
+		<EditorDialog ref="editorDialogRef" />
 	</div>
 </template>
 
@@ -99,7 +105,7 @@ import { type PrimaryTableCol, MessagePlugin } from 'tdesign-vue-next'
 import jsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker'
 import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
 import { useCopyButton } from '@/hooks'
-import DiffConfirmDialog from './DiffConfirmDialog.vue'
+import EditorDialog from './EditorDialog.vue'
 import { keyEditInjectKey, keyEditUpdatedEventKey } from '../keys'
 import { useHashFieldNameRename } from '../hooks'
 
@@ -190,31 +196,32 @@ function exitFieldNameEdit(fieldName: string) {
 }
 
 // field name rename click
-const diffConfirmDialogRef = ref<InstanceType<typeof DiffConfirmDialog>>()
 const { isLoading: isFieldNameRenameLoading, execute: renameFieldName } = useHashFieldNameRename(injectData.value.id)
-async function handleFieldNameRenameClick(fieldName: string) {
+async function handleFieldNameRenameClick(fieldName: string, fieldValue: string) {
 	const modifiedValue = fieldNameEditValueMap.value[fieldName]
 	if (!modifiedValue) {
 		fieldNameInputStatusMap.value.set(fieldName, 'error')
 		MessagePlugin.error('属性名不能为空')
 		return
 	}
-	// diffConfirmDialogRef.value.open('fieldName', fieldName, fieldName, modifiedValue)
-	const value = data.value.find(item => item.fieldName === fieldName).fieldValue
-	await renameFieldName(injectData.value.key, fieldName, modifiedValue, value)
+	await renameFieldName(injectData.value.key, fieldName, modifiedValue, fieldValue)
+	MessagePlugin.success('保存成功')
 	useEventBus(keyEditUpdatedEventKey).emit()
 	fieldNameEditStatusMap.value.clear()
 }
 
-// difference confirm dialog close
-function handleDiffConfirmDialogClose() {
-	fieldNameEditStatusMap.value.clear()
-}
-
-// difference confirm dialog confirm
-function handleDiffConfirmDialogConfirm(type: string, key: string, value: string) {
-	if (type === 'fieldName') {
-	}
+// field value edit click
+const editorDialogRef = ref<InstanceType<typeof EditorDialog>>()
+function handleFieldValueEditClick(fieldName: string, fieldValue: string) {
+	editorDialogRef.value.open({
+		value: fieldValue,
+		confirm: async value => {
+			const { id, key } = injectData.value
+			await window.mainWindow.redis.hset(id, key, fieldName, value)
+			MessagePlugin.success('保存成功')
+			useEventBus(keyEditUpdatedEventKey).emit()
+		},
+	})
 }
 </script>
 
@@ -222,13 +229,10 @@ function handleDiffConfirmDialogConfirm(type: string, key: string, value: string
 .hash-editor {
 	display: flex;
 	flex-direction: column;
-	border-radius: var(--td-radius-medium);
-	border: 1px solid var(--td-component-stroke);
-	background-color: var(--td-bg-color-container);
 }
 
 .header {
-	padding: var(--td-comp-paddingLR-s);
+	padding: var(--td-comp-paddingLR-s) 0;
 	border-bottom: 1px solid var(--td-component-stroke);
 }
 

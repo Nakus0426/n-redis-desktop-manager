@@ -6,7 +6,6 @@
 		width="800px"
 		:close-on-overlay-click="false"
 		:close-on-esc-key-down="!connectTesting"
-		:close-btn="!connectTesting"
 		placement="center"
 		@closed="handleDialogClosed()"
 	>
@@ -85,8 +84,8 @@
 					</TPopup>
 				</div>
 				<div class="suffix">
-					<TButton theme="default" :disabled="connectTesting" @click="visible = false">取消</TButton>
-					<TButton :disabled="connectTesting" :loading="confirmLoading" @click="handleConfirmClick()">保存</TButton>
+					<TButton theme="default" @click="visible = false">取消</TButton>
+					<TButton :loading="confirmLoading" @click="handleConfirmClick()">保存</TButton>
 				</div>
 			</div>
 		</template>
