@@ -12,7 +12,7 @@ interface Option {
 		variant?: ButtonProps['variant']
 		shape?: ButtonProps['shape']
 		tooltip?: string
-		onClick?: ButtonProps['onClick']
+		onClick?: () => void | Promise<void>
 	}
 	autoCopy?: boolean
 	source?: any
@@ -39,6 +39,7 @@ export function useCopyButton(option?: Option) {
 		})
 
 		async function handleButtonClick() {
+			await option?.buttonProps?.onClick?.()
 			context.emit('click')
 			if (autoCopy && option?.source) {
 				try {

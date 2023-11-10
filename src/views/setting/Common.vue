@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { SelectOption } from 'tdesign-vue-next'
+import { type SelectOption } from 'tdesign-vue-next'
 import { useLocale } from '@/hooks'
 import { useAppStore } from '@/store'
 import { Cell, CellItem } from './components'

@@ -102,23 +102,10 @@
 <script setup lang="tsx">
 import { useElementSize, useEventBus } from '@vueuse/core'
 import { type PrimaryTableCol, MessagePlugin } from 'tdesign-vue-next'
-import jsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker'
-import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
 import { useCopyButton } from '@/hooks'
 import EditorDialog from './EditorDialog.vue'
 import { keyEditInjectKey, keyEditUpdatedEventKey } from '../keys'
 import { useHashFieldNameRename } from '../hooks'
-
-self.MonacoEnvironment = {
-	getWorker: function (workerId, label) {
-		switch (label) {
-			case 'json':
-				return new jsonWorker()
-			default:
-				return new editorWorker()
-		}
-	},
-}
 
 defineOptions({ name: 'ConnectionsKeyEditHashEditor' })
 

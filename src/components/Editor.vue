@@ -67,7 +67,9 @@ function init() {
 onMounted(() => props.immediate && init())
 
 // editor theme
-const editorThemeMap = { light: 'vs', dark: 'vs-dark' }
+const editorThemeMap = { light: 'light', dark: 'dark' }
+editor.defineTheme('light', { base: 'vs', inherit: true, rules: [], colors: { 'editor.background': '#ffffff' } })
+editor.defineTheme('dark', { base: 'vs-dark', inherit: true, rules: [], colors: { 'editor.background': '#242424' } })
 watch(
 	() => appStore.theme,
 	() => {

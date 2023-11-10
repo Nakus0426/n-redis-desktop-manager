@@ -77,7 +77,7 @@ import { keyEditInjectKey, keyEditUpdatedEventKey } from '../keys'
 import AutoRefresh from '../components/AutoRefresh.vue'
 import StringEditor from './StringEditor.vue'
 import HashEditor from './HashEditor.vue'
-import { useKeyDelete, useKeyRename, useTTLUpdate } from '../hooks'
+import { useKeyRemove, useKeyRename, useTTLUpdate } from '../hooks'
 import { useEventBus } from '@vueuse/core'
 
 defineOptions({ name: 'ConnectionsKeyEditIndex' })
@@ -90,6 +90,7 @@ const injectData = computed(() => ({
 	key: props.data,
 	value: keyValue.value,
 	type: keyType.value,
+	ttl: keyTtl.value,
 	memoryUsage: memoryUsage.value,
 }))
 provide(keyEditInjectKey, injectData)
@@ -170,15 +171,15 @@ async function handleTTLEditClick() {
 }
 
 // remove key
-const { isLoading: isRemoveLoading, execute: deleteKey } = useKeyDelete(props.id)
+const { isLoading: isRemoveLoading, execute: removeKey } = useKeyRemove(props.id)
 function handleRemoveClick() {
 	const dialogInstance = DialogPlugin.confirm({
-		header: '删除键',
+		header: '删除确认',
 		body: '确定要删除该键吗？',
 		theme: 'danger',
-		confirmBtn: { loading: isRemoveLoading.value },
+		confirmBtn: { loading: isRemoveLoading.value, theme: 'danger', variant: 'outline' },
 		onConfirm: async () => {
-			await deleteKey(props.data)
+			await removeKey(props.data)
 			dialogInstance.destroy()
 		},
 	})

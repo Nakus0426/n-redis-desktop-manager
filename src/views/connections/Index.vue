@@ -24,11 +24,10 @@
 							v-for="item in tabPanels"
 							:key="item.key"
 							:ref="ref => generateTabRef(item.key, ref)"
-							:title="item.label"
 							v-ripple
 							@click="handleTabClick(item)"
 						>
-							<div class="tab_label">
+							<div class="tab_label" :title="item.label">
 								<Icon height="16" width="16" :icon="item.icon" />
 								<div class="tab_label_text">{{ item.label }}</div>
 							</div>

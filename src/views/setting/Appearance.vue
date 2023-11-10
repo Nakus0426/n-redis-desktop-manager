@@ -2,16 +2,16 @@
 	<div class="appearance">
 		<Cell :title="t('setting.appearance.theme.title')">
 			<div class="themes">
-				<div class="theme" :class="isThemeActived('system')" v-ripple>
-					<div class="theme_icon system" v-ripple @click="handleThemeClick('system')"></div>
+				<div class="theme" :class="isThemeActived('system')">
+					<div class="theme_icon system" @click="handleThemeClick('system')"></div>
 					<div class="theme_title">{{ t('setting.appearance.theme.system') }}</div>
 				</div>
 				<div class="theme" :class="isThemeActived('light')">
-					<div class="theme_icon light" v-ripple @click="handleThemeClick('light')"></div>
+					<div class="theme_icon light" @click="handleThemeClick('light')"></div>
 					<div class="theme_title">{{ t('setting.appearance.theme.light') }}</div>
 				</div>
 				<div class="theme" :class="isThemeActived('dark')">
-					<div class="theme_icon dark" v-ripple @click="handleThemeClick('dark')"></div>
+					<div class="theme_icon dark" @click="handleThemeClick('dark')"></div>
 					<div class="theme_title">{{ t('setting.appearance.theme.dark') }}</div>
 				</div>
 			</div>
@@ -71,7 +71,6 @@ function handleThemeClick(theme: Theme) {
 			outline: solid 2px transparent;
 			transition: outline var(--td-transition);
 			cursor: pointer;
-			--ripple-color: var(--td-bg-color-container-active);
 
 			&:hover {
 				outline: solid 2px var(--td-brand-color-focus);

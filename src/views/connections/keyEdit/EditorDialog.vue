@@ -30,9 +30,9 @@
 </template>
 
 <script setup lang="ts">
+import { type SelectOption } from 'tdesign-vue-next'
 import Editor from '@/components/Editor.vue'
 import { useLoading } from '@/hooks'
-import { SelectOption } from 'tdesign-vue-next'
 
 defineOptions({ name: 'ConnectionKeyEditEditorDialog' })
 
@@ -49,9 +49,9 @@ function open(options: { value: string; confirm: typeof confirmCallback }) {
 
 // close dialog
 function close() {
+	editorRef.value.destroy()
 	visible.value = false
 	language.value = 'text/plain'
-	editorRef.value.destroy()
 }
 
 // dialog opened

@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { PrimaryTableCol } from 'tdesign-vue-next'
+import { type PrimaryTableCol } from 'tdesign-vue-next'
 import { connectionInfoInjectKey } from '../keys'
 
 defineOptions({ name: 'ConnectionsOverviewKeyspace' })

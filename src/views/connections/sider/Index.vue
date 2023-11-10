@@ -4,7 +4,7 @@
 			<TInput v-model="keyword" size="small" placeholder="搜索" clearable>
 				<template #prefixIcon><Icon height="16" width="16" icon="fluent:search-16-regular" /></template>
 			</TInput>
-			<TTooltip content="新建连接" :show-arrow="false" placement="bottom-right">
+			<TTooltip content="新建连接" :show-arrow="false" placement="bottom">
 				<TButton size="small" variant="dashed" theme="default" shape="square" @click="handleEditConnectionClick()">
 					<template #icon><Icon height="16" width="16" icon="fluent:add-16-regular" /></template>
 				</TButton>
@@ -14,7 +14,7 @@
 			<TransitionGroup name="body">
 				<div class="body_item" v-for="item in filteredConnections" :key="item.id" :id="item.id">
 					<div class="body_item_header" :class="generateConnectionClass(item)" @click="handleConnectionClick(item)">
-						<Icon class="body_item_header_arrow" height="16" width="16" :icon="connectionIcon" />
+						<Icon class="body_item_header_arrow" height="16" width="16" icon="fluent:chevron-down-16-regular" />
 						<TextEllipsis class="body_item_header_title" :content="item.name" />
 						<div class="body_item_header_actions">
 							<TDropdown>
@@ -135,15 +135,9 @@ function generateContentRef(el, id: string, display: string) {
 
 // connection click
 const activedConnectionId = ref<string>()
-const { isLoading: connectionLoading, enter: enterConnectionLoading, exit: exitConnectionLoading } = useLoading()
 async function handleConnectionClick(connection: Connection) {
-	try {
-		enterConnectionLoading()
-		activedConnectionId.value = activedConnectionId.value === connection.id ? null : connection.id
-		await contentRefs.value.get(`${connection.display}-${connection.id}`).init()
-	} finally {
-		exitConnectionLoading()
-	}
+	activedConnectionId.value = activedConnectionId.value === connection.id ? null : connection.id
+	await contentRefs.value.get(`${connection.display}-${connection.id}`).init()
 }
 
 // generate connection class
@@ -154,11 +148,6 @@ function generateConnectionClass(connection: Connection) {
 		'is-actived': connection.id === activedConnectionId.value,
 	}
 }
-
-// connection icon
-const connectionIcon = computed(() =>
-	connectionLoading.value ? 'line-md:loading-loop' : 'fluent:chevron-down-16-regular',
-)
 
 // top connection
 function generateConnectionTopDropdownItem(top: boolean) {
@@ -189,10 +178,10 @@ function handleConnectionDisplayChange(connection: Connection) {
 const { isLoading: isRemoveLoading, enter: enterRemoveLoading, exit: exitRemoveLoading } = useLoading()
 function handleConnectionRemoveClick(id: string) {
 	const dialogInstance = DialogPlugin.confirm({
-		header: '删除连接',
+		header: '删除确认',
 		body: '确定要删除该连接吗？',
 		theme: 'danger',
-		confirmBtn: { loading: isRemoveLoading.value },
+		confirmBtn: { loading: isRemoveLoading.value, theme: 'danger', variant: 'outline' },
 		onConfirm: async () => {
 			try {
 				enterRemoveLoading()
