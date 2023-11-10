@@ -9,9 +9,7 @@
 					size="small"
 					@change="initKeys()"
 				>
-					<template #prefixIcon>
-						<Icon height="14" width="14" icon="fluent:database-stack-16-regular" />
-					</template>
+					<template #prefixIcon><Icon height="14" width="14" icon="fluent:database-stack-16-regular" /></template>
 					<template #panelTopContent>
 						<div class="database_panel_top">
 							<TButton
@@ -22,9 +20,7 @@
 								:loading="databasesLoading"
 								@click="initDatabaseOptions()"
 							>
-								<template #icon>
-									<Icon height="16" width="16" icon="fluent:arrow-sync-16-regular" />
-								</template>
+								<template #icon><Icon height="16" width="16" icon="fluent:arrow-sync-16-regular" /></template>
 								<span>刷新</span>
 							</TButton>
 						</div>
@@ -52,7 +48,6 @@
 				:data="keysTree"
 				:filter="keysTreeFilter"
 				:actived="activedKey"
-				:disabled="isKeyChangeLoading"
 				allow-fold-node-on-filter
 				activable
 				expand-mutex
@@ -64,8 +59,23 @@
 			>
 				<template #label="{ node }">
 					<div class="tree_node">
-						<Icon height="16" width="16" color="var(--td-brand-color)" :icon="keyIcon" v-if="node.data.isLeaf" />
+						<Icon
+							height="16"
+							width="16"
+							color="var(--td-brand-color)"
+							icon="fluent:key-20-regular"
+							v-if="node.data.isLeaf"
+						/>
 						<div class="tree_node_label">{{ node.label }}</div>
+						<TDropdown trigger="hover">
+							<Icon class="tree_node_action" height="16" width="16" icon="fluent:more-vertical-16-regular" />
+							<TDropdownMenu>
+								<TDropdownItem theme="error" @click="handleKeyRemoveClick(node)">
+									<template #prefixIcon><Icon height="16" width="16" icon="fluent:delete-16-regular" /></template>
+									<span>删除</span>
+								</TDropdownItem>
+							</TDropdownMenu>
+						</TDropdown>
 					</div>
 				</template>
 				<template #empty>
@@ -87,6 +97,7 @@ import {
 	type TreeNodeValue,
 	type SkeletonRowCol,
 	MessagePlugin,
+	DialogPlugin,
 } from 'tdesign-vue-next'
 import { useEventBus } from '@vueuse/core'
 import { useConnectionsStore, type Connection } from '@/store'
@@ -100,7 +111,7 @@ import {
 	keySavedEventKey,
 	keyUpdatedEventKey,
 } from '../keys'
-import { useKeyTree } from '../hooks'
+import { useKeyRemove, useKeyTree } from '../hooks'
 
 defineOptions({ name: 'SiderTree' })
 
@@ -198,24 +209,31 @@ function handleKeysTreeFilterChange(value: string) {
 
 // connection keys tree change
 const injectActivedKey = inject(activedKeyInjectKey)
-const { isLoading: isKeyChangeLoading, enter: enterKeyChangeLoading, exit: exitKeyChangeLoading } = useLoading()
-const keyIcon = computed(() => (isKeyChangeLoading.value ? 'line-md:loading-loop' : 'fluent:key-20-regular'))
 const activedKey = computed(() => (injectActivedKey.value?.key ? [injectActivedKey.value.key] : []))
 async function handleKeyTreeChange(value: TreeNodeValue[], { node }: { node: TreeNodeModel }) {
-	try {
-		enterKeyChangeLoading()
-		if (!node.data.isLeaf) return
-		const key = node.value as string
-		const id = props.connection.id
-		const keyExists = await window.mainWindow.redis.exists(id, key)
-		if (keyExists !== 1) {
-			MessagePlugin.error('键不存在')
-			return
-		}
-		useEventBus(keyActivedEventKey).emit({ key, id })
-	} finally {
-		exitKeyChangeLoading()
+	if (!node.data.isLeaf) return
+	const key = node.data.key
+	const id = props.connection.id
+	const keyExists = await window.mainWindow.redis.exists(id, key)
+	if (keyExists !== 1) {
+		MessagePlugin.error('键不存在')
+		return
 	}
+	useEventBus(keyActivedEventKey).emit({ key, id })
+}
+
+// key remove
+const { isLoading: isKeyRemoveLoading, execute: removeKey } = useKeyRemove(props.connection.id)
+function handleKeyRemoveClick(node: TreeNodeModel) {
+	const dialogInstance = DialogPlugin.confirm({
+		header: '删除确认',
+		theme: 'danger',
+		body: node.data.isLeaf ? '确认删除该键吗？' : '确认删除该目录下的所有键吗？',
+		confirmBtn: { loading: isKeyRemoveLoading.value, theme: 'danger', variant: 'outline' },
+		onConfirm: async () => {
+			dialogInstance.destroy()
+		},
+	})
 }
 
 defineExpose({ init })
@@ -276,12 +294,23 @@ defineExpose({ init })
 		gap: var(--td-comp-margin-s);
 		color: var(--td-text-color-primary);
 
+		&:hover .tree_node_action {
+			visibility: visible;
+			opacity: 1;
+		}
+
 		&_label {
 			flex: 1;
 			font: var(--td-font-body-medium);
 			overflow: hidden;
 			text-overflow: ellipsis;
 			white-space: nowrap;
+		}
+
+		&_action {
+			transition: all var(--td-transition);
+			visibility: hidden;
+			opacity: 0;
 		}
 	}
 }

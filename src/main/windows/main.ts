@@ -40,6 +40,12 @@ export function createMainWindow() {
 	mainWindow.on('minimize', () => mainWindow.webContents.send(channel.main.onMinimize))
 	mainWindow.on('maximize', () => mainWindow.webContents.send(channel.main.onMaximize))
 	mainWindow.on('unmaximize', () => mainWindow.webContents.send(channel.main.onUnmaximize))
+	mainWindow.on('close', () => {
+		BrowserWindow.getAllWindows().forEach(item => {
+			if (item.id === mainWindow.id) return
+			item.close()
+		})
+	})
 }
 
 // window operations
@@ -48,12 +54,7 @@ ipcMain.on(channel.main.maximize, () => mainWindow.maximize())
 ipcMain.on(channel.main.unmaximize, () => mainWindow.unmaximize())
 ipcMain.on(channel.main.openSetting, () => SettingWindow.open())
 ipcMain.on(channel.main.openDevtools, () => mainWindow.webContents.openDevTools())
-ipcMain.on(channel.main.close, () =>
-	BrowserWindow.getAllWindows().forEach(item => {
-		item.minimize()
-		item.close()
-	}),
-)
+ipcMain.on(channel.main.close, () => mainWindow.close())
 ipcMain.on(channel.main.reload, () => mainWindow.reload())
 
 // app operations

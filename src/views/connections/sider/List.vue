@@ -9,9 +9,7 @@
 					size="small"
 					@change="initKeys()"
 				>
-					<template #prefixIcon>
-						<Icon height="16" width="16" icon="fluent:database-stack-16-regular" />
-					</template>
+					<template #prefixIcon><Icon height="16" width="16" icon="fluent:database-stack-16-regular" /></template>
 					<template #panelTopContent>
 						<div class="database_panel_top">
 							<TButton
@@ -22,9 +20,7 @@
 								:loading="databasesLoading"
 								@click="initDatabaseOptions()"
 							>
-								<template #icon>
-									<Icon height="16" width="16" icon="fluent:arrow-sync-16-regular" />
-								</template>
+								<template #icon><Icon height="16" width="16" icon="fluent:arrow-sync-16-regular" /></template>
 								<span>刷新</span>
 							</TButton>
 						</div>
@@ -55,11 +51,19 @@
 					:id="item"
 					v-for="item in filterKeysList"
 					:key="item"
-					:title="item"
 					@click="handleKeyClick(item)"
 				>
 					<Icon height="16" width="16" color="var(--td-brand-color)" icon="fluent:key-16-regular" />
-					<div class="body_item_label">{{ item }}</div>
+					<div class="body_item_label" :title="item">{{ item }}</div>
+					<TDropdown trigger="hover">
+						<Icon class="body_item_action" height="16" width="16" icon="fluent:more-vertical-16-regular" />
+						<TDropdownMenu>
+							<TDropdownItem theme="error" @click="handleKeyRemoveClick(item)">
+								<template #prefixIcon><Icon height="16" width="16" icon="fluent:delete-16-regular" /></template>
+								<span>删除</span>
+							</TDropdownItem>
+						</TDropdownMenu>
+					</TDropdown>
 				</div>
 				<div class="body_empty" v-if="isEmpty">
 					<Icon class="body_empty_icon" height="64" width="64" icon="custom-empty" />
@@ -72,7 +76,7 @@
 </template>
 
 <script setup lang="ts">
-import { type SelectOption, type SkeletonRowCol } from 'tdesign-vue-next'
+import { DialogPlugin, MessagePlugin, type SelectOption, type SkeletonRowCol } from 'tdesign-vue-next'
 import { useEventBus } from '@vueuse/core'
 import { useConnectionsStore, type Connection } from '@/store'
 import {
@@ -85,10 +89,12 @@ import {
 	keyUpdatedEventKey,
 } from '../keys'
 import { useLoading, useScrollbar } from '@/hooks'
+import { useKeyRemove } from '../hooks'
 
 defineOptions({ name: 'SiderList' })
 
 const props = defineProps<{ connection: Connection }>()
+
 const emit = defineEmits<{ error: [id: string] }>()
 
 const connectionsStore = useConnectionsStore()
@@ -153,7 +159,7 @@ useEventBus(keyRenamedEventKey).on(key => initKeys(false))
 
 // init keys
 const { isLoading: keysLoading, enter: enterKeysLoading, exit: exitKeysLoading } = useLoading()
-const keysList = ref<any[]>([])
+const keysList = ref<string[]>([])
 async function initKeys(showLoading = true) {
 	try {
 		showLoading && enterKeysLoading()
@@ -184,6 +190,23 @@ function handleKeyClick(key: string) {
 // generate key actived class
 function keyActivedClass(key: string) {
 	return activedKey.value?.key === key ? 'is-actived' : ''
+}
+
+// key remove click
+const { isLoading: isKeyRemoveLoading, execute: removeKey } = useKeyRemove(props.connection.id)
+function handleKeyRemoveClick(key: string) {
+	const dialogInstance = DialogPlugin.confirm({
+		header: '删除确认',
+		body: '确认删除该键吗？',
+		theme: 'danger',
+		confirmBtn: { loading: isKeyRemoveLoading.value, theme: 'danger', variant: 'outline' },
+		onConfirm: async () => {
+			await removeKey(key)
+			useEventBus(keyRemovedEventKey).emit(key)
+			MessagePlugin.success('删除成功')
+			dialogInstance.destroy()
+		},
+	})
 }
 
 defineExpose({ init })
@@ -224,6 +247,7 @@ defineExpose({ init })
 	gap: var(--td-comp-margin-s);
 
 	&_item {
+		position: relative;
 		display: flex;
 		align-items: center;
 		gap: var(--td-comp-margin-s);
@@ -242,11 +266,22 @@ defineExpose({ init })
 			background-color: var(--td-bg-color-container-hover);
 		}
 
+		&:hover > .body_item_action {
+			visibility: visible;
+			opacity: 1;
+		}
+
 		&_label {
 			flex: 1;
 			overflow: hidden;
 			text-overflow: ellipsis;
 			white-space: nowrap;
+		}
+
+		&_action {
+			transition: all var(--td-transition);
+			visibility: hidden;
+			opacity: 0;
 		}
 	}
 

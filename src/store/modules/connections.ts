@@ -1,6 +1,6 @@
 import { acceptHMRUpdate, defineStore } from 'pinia'
 import { setItem, getItem } from 'localforage'
-import { set } from 'lodash-es'
+import { set, cloneDeep } from 'lodash-es'
 
 export interface Connection {
 	id: string
@@ -41,11 +41,9 @@ export const useConnectionsStore = defineStore('Connections', () => {
 
 	/** get stored connections */
 	async function getStoredConnections() {
-		const normalConnectionsStr = await getItem<string>(ConnectionKeys.NormalConnections)
-		const topConnectionsStr = await getItem<string>(ConnectionKeys.TopConnections)
-		const normalConnections = normalConnectionsStr ? (JSON.parse(normalConnectionsStr) as Connection[]) : []
-		const topConnections = topConnectionsStr ? (JSON.parse(topConnectionsStr) as Connection[]) : []
-		return [normalConnections, topConnections]
+		const normalConnections = await getItem<Connection[]>(ConnectionKeys.NormalConnections)
+		const topConnections = await getItem<Connection[]>(ConnectionKeys.TopConnections)
+		return [normalConnections || [], topConnections || []]
 	}
 
 	/** generate connections */
@@ -69,6 +67,7 @@ export const useConnectionsStore = defineStore('Connections', () => {
 
 	/** add connections */
 	async function addConnections(connection: Connection) {
+		connection = cloneDeep(connection)
 		const [normalConnections, topConnections] = await getStoredConnections()
 		const { name, host, port, username, password } = connection
 		const isNormalExist = normalConnections.some(item => {
@@ -81,7 +80,7 @@ export const useConnectionsStore = defineStore('Connections', () => {
 		})
 		if (isNormalExist || isTopExist) throw new Error('该连接已存在')
 		normalConnections.push(connection)
-		const res = await setItem(ConnectionKeys.NormalConnections, JSON.stringify(normalConnections))
+		const res = await setItem(ConnectionKeys.NormalConnections, normalConnections)
 		if (res) generateConnections(topConnections, normalConnections)
 	}
 
@@ -92,18 +91,19 @@ export const useConnectionsStore = defineStore('Connections', () => {
 		const topConnectionIndex = topConnections.findIndex(item => item.id === id)
 		if (normalConnectionIndex !== -1) {
 			normalConnections.splice(normalConnectionIndex, 1)
-			const res = await setItem(ConnectionKeys.NormalConnections, JSON.stringify(normalConnections))
+			const res = await setItem(ConnectionKeys.NormalConnections, normalConnections)
 			if (res) generateConnections(topConnections, normalConnections)
 		}
 		if (topConnectionIndex !== -1) {
 			topConnections.splice(topConnectionIndex, 1)
-			const res = await setItem(ConnectionKeys.TopConnections, JSON.stringify(topConnections))
+			const res = await setItem(ConnectionKeys.TopConnections, topConnections)
 			if (res) generateConnections(topConnections, normalConnections)
 		}
 	}
 
 	/** update connection */
 	async function updateConnection(connection: Connection) {
+		connection = cloneDeep(connection)
 		const [normalConnections, topConnections] = await getStoredConnections()
 		const connectionIndex = connection.top
 			? topConnections.findIndex(item => item.id === connection.id)
@@ -112,7 +112,7 @@ export const useConnectionsStore = defineStore('Connections', () => {
 			? topConnections.splice(connectionIndex, 1, connection)
 			: normalConnections.splice(connectionIndex, 1, connection)
 		const key = connection.top ? ConnectionKeys.TopConnections : ConnectionKeys.NormalConnections
-		const value = JSON.stringify(connection.top ? topConnections : normalConnections)
+		const value = connection.top ? topConnections : normalConnections
 		const res = await setItem(key, value)
 		if (res) generateConnections(topConnections, normalConnections)
 	}
@@ -125,8 +125,8 @@ export const useConnectionsStore = defineStore('Connections', () => {
 		connection.top = true
 		topConnections.push(connection)
 		normalConnections.splice(connectionIndex, 1)
-		const normalRes = await setItem(ConnectionKeys.NormalConnections, JSON.stringify(normalConnections))
-		const topRes = await setItem(ConnectionKeys.TopConnections, JSON.stringify(topConnections))
+		const normalRes = await setItem(ConnectionKeys.NormalConnections, normalConnections)
+		const topRes = await setItem(ConnectionKeys.TopConnections, topConnections)
 		if (normalRes && topRes) generateConnections(topConnections, normalConnections)
 	}
 
@@ -138,8 +138,8 @@ export const useConnectionsStore = defineStore('Connections', () => {
 		connection.top = false
 		normalConnections.push(connection)
 		topConnections.splice(connectionIndex, 1)
-		const normalRes = await setItem(ConnectionKeys.NormalConnections, JSON.stringify(normalConnections))
-		const topRes = await setItem(ConnectionKeys.TopConnections, JSON.stringify(topConnections))
+		const normalRes = await setItem(ConnectionKeys.NormalConnections, normalConnections)
+		const topRes = await setItem(ConnectionKeys.TopConnections, topConnections)
 		if (normalRes && topRes) generateConnections(topConnections, normalConnections)
 	}
 

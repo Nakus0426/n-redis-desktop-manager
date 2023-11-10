@@ -1,7 +1,8 @@
-import { useLoading } from "@/hooks"
-import { useEventBus } from "@vueuse/core"
-import { MessagePlugin } from "tdesign-vue-next"
-import { keyActivedEventKey, keyRemovedEventKey, keyRenamedEventKey } from "./keys"
+import { MessagePlugin } from 'tdesign-vue-next'
+import { useEventBus } from '@vueuse/core'
+import { useLoading } from '@/hooks'
+import { keyActivedEventKey, keyRemovedEventKey, keyRenamedEventKey } from './keys'
+import { nanoid } from 'nanoid'
 
 /** transform keys to tree */
 export function useKeyTree(keys: string[], separator: string) {
@@ -12,11 +13,15 @@ export function useKeyTree(keys: string[], separator: string) {
 		let node = tree
 		splitKeys.forEach((key2, index2) => {
 			key2 = key2 === '' ? '[Empty]' : key2
-			if (!node.find(item => item.label === key2)) node.push({ label: key2, children: [], isLeaf: false, value: null })
+			if (!node.find(item => item.label === key2)) {
+				const prefixKey = key.split(key2)[0]
+				node.push({ label: key2, children: [], isLeaf: false, key: prefixKey + key2, value: nanoid() })
+			}
 			const foundNode = node.find(item => item.label === key2)
 			if (index2 === splitKeysLength - 1) {
 				foundNode.isLeaf = true
-				foundNode.value = key
+				foundNode.key = key
+				foundNode.value = nanoid()
 			}
 			node = foundNode.children
 		})
@@ -67,8 +72,8 @@ export function useTTLUpdate(id: string) {
 	return { isLoading, execute }
 }
 
-/** delete key */
-export function useKeyDelete(id: string) {
+/** remove key */
+export function useKeyRemove(id: string) {
 	const { isLoading, enter, exit } = useLoading()
 
 	async function execute(key: string) {
@@ -96,6 +101,25 @@ export function useHashFieldNameRename(id: string) {
 			enter()
 			await window.mainWindow.redis.hset(id, key, modifiedName, value)
 			await window.mainWindow.redis.hdel(id, key, originalName)
+		} catch (e) {
+			MessagePlugin.error(e.message)
+			throw e
+		} finally {
+			exit()
+		}
+	}
+
+	return { isLoading, execute }
+}
+
+/** set key value */
+export function useKeyValueSet(id: string) {
+	const { isLoading, enter, exit } = useLoading()
+
+	async function execute(key: string, value: string | number, expire?: number) {
+		try {
+			enter()
+			await window.mainWindow.redis.set(id, key, value, expire)
 		} catch (e) {
 			MessagePlugin.error(e.message)
 			throw e
