@@ -80,3 +80,17 @@
 	-webkit-animation-duration: 0.15s !important;
 	animation-duration: 0.15s !important;
 }
+
+// dropdown
+.t-dropdown {
+	background-color: var(--td-bg-color-container-opacity);
+	backdrop-filter: blur(15px);
+}
+
+// popup
+.t-popup {
+	&__content {
+		background-color: var(--td-bg-color-container-opacity);
+		backdrop-filter: blur(15px);
+	}
+}
