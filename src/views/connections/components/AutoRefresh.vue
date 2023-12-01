@@ -13,8 +13,6 @@
 </template>
 
 <script setup lang="ts">
-defineOptions({ name: 'ConnectionAutoRefresh' })
-
 const emit = defineEmits<{ refresh: [] }>()
 
 // generate button icon

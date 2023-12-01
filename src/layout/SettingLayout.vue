@@ -51,8 +51,6 @@ import { AppearanceSettingRoute, CommonSettingRoute, FunctionSettingRoute } from
 import { useAppStore } from '@/store'
 import { useLocale, useScrollbar } from '@/hooks'
 
-defineOptions({ name: 'Setting' })
-
 const router = useRouter()
 const route = useRoute()
 const appStore = useAppStore()

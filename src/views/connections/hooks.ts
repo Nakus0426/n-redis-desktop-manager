@@ -4,9 +4,17 @@ import { useLoading } from '@/hooks'
 import { keyActivedEventKey, keyRemovedEventKey, keyRenamedEventKey } from './keys'
 import { nanoid } from 'nanoid'
 
+interface KeyTreeNode {
+	label: string
+	children: KeyTreeNode[]
+	isLeaf: boolean
+	key: string
+	value: string
+}
+
 /** transform keys to tree */
 export function useKeyTree(keys: string[], separator: string) {
-	const tree = []
+	const tree: KeyTreeNode[] = []
 	keys.forEach(key => {
 		const splitKeys = key.split(separator)
 		const splitKeysLength = splitKeys.length
@@ -27,6 +35,17 @@ export function useKeyTree(keys: string[], separator: string) {
 		})
 	})
 	return tree
+}
+
+/** search key from key tree */
+export function useKeyTreeSearch(tree: KeyTreeNode[], key: string) {
+	if (!tree || tree.length === 0) return null
+	let stack = [].concat(tree)
+	while (stack.length > 0) {
+		const node = stack.pop()
+		if (node.isLeaf && node.key === key) return node
+		if (node.children.length > 0) stack = stack.concat(node.children.reverse())
+	}
 }
 
 /** rename key */
@@ -120,6 +139,26 @@ export function useKeyValueSet(id: string) {
 		try {
 			enter()
 			await window.mainWindow.redis.set(id, key, value, expire)
+		} catch (e) {
+			MessagePlugin.error(e.message)
+			throw e
+		} finally {
+			exit()
+		}
+	}
+
+	return { isLoading, execute }
+}
+
+/** update set value */
+export function useSetUpdate(id: string) {
+	const { isLoading, enter, exit } = useLoading()
+
+	async function execute(key: string, originalValue: string | string[], modifiedValue: string | string[]) {
+		try {
+			enter()
+			await window.mainWindow.redis.srem(id, key, originalValue)
+			await window.mainWindow.redis.sadd(id, key, modifiedValue)
 		} catch (e) {
 			MessagePlugin.error(e.message)
 			throw e

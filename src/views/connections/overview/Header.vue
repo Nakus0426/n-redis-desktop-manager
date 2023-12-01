@@ -44,8 +44,6 @@ import TextEllipsis from '@/components/TextEllipsis.vue'
 import { Icon } from '@iconify/vue'
 import { useLoading } from '@/hooks'
 
-defineOptions({ name: 'ConnectionsOverviewHeader' })
-
 const { data, isLoading } = inject(connectionInfoInjectKey)
 
 // tab panel content

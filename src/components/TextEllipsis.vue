@@ -7,8 +7,6 @@
 <script setup lang="ts">
 import { useMouseInElement } from '@vueuse/core'
 
-defineOptions({ name: 'TextEllipsis' })
-
 const props = defineProps<{ content?: string | number }>()
 
 // calculate whether text overflows

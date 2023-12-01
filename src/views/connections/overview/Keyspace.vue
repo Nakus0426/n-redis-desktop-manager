@@ -19,8 +19,6 @@
 import { type PrimaryTableCol } from 'tdesign-vue-next'
 import { connectionInfoInjectKey } from '../keys'
 
-defineOptions({ name: 'ConnectionsOverviewKeyspace' })
-
 const { data, isLoading } = inject(connectionInfoInjectKey)
 
 // table columns config

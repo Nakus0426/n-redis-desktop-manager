@@ -18,9 +18,7 @@
 <script setup lang="ts">
 import { useScrollbar } from '@/hooks'
 
-defineOptions({ name: 'Dialog' })
 const slots = defineSlots<{ footer(): any; default(): any }>()
-
 const props = defineProps<{ title: string; icon?: string }>()
 const emit = defineEmits<{ opened: [] }>()
 

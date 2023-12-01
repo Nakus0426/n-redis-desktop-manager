@@ -45,6 +45,8 @@ export interface MainWindow {
 		type: (typeof import('./utils'))['RedisUtil']['prototype']['type']
 		ttl: (typeof import('./utils'))['RedisUtil']['prototype']['ttl']
 		memoryUsage: (typeof import('./utils'))['RedisUtil']['prototype']['memoryUsage']
+		srem: (typeof import('./utils'))['RedisUtil']['prototype']['srem']
+		sadd: (typeof import('./utils'))['RedisUtil']['prototype']['sadd']
 		onError: (callback: (id: string, error: Error) => void) => void
 		onReady: (callback: (id: string) => void) => void
 		onEnd: (callback: (id: string) => void) => void

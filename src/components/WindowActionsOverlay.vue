@@ -13,8 +13,6 @@
 </template>
 
 <script setup lang="ts">
-defineOptions({ name: 'WindowActionsOverlay' })
-
 const props = withDefaults(
 	defineProps<{
 		/**

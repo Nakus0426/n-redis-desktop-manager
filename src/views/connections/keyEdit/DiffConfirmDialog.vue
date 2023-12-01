@@ -37,8 +37,6 @@
 <script setup lang="ts">
 import DiffEditor from '@/components/DiffEditor.vue'
 
-defineOptions({ name: 'ConnectionKeyEditDiffConfirmDialog' })
-
 const emit = defineEmits<{ close: []; confirm: [type: typeof type, key: string, value: string] }>()
 
 // open dialog

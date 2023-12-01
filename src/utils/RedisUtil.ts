@@ -182,4 +182,16 @@ export class RedisUtil {
 		const client = this.getClient(id)
 		return client.MEMORY_USAGE(key)
 	}
+
+	/** Removes one or more members from a set. Deletes the set if the last member was removed */
+	srem(id: string, key: string, member: string | string[]) {
+		const client = this.getClient(id)
+		return client.SREM(key, member)
+	}
+
+	/** Adds one or more members to a set. Creates the key if it doesn't exist */
+	sadd(id: string, key: string, member: string | string[]) {
+		const client = this.getClient(id)
+		return client.SADD(key, member)
+	}
 }

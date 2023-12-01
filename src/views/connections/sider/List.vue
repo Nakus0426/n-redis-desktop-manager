@@ -91,8 +91,6 @@ import {
 import { useLoading, useScrollbar } from '@/hooks'
 import { useKeyRemove } from '../hooks'
 
-defineOptions({ name: 'SiderList' })
-
 const props = defineProps<{ connection: Connection }>()
 
 const emit = defineEmits<{ error: [id: string] }>()

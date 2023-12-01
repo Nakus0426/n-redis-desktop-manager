@@ -37,8 +37,6 @@ import { useCopyButton } from '@/hooks'
 import { keyEditInjectKey, keyEditUpdatedEventKey } from '../keys'
 import { useKeyValueSet } from '../hooks'
 
-defineOptions({ name: 'ConnectionsKeyEditStringEditor' })
-
 const injectData = inject(keyEditInjectKey)
 
 // memory usage

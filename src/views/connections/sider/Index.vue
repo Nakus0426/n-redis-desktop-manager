@@ -90,8 +90,6 @@ import ContentList from './List.vue'
 import { connectionDisconnectedEventKey } from '../keys'
 import { useLoading } from '@/hooks'
 
-defineOptions({ name: 'ConnectionsSiderIndex' })
-
 const connectionsStore = useConnectionsStore()
 
 // keyword filter

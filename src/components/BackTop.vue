@@ -9,8 +9,6 @@ import { type SizeEnum } from 'tdesign-vue-next'
 import { useEventListener } from '@vueuse/core'
 import { type MaybeRef } from 'vue'
 
-defineOptions({ name: 'BackTop' })
-
 const props = withDefaults(
 	defineProps<{
 		target: MaybeRef<HTMLElement>

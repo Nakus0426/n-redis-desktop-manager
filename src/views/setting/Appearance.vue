@@ -29,8 +29,6 @@ import { useLocale } from '@/hooks'
 import { Theme, useAppStore } from '@/store'
 import { Cell, CellItem } from './components'
 
-defineOptions({ name: 'SettingAppearance' })
-
 const appStore = useAppStore()
 const { t } = useLocale(false)
 

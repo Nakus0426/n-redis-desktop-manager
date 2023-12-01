@@ -47,7 +47,6 @@
 			<TTree
 				:data="keysTree"
 				:filter="keysTreeFilter"
-				:actived="activedKey"
 				allow-fold-node-on-filter
 				activable
 				expand-mutex
@@ -55,6 +54,7 @@
 				hover
 				line
 				check-strictly
+				ref="treeRef"
 				@active="handleKeyTreeChange"
 			>
 				<template #label="{ node }">
@@ -96,6 +96,7 @@ import {
 	type SelectOption,
 	type TreeNodeValue,
 	type SkeletonRowCol,
+	Tree,
 	MessagePlugin,
 	DialogPlugin,
 } from 'tdesign-vue-next'
@@ -111,9 +112,7 @@ import {
 	keySavedEventKey,
 	keyUpdatedEventKey,
 } from '../keys'
-import { useKeyRemove, useKeyTree } from '../hooks'
-
-defineOptions({ name: 'SiderTree' })
+import { useKeyRemove, useKeyTree, useKeyTreeSearch } from '../hooks'
 
 const props = defineProps<{ connection: Connection }>()
 const emit = defineEmits<{ error: [id: string] }>()
@@ -209,7 +208,14 @@ function handleKeysTreeFilterChange(value: string) {
 
 // connection keys tree change
 const injectActivedKey = inject(activedKeyInjectKey)
-const activedKey = computed(() => (injectActivedKey.value?.key ? [injectActivedKey.value.key] : []))
+const treeRef = ref<InstanceType<typeof Tree>>()
+watch(
+	() => injectActivedKey.value?.key,
+	newValue => {
+		const node = useKeyTreeSearch(keysTree.value, newValue)
+		if (node) treeRef.value.setItem(node.value, { actived: true })
+	},
+)
 async function handleKeyTreeChange(value: TreeNodeValue[], { node }: { node: TreeNodeModel }) {
 	if (!node.data.isLeaf) return
 	const key = node.data.key

@@ -77,10 +77,9 @@ import { keyEditInjectKey, keyEditUpdatedEventKey } from '../keys'
 import AutoRefresh from '../components/AutoRefresh.vue'
 import StringEditor from './StringEditor.vue'
 import HashEditor from './HashEditor.vue'
+import SetEditor from './SetEditor.vue'
 import { useKeyRemove, useKeyRename, useTTLUpdate } from '../hooks'
 import { useEventBus } from '@vueuse/core'
-
-defineOptions({ name: 'ConnectionsKeyEditIndex' })
 
 const props = defineProps<{ data: string; id: string }>()
 
@@ -199,6 +198,7 @@ useEventBus(keyEditUpdatedEventKey).on(() => handleAutoRefreshClick())
 const bodyComponent = computed(() => {
 	if (keyType.value === 'string') return StringEditor
 	if (keyType.value === 'hash') return HashEditor
+	if (keyType.value === 'set') return SetEditor
 })
 </script>
 

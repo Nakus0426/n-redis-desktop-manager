@@ -64,8 +64,6 @@ import { useWindowShortcut } from '@/hooks'
 import { useAppStore } from '@/store'
 import { ConnectionsIndexRoute, TerminalIndexRoute } from '@/router'
 
-defineOptions({ name: 'Layout' })
-
 const appStore = useAppStore()
 const router = useRouter()
 const route = useRoute()

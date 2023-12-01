@@ -10,8 +10,6 @@
 import { type IconifyIconSize } from '@iconify/vue'
 import { isNumber, isString } from 'lodash-es'
 
-defineOptions({ name: 'HelpTooltip' })
-
 const props = withDefaults(
 	defineProps<{
 		height?: IconifyIconSize

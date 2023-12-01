@@ -8,8 +8,6 @@ import jsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker'
 import editorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
 import { useAppStore } from '@/store'
 
-defineOptions({ name: 'Editor' })
-
 const props = withDefaults(
 	defineProps<{
 		value?: string

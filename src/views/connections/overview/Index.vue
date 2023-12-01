@@ -14,8 +14,6 @@ import Keyspace from './Keyspace.vue'
 import AutoRefresh from '../components/AutoRefresh.vue'
 import { connectionInfoInjectKey } from '../keys'
 
-defineOptions({ name: 'ConnectionsOverviewIndex' })
-
 const props = defineProps<{ id: string }>()
 
 const connectionStore = useConnectionsStore()

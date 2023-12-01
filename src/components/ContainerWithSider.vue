@@ -11,8 +11,6 @@
 </template>
 
 <script setup lang="ts">
-defineOptions({ name: 'ContainerWithSider' })
-
 const props = withDefaults(
 	defineProps<{
 		siderWidth?: number

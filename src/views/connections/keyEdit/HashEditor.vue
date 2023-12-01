@@ -1,5 +1,5 @@
 <template>
-	<div class="hash-editor" ref="containerRef">
+	<div class="hash-editor">
 		<div class="header">
 			<div class="header_prefix">
 				<TTooltip content="大小" :show-arrow="false" placement="right">
@@ -14,7 +14,6 @@
 			:columns="columns"
 			:data="data"
 			:scroll="{ type: 'virtual' }"
-			:height="tableHeight"
 			stripe
 			attach="#app"
 			size="small"
@@ -100,14 +99,12 @@
 </template>
 
 <script setup lang="tsx">
-import { useElementSize, useEventBus } from '@vueuse/core'
+import { useEventBus } from '@vueuse/core'
 import { type PrimaryTableCol, MessagePlugin } from 'tdesign-vue-next'
 import { useCopyButton } from '@/hooks'
 import EditorDialog from './EditorDialog.vue'
 import { keyEditInjectKey, keyEditUpdatedEventKey } from '../keys'
 import { useHashFieldNameRename } from '../hooks'
-
-defineOptions({ name: 'ConnectionsKeyEditHashEditor' })
 
 const injectData = inject(keyEditInjectKey)
 
@@ -115,10 +112,6 @@ const formatedMemoryUsage = computed(() => {
 	const kb = injectData.value.memoryUsage / 1024
 	return kb > 1024 ? `${(kb / 1024).toFixed(1)}MB` : `${kb.toFixed(1)}KB`
 })
-
-// table height
-const containerRef = ref()
-const { height: tableHeight } = useElementSize(containerRef)
 
 // formate data
 const data = computed(() => {
@@ -173,9 +166,9 @@ const fieldNameEditValueMap = ref<Record<string, string>>({})
 type InputStatus = 'error' | 'default' | 'success' | 'warning'
 const fieldNameInputStatusMap = ref(new Map<string, InputStatus>())
 function enterFieldNameEdit(fieldName: string) {
+	fieldNameEditStatusMap.value.clear()
 	fieldNameEditStatusMap.value.set(fieldName, true)
-	fieldNameEditStatusMap.value.forEach((value, key) => fieldNameEditStatusMap.value.set(key, key === fieldName))
-	fieldNameInputStatusMap.value.forEach((value, key) => fieldNameInputStatusMap.value.set(key, 'default'))
+	fieldNameInputStatusMap.value.clear()
 	fieldNameEditValueMap.value[fieldName] = fieldName
 }
 function exitFieldNameEdit(fieldName: string) {

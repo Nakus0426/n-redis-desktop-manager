@@ -12,8 +12,6 @@
 import { useAppStore } from '@/store'
 import { Cell, CellItem } from './components'
 
-defineOptions({ name: 'SettingFunction' })
-
 const appStore = useAppStore()
 </script>
 

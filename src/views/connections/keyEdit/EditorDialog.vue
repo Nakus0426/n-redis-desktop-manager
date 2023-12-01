@@ -34,8 +34,6 @@ import { type SelectOption } from 'tdesign-vue-next'
 import Editor from '@/components/Editor.vue'
 import { useLoading } from '@/hooks'
 
-defineOptions({ name: 'ConnectionKeyEditEditorDialog' })
-
 // open dialog
 const visible = ref(false)
 let confirmCallback: (value: string) => void | Promise<void>

@@ -2,14 +2,8 @@
 	<ContainerWithSider class="connections">
 		<template #sider><Sider /></template>
 		<div class="content">
-			<div class="content_header">
-				<div
-					class="content_header_prefix"
-					:class="tabsOverflowButtonVisibleClass"
-					v-ripple
-					v-show="tabsOverlow"
-					@click="handleTabsOverflowButtonClick('prefix')"
-				>
+			<div class="content_header" :class="tabsOverflowClass">
+				<div class="content_header_prefix" v-ripple @click="handleTabsOverflowButtonClick('prefix')">
 					<Icon height="16" width="16" icon="fluent:chevron-left-16-regular" />
 				</div>
 				<div class="content_header_center" ref="tabsRef">
@@ -37,13 +31,7 @@
 						</button>
 					</TransitionGroup>
 				</div>
-				<div
-					class="content_header_suffix"
-					:class="tabsOverflowButtonVisibleClass"
-					v-ripple
-					v-show="tabsOverlow"
-					@click="handleTabsOverflowButtonClick('suffix')"
-				>
+				<div class="content_header_suffix" v-ripple @click="handleTabsOverflowButtonClick('suffix')">
 					<Icon height="16" width="16" icon="fluent:chevron-right-16-regular" />
 				</div>
 			</div>
@@ -80,8 +68,6 @@ import Overview from './overview/Index.vue'
 import KeyEdit from './keyEdit/Index.vue'
 import { useScrollbar } from '@/hooks'
 import { useAppStore } from '@/store'
-
-defineOptions({ name: 'ConnectionsIndex' })
 
 // init scrollbar
 const containerRef = ref()
@@ -148,7 +134,7 @@ const activedTabPanel = ref<TabPanel>()
 
 // is tabs overflow
 const tabsOverlow = ref(false)
-const tabsOverflowButtonVisibleClass = computed(() => (tabsOverlow.value ? 'is-show' : ''))
+const tabsOverflowClass = computed(() => (tabsOverlow.value ? 'is-overflow' : ''))
 const tabsRef = ref<HTMLElement>()
 function calcTabsOverflow() {
 	nextTick(() => {
@@ -203,8 +189,7 @@ function tabActivedClass(key: string) {
 
 // tab click
 function handleTabClick(value: TabPanel) {
-	activedTabPanel.value = value
-	activeKey.value = { key: value.key, id: value.id }
+	useEventBus(keyActivedEventKey).emit({ key: value.key, id: value.id })
 	if (tabsOverlow.value) tabRefs.get(value.key).scrollIntoView({ inline: 'center', behavior: 'smooth' })
 }
 </script>
@@ -225,6 +210,18 @@ function handleTabClick(value: TabPanel) {
 		border-bottom: 1px solid var(--td-component-stroke);
 		-webkit-app-region: drag;
 
+		&.is-overflow {
+			.content_header_center {
+				-webkit-mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent 100%);
+				mask-image: linear-gradient(90deg, transparent, #000 5%, #000 95%, transparent 100%);
+			}
+
+			.content_header_prefix,
+			.content_header_suffix {
+				width: 24px;
+			}
+		}
+
 		&::after {
 			content: '';
 			position: absolute;
@@ -240,8 +237,9 @@ function handleTabClick(value: TabPanel) {
 			display: flex;
 			justify-content: center;
 			align-items: center;
-			margin-top: var(--td-comp-paddingTB-m);
+			margin-top: 17px;
 			height: 24px;
+			width: 0px;
 			border-radius: var(--td-radius-default);
 			color: var(--td-text-color-primary);
 			cursor: pointer;
@@ -251,10 +249,6 @@ function handleTabClick(value: TabPanel) {
 
 			&:hover {
 				background-color: var(--td-bg-color-container-active);
-			}
-
-			&.is-show {
-				width: 24px;
 			}
 		}
 

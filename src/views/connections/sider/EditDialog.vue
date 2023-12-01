@@ -100,8 +100,6 @@ import { cloneDeep } from 'lodash-es'
 import { useLoading, useLocale } from '@/hooks'
 import { type Connection, useConnectionsStore } from '@/store'
 
-defineOptions({ name: 'ConnectionsSiderEditDialog' })
-
 const emit = defineEmits<{ update: [id: string] }>()
 
 const { t } = useLocale()

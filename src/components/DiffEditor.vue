@@ -6,8 +6,6 @@
 import { useAppStore } from '@/store'
 import { editor } from 'monaco-editor'
 
-defineOptions({ name: 'DiffEditor' })
-
 const appStore = useAppStore()
 
 const props = withDefaults(

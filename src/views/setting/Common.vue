@@ -26,8 +26,6 @@ import { useLocale } from '@/hooks'
 import { useAppStore } from '@/store'
 import { Cell, CellItem } from './components'
 
-defineOptions({ name: 'SettingCommon' })
-
 const appStore = useAppStore()
 
 // app locale switch
