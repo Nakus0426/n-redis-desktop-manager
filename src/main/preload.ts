@@ -1,5 +1,10 @@
 import { contextBridge, ipcRenderer } from 'electron'
+import { useEvents } from 'electron-events'
 import { channel } from './windows/channels'
+
+const events = useEvents()
+
+contextBridge.exposeInMainWorld('ElectronAPI', { events })
 
 // main window
 contextBridge.exposeInMainWorld('mainWindow', {

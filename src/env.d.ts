@@ -4,8 +4,9 @@ declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string
 declare const MAIN_WINDOW_VITE_NAME: string
 
 declare interface Window {
-	mainWindow: ElectronAPI.MainWindow
-	settingWindow: ElectronAPI.SettingWindow
+	mainWindow: API.MainWindow
+	settingWindow: API.SettingWindow
+	ElectronAPI: API.ElectronAPI
 }
 
 interface ImportMetaEnv {

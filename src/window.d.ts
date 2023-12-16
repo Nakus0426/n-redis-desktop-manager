@@ -1,4 +1,5 @@
 import { type ConfigStore } from './main/configStore'
+import { type RendererIpcEvents } from 'electron-events'
 
 export interface MainWindow {
 	minimize: () => void
@@ -60,4 +61,8 @@ export interface SettingWindow {
 	close: () => void
 }
 
-export as namespace ElectronAPI
+export interface ElectronAPI {
+	events: RendererIpcEvents
+}
+
+export as namespace API

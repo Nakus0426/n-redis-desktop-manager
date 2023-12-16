@@ -6,9 +6,12 @@ import { SettingWindow } from './setting'
 import { channel } from './channels'
 import { RedisUtil } from '@/utils'
 import { configStore } from '../configStore'
+import { useEvents } from 'electron-events'
+import { MainMinimize, Windows } from '../keys'
 
 let mainWindow: MicaBrowserWindowType
 const redis = new RedisUtil()
+const events = useEvents('browser')
 
 export function createMainWindow() {
 	mainWindow = new MicaBrowserWindow({
@@ -26,6 +29,8 @@ export function createMainWindow() {
 		},
 	})
 
+	events.addWindow(Windows.Main, mainWindow)
+	mainWindow.webContents.openDevTools()
 	mainWindow.removeMenu()
 	initMica()
 	initAppTheme()
@@ -49,7 +54,8 @@ export function createMainWindow() {
 }
 
 // window operations
-ipcMain.on(channel.main.minimize, () => mainWindow.minimize())
+events.on(Windows.Main, MainMinimize, () => console.log('minimize'))
+// ipcMain.on(channel.main.minimize, () => mainWindow.minimize())
 ipcMain.on(channel.main.maximize, () => mainWindow.maximize())
 ipcMain.on(channel.main.unmaximize, () => mainWindow.unmaximize())
 ipcMain.on(channel.main.openSetting, () => SettingWindow.open())

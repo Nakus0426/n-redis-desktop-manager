@@ -13,6 +13,8 @@
 </template>
 
 <script setup lang="ts">
+import { MainMinimize, Windows } from '@/main/keys'
+
 const props = withDefaults(
 	defineProps<{
 		/**
@@ -55,7 +57,8 @@ if (window?.[props.window]?.onUnMaximize) {
  * handle minimize button click
  */
 function handleMinimizeClick() {
-	window[props.window].minimize()
+	// window[props.window].minimize()
+	window.ElectronAPI.events.emitTo(Windows.Main, MainMinimize)
 }
 
 /**
