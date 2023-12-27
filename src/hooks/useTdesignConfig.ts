@@ -2,7 +2,7 @@ import { type GlobalConfigProvider } from 'tdesign-vue-next'
 import zhCNConfig from 'tdesign-vue-next/es/locale/zh_CN'
 import zhTWConfig from 'tdesign-vue-next/es/locale/zh_TW'
 import { merge } from 'lodash-es'
-import { tdesignConfig } from '@/config'
+import { tdesignConfig } from '@/config/tdesignConfig'
 import { useAppStore } from '@/store'
 
 const localeConfigMap = {

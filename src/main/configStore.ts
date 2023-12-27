@@ -1,10 +1,10 @@
 import Store from 'electron-store'
 import { type NativeTheme } from 'electron'
 
+/** app config */
 export interface ConfigStore {
-	appTheme: NativeTheme['themeSource']
-	appMicaConfig: boolean
-	showDiffBeforeSave: boolean
+	theme: NativeTheme['themeSource']
+	mica: boolean
 }
 
 export const configStore = new Store<ConfigStore>()

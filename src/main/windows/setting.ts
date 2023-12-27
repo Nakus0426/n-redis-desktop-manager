@@ -1,24 +1,19 @@
-import { type NativeTheme, ipcMain } from 'electron'
-const { MicaBrowserWindow, IS_WINDOWS_11 } = require('mica-electron')
-import { MicaBrowserWindow as MicaBrowserWindowType } from 'mica-electron'
-import path from 'path'
-import { channel } from './channels'
-import { configStore } from '../configStore'
+import { ipcMain, BrowserWindow } from 'electron'
+import { join } from 'path'
+import { Channels } from './channels'
 
-/** setting window */
-export class SettingWindow {
-	private static instance: MicaBrowserWindowType = null
+class SettingWindow {
+	private instance: BrowserWindow
 
-	private constructor() {}
+	constructor() {}
 
-	/** open setting window */
-	static open() {
-		if (SettingWindow.instance) {
-			SettingWindow.instance.show()
-			return SettingWindow.instance
+	/** open window */
+	open() {
+		if (this.instance) {
+			this.instance.show()
+			return
 		}
-
-		SettingWindow.instance = new MicaBrowserWindow({
+		this.instance = new BrowserWindow({
 			icon: './src/assets/icons/logo.ico',
 			show: false,
 			width: 800,
@@ -29,63 +24,37 @@ export class SettingWindow {
 			title: '设置',
 			webPreferences: {
 				nodeIntegration: true,
-				preload: path.join(__dirname, 'preload.js'),
+				preload: join(__dirname, 'preload.js'),
 			},
-		}) as MicaBrowserWindowType
-
-		if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-			SettingWindow.instance.loadURL(`${MAIN_WINDOW_VITE_DEV_SERVER_URL}/#/setting`)
-		} else {
-			SettingWindow.instance.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`), {
-				hash: '#/setting',
-			})
-		}
-
-		SettingWindow.instance.on('ready-to-show', () => SettingWindow.instance.show())
-
-		initMica()
-		initAppTheme()
-
-		const unWatchAppTheme = configStore.onDidChange('appTheme', value => initAppTheme(value))
-
-		SettingWindow.instance.on('closed', () => {
-			SettingWindow.instance = null
 		})
+		if (MAIN_WINDOW_VITE_DEV_SERVER_URL) this.instance.loadURL(`${MAIN_WINDOW_VITE_DEV_SERVER_URL}/#/setting`)
+		else
+			this.instance.loadFile(join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`), { hash: '#/setting' })
+		this.setupEvents()
+		this.setupIpc()
+	}
 
-		// window operations
-		ipcMain.on(channel.setting.minimize, () => {
-			if (!SettingWindow.instance) return
-			SettingWindow.instance.minimize()
-		})
-		ipcMain.on(channel.setting.close, () => {
-			if (!SettingWindow.instance) return
-			SettingWindow.instance.minimize()
-			SettingWindow.instance.close()
-			SettingWindow.instance = null
-			unWatchAppTheme()
-		})
-		ipcMain.on(channel.setting.openDevtools, () => {
-			if (!SettingWindow.instance) return
-			SettingWindow.instance.webContents.openDevTools()
-		})
-		ipcMain.on(channel.setting.reload, () => {
-			if (!SettingWindow.instance) return
-			SettingWindow.instance.reload()
-		})
+	/** setup window event */
+	private setupEvents() {
+		this.instance.on('ready-to-show', () => this.instance.show())
+		this.instance.on('closed', () => (this.instance = null))
+	}
 
-		function initMica() {
-			if (!IS_WINDOWS_11) return
-			const enable = configStore.get('appMicaConfig', false)
-			if (enable) SettingWindow.instance.setMicaEffect()
-		}
-
-		function initAppTheme(theme?: NativeTheme['themeSource']) {
-			const _theme = theme || configStore.get('appTheme', 'light')
-			if (_theme === 'dark') SettingWindow.instance.setDarkTheme()
-			if (_theme === 'light') SettingWindow.instance.setLightTheme()
-			if (_theme === 'system') SettingWindow.instance.setAutoTheme()
-		}
-
-		return SettingWindow.instance
+	/** setup window ipc */
+	private setupIpc() {
+		ipcMain.on(Channels.Setting.minimize, () => {
+			if (this.instance) this.instance.minimize()
+		})
+		ipcMain.on(Channels.Setting.close, () => {
+			if (this.instance) this.instance.close()
+		})
+		ipcMain.on(Channels.Setting.openDevtools, () => {
+			if (this.instance) this.instance.webContents.openDevTools()
+		})
+		ipcMain.on(Channels.Setting.reload, () => {
+			if (this.instance) this.instance.reload()
+		})
 	}
 }
+
+export const settingWindow = new SettingWindow()

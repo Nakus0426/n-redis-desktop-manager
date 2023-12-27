@@ -1,6 +1,5 @@
-export const channel = {
-	main: {
-		// window operations
+export const Channels = {
+	Main: {
 		minimize: 'main:minimize',
 		maximize: 'main:maximize',
 		unmaximize: 'main:unmaximize',
@@ -12,19 +11,15 @@ export const channel = {
 		onMaximize: 'main:onMaximize',
 		onUnmaximize: 'main:onUnmaximize',
 		onError: 'main:onError',
-		// app operations
 		getAppTheme: 'main:getAppTheme',
 		setAppTheme: 'main:setAppTheme',
 		getSystemLocale: 'main:getSystemLocale',
 		getConfig: 'main:getConfig',
 		setConfig: 'main:setConfig',
-		isWindows11: 'main:isWindows11',
-		// pinia operations
 		pinia: {
 			change: 'main:pinia:change',
 			onChange: 'main:pinia:onChange',
 		},
-		//redis operations
 		redis: {
 			create: 'main:redis:create',
 			connect: 'main:redis:connect',
@@ -39,6 +34,8 @@ export const channel = {
 			set: 'main:redis:set',
 			hset: 'main:redis:hset',
 			get: 'main:redis:get',
+			smembers: 'main:redis:smembers',
+			hget: 'main:redis:hget',
 			del: 'main:redis:del',
 			hdel: 'main:redis:hdel',
 			rename: 'main:redis:rename',
@@ -56,8 +53,7 @@ export const channel = {
 			onReconnect: 'main:redis:onReconnect',
 		},
 	},
-	setting: {
-		// window operations
+	Setting: {
 		minimize: 'setting:minimize',
 		close: 'setting:close',
 		openDevtools: 'setting:openDevtools',

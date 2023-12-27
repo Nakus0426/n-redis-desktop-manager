@@ -3,10 +3,15 @@
 declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string
 declare const MAIN_WINDOW_VITE_NAME: string
 
+declare module '*.vue' {
+	import { type DefineComponent } from 'vue'
+	const component: DefineComponent<{}, {}, any>
+	export default component
+}
+
 declare interface Window {
-	mainWindow: API.MainWindow
-	settingWindow: API.SettingWindow
-	ElectronAPI: API.ElectronAPI
+	mainWindow: ElectronAPI.MainWindow
+	settingWindow: ElectronAPI.SettingWindow
 }
 
 interface ImportMetaEnv {

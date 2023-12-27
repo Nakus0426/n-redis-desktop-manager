@@ -1,6 +1,6 @@
 import { createClient, type RedisClientType, type RedisClientOptions } from 'redis'
 
-export type CreateClientOptions = {
+type CreateClientOptions = {
 	id: string
 	ignoreError?: boolean
 	error?: (id: string, error: Error) => void
@@ -10,15 +10,11 @@ export type CreateClientOptions = {
 	reconnect?: (id: string) => void
 } & RedisClientOptions
 
-export type KeyType = 'string' | 'list' | 'set' | 'zset' | 'hash' | 'stream' | string
-
 /** Redis Util */
 export class RedisUtil {
-	private clients: Map<string, RedisClientType<any, any, any>>
+	private clients = new Map<string, RedisClientType<any, any, any>>()
 
-	constructor() {
-		this.clients = new Map()
-	}
+	constructor() {}
 
 	/** create redis client */
 	async create(options: CreateClientOptions) {
@@ -26,7 +22,6 @@ export class RedisUtil {
 			await this.clients.get(options.id).disconnect()
 			this.destory(options.id)
 		}
-		// options.socket = { reconnectStrategy: retries => (retries > 5 ? false : 5000) }
 		options.socket = { reconnectStrategy: false }
 		const client = createClient(options)
 		if (!options.ignoreError) client.on('error', error => options.error(options.id, error))
@@ -121,18 +116,25 @@ export class RedisUtil {
 	}
 
 	/** Returns the value of a key */
-	async get(id: string, key: string, type: KeyType = 'string') {
+	async get(id: string, key: string) {
 		const client = this.getClient(id)
-		if (type === 'string') return client.GET(key)
-		if (type === 'set') return client.SMEMBERS(key)
-		if (type === 'hash') {
-			const res: Array<{ field: string; value: string }> = []
-			for await (const field of client.hScanIterator(key)) {
-				res.push(field)
-			}
-			return res
-		}
 		return client.GET(key)
+	}
+
+	/** Returns all members of a set */
+	smembers(id: string, key: string) {
+		const client = this.getClient(id)
+		return client.SMEMBERS(key)
+	}
+
+	/** Returns the value of a field in a hash */
+	async hget(id: string, key: string) {
+		const client = this.getClient(id)
+		const res: Array<{ field: string; value: string }> = []
+		for await (const field of client.hScanIterator(key)) {
+			res.push(field)
+		}
+		return res
 	}
 
 	/** Deletes one or more keys */
@@ -195,3 +197,5 @@ export class RedisUtil {
 		return client.SADD(key, member)
 	}
 }
+
+export const redisUtil = new RedisUtil()
