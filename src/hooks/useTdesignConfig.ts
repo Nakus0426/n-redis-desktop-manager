@@ -3,7 +3,7 @@ import zhCNConfig from 'tdesign-vue-next/es/locale/zh_CN'
 import zhTWConfig from 'tdesign-vue-next/es/locale/zh_TW'
 import { merge } from 'lodash-es'
 import { tdesignConfig } from '@/config/tdesignConfig'
-import { useAppStore } from '@/store'
+import { useAppStore } from '@/store/modules/app'
 
 const localeConfigMap = {
 	'zh-CN': zhCNConfig,
@@ -19,7 +19,7 @@ export function useTdesignConfig() {
 		value => {
 			config.value = merge(localeConfigMap[value], tdesignConfig)
 		},
-		{ immediate: true }
+		{ immediate: true },
 	)
 
 	return { config }

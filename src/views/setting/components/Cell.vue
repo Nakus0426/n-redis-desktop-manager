@@ -1,3 +1,18 @@
+<template>
+	<div class="cell">
+		<div class="cell_title">{{ props.title }}</div>
+		<div class="cell_content">
+			<slot name="default" />
+		</div>
+	</div>
+</template>
+
+<script setup lang="ts">
+const props = defineProps<{ title: string }>()
+const slots = defineSlots<{ default(): any }>()
+</script>
+
+<style scoped lang="scss">
 .cell {
 	display: flex;
 	flex-direction: column;
@@ -29,36 +44,6 @@
 		display: flex;
 		flex-direction: column;
 		padding: var(--td-comp-paddingLR-m);
-
-		&_item {
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-			padding: var(--td-comp-margin-m) 0;
-
-			&:first-child {
-				padding-top: 0;
-			}
-
-			&:last-child {
-				padding-bottom: 0;
-			}
-
-			&:not(:first-child) {
-				border-top: 1px solid var(--td-component-stroke);
-			}
-
-			&_label {
-				&_title {
-					font: var(--td-font-body-medium);
-					color: var(--td-text-color-primary);
-				}
-
-				&_desc {
-					font: var(--td-font-body-small);
-					color: var(--td-text-color-secondary);
-				}
-			}
-		}
 	}
 }
+</style>

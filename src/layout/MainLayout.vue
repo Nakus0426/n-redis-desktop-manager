@@ -7,35 +7,40 @@
 			<div class="sider_body">
 				<TTooltip content="连接" placement="right" :show-arrow="false">
 					<div
-						v-ripple
 						class="sider_body_item"
 						:class="menuClass(ConnectionsIndexRoute.path)"
+						v-ripple
 						@click="handleMenuClick(ConnectionsIndexRoute)"
 					>
 						<Icon height="24" width="24" :icon="connectionIcon" />
 					</div>
 				</TTooltip>
-				<TTooltip content="终端" :class="menuClass(TerminalIndexRoute.path)" placement="right" :show-arrow="false">
-					<div v-ripple class="sider_body_item" @click="handleMenuClick(TerminalIndexRoute)">
+				<TTooltip content="终端" placement="right" :show-arrow="false">
+					<div
+						class="sider_body_item"
+						:class="menuClass(TerminalIndexRoute.path)"
+						v-ripple
+						@click="handleMenuClick(TerminalIndexRoute)"
+					>
 						<Icon height="24" width="24" :icon="terminalIcon" />
 					</div>
 				</TTooltip>
 			</div>
 			<div class="sider_footer">
-				<TDropdown placement="right-top">
+				<TDropdown placement="right-top" @click="handleExtraMenuClick">
 					<div v-ripple class="sider_body_item">
 						<Icon height="24" width="24" icon="fluent:text-align-justify-24-filled" />
 					</div>
 					<TDropdownMenu>
-						<TDropdownItem @click="handleExtraMenuClick(0)">
+						<TDropdownItem value="help">
 							<template #prefixIcon><Icon height="16" width="16" icon="fluent:question-circle-16-regular" /></template>
 							<span>帮助</span>
 						</TDropdownItem>
-						<TDropdownItem @click="handleExtraMenuClick(1)">
+						<TDropdownItem value="setting">
 							<template #prefixIcon><Icon height="16" width="16" icon="fluent:settings-16-regular" /></template>
 							<span>设置</span>
 						</TDropdownItem>
-						<TDropdownItem @click="handleExtraMenuClick(2)">
+						<TDropdownItem value="about">
 							<template #prefixIcon><Icon height="16" width="16" icon="fluent:info-16-regular" /></template>
 							<span>关于</span>
 						</TDropdownItem>
@@ -44,35 +49,30 @@
 			</div>
 		</div>
 		<div class="content">
-			<div class="content_body">
-				<RouterView>
-					<template #default="{ Component }">
-						<Transition enter-active-class="animate__animated animate__fadeInUp animate__faster" mode="out-in">
-							<component :is="Component" />
-						</Transition>
-					</template>
-				</RouterView>
-			</div>
+			<RouterView>
+				<template #default="{ Component }">
+					<Transition enter-active-class="animate__animated animate__fadeInUp animate__faster" mode="out-in">
+						<component :is="Component" />
+					</Transition>
+				</template>
+			</RouterView>
 		</div>
-		<WindowActionsOverlay window="mainWindow" />
+		<WindowOverlay window="mainWindow" />
 	</div>
 </template>
 
 <script setup lang="ts">
+import { type DropdownOption } from 'tdesign-vue-next'
 import { type RouteRecordRaw } from 'vue-router'
-import { useWindowShortcut } from '@/hooks'
-import { useAppStore } from '@/store'
-import { ConnectionsIndexRoute, TerminalIndexRoute } from '@/router'
+import { useAppStore } from '@/store/modules/app'
+import { ConnectionsIndexRoute, TerminalIndexRoute } from '@/router/routes'
 
 const appStore = useAppStore()
 const router = useRouter()
 const route = useRoute()
 
-// init main window shortcut
-useWindowShortcut('mainWindow')
-
 // mica effect
-const layoutClass = computed(() => (appStore.micaEnable ? 'main-layout-mica' : ''))
+const layoutClass = computed(() => (appStore.micaEnable ? 'mica' : ''))
 
 // handling menu click events
 function handleMenuClick(route: RouteRecordRaw) {
@@ -85,11 +85,11 @@ function isMenuActived(path: string) {
 }
 
 // generate menu icon
-const connectionIcon = computed(() =>
-	isMenuActived(ConnectionsIndexRoute.path) ? 'fluent:link-square-24-filled' : 'fluent:link-square-24-regular',
+const connectionIcon = computed(
+	() => `fluent:link-square-24-${isMenuActived(ConnectionsIndexRoute.path) ? 'filled' : 'regular'}`,
 )
-const terminalIcon = computed(() =>
-	isMenuActived(TerminalIndexRoute.path) ? 'fluent:window-console-20-filled' : 'fluent:window-console-20-regular',
+const terminalIcon = computed(
+	() => `fluent:window-console-20-${isMenuActived(TerminalIndexRoute.path) ? 'filled' : 'regular'}`,
 )
 
 // generate menu class
@@ -98,8 +98,8 @@ function menuClass(path: string) {
 }
 
 // handling extra menu click events
-function handleExtraMenuClick(index: number) {
-	if (index === 1) window.mainWindow.openSettingWindow()
+function handleExtraMenuClick(option: DropdownOption) {
+	if (option.value === 'setting') window.mainWindow.openSettingWindow()
 }
 </script>
 
@@ -111,7 +111,7 @@ function handleExtraMenuClick(index: number) {
 	overflow: hidden;
 	background-color: var(--td-bg-color-secondarycontainer);
 
-	&-mica {
+	&.mica {
 		background-color: transparent;
 	}
 }
@@ -186,22 +186,10 @@ function handleExtraMenuClick(index: number) {
 		align-items: center;
 		gap: var(--td-comp-margin-m);
 	}
-
-	[theme-mode='dark'] {
-		.sider_body_item {
-			--ripple-color: var();
-		}
-	}
 }
 
 .content {
 	flex: 1;
 	overflow: hidden;
-
-	&_body {
-		width: 100%;
-		height: 100%;
-		overflow: hidden;
-	}
 }
 </style>

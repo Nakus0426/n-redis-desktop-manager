@@ -21,10 +21,7 @@ export const useAppStore = defineStore(
 		const locale = ref<string>()
 
 		/** mica enable */
-		const micaEnable = ref<boolean>(window.mainWindow.getConfig('appMicaConfig'))
-
-		/** show differences before saving */
-		const showDiffBeforeSave = ref<boolean>(window.mainWindow.getConfig('showDiffBeforeSave'))
+		const micaEnable = ref<boolean>(window.mainWindow.getConfig('mica'))
 
 		/** change theme */
 		function setTheme(_theme: Theme) {
@@ -67,15 +64,13 @@ export const useAppStore = defineStore(
 		}
 
 		// watch config change
-		watch(micaEnable, value => window.mainWindow.setConfig('appMicaConfig', value))
-		watch(showDiffBeforeSave, value => window.mainWindow.setConfig('showDiffBeforeSave', value))
+		watch(micaEnable, value => window.mainWindow.setConfig('mica', value))
 
 		return {
 			theme,
 			isDarkTheme,
 			locale,
 			micaEnable,
-			showDiffBeforeSave,
 			setTheme,
 			initAppLocale,
 		}

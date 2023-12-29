@@ -94,3 +94,17 @@
 		backdrop-filter: blur(15px);
 	}
 }
+
+// split.js
+.gutter.gutter-horizontal {
+	transition: background-color var(--td-transition);
+	cursor: col-resize;
+
+	&:hover {
+		background-color: var(--td-brand-color-hover);
+	}
+
+	&:active {
+		background-color: var(--td-brand-color-active);
+	}
+}

@@ -1,20 +1,14 @@
-import { useAppStore } from '@/store'
+import { useAppStore } from '@/store/modules/app'
 import { useI18n } from 'vue-i18n'
 
-/**
- * locale hook support muti-window
- */
-export function useLocale(sync = true) {
-	const { t, locale } = useI18n({ useScope: 'global' })
+/** locale hook support muti-window */
+export function useLocale() {
 	const appStore = useAppStore()
-
+	const { t, locale } = useI18n({ useScope: 'global' })
 	watch(
 		() => appStore.locale,
-		value => {
-			if (!sync) return
-			locale.value = value
-		}
+		value => (locale.value = value),
+		{ immediate: true },
 	)
-
 	return { t, locale }
 }

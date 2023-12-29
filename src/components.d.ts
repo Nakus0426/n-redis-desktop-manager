@@ -8,7 +8,6 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     BackTop: typeof import('./components/BackTop.vue')['default']
-    ContainerWithSider: typeof import('./components/ContainerWithSider.vue')['default']
     Dialog: typeof import('./components/Dialog.vue')['default']
     DiffEditor: typeof import('./components/DiffEditor.vue')['default']
     Editor: typeof import('./components/Editor.vue')['default']
@@ -40,6 +39,6 @@ declare module 'vue' {
     TTag: typeof import('tdesign-vue-next')['Tag']
     TTooltip: typeof import('tdesign-vue-next')['Tooltip']
     TTree: typeof import('tdesign-vue-next')['Tree']
-    WindowActionsOverlay: typeof import('./components/WindowActionsOverlay.vue')['default']
+    WindowOverlay: typeof import('./components/WindowOverlay.vue')['default']
   }
 }

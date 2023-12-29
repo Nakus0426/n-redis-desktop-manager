@@ -1,6 +1,6 @@
 <template>
 	<div class="setting-layout" :class="containerClass">
-		<WindowActionsOverlay window="settingWindow" :maximizable="false" />
+		<WindowOverlay window="settingWindow" :maximizable="false" />
 		<div class="sider">
 			<div
 				v-ripple
@@ -47,17 +47,18 @@
 
 <script setup lang="ts">
 import { type RouteRecordRaw } from 'vue-router'
-import { AppearanceSettingRoute, CommonSettingRoute, FunctionSettingRoute } from '@/router'
-import { useAppStore } from '@/store'
-import { useLocale, useScrollbar } from '@/hooks'
+import { AppearanceSettingRoute, CommonSettingRoute, FunctionSettingRoute } from '@/router/routes'
+import { useAppStore } from '@/store/modules/app'
+import { useLocale } from '@/hooks/useLocale'
+import { useScrollbar } from '@/hooks/useScrollbar'
 
 const router = useRouter()
 const route = useRoute()
 const appStore = useAppStore()
-const { t } = useLocale(false)
+const { t } = useLocale()
 
 // mica effect
-const containerClass = computed(() => (appStore.micaEnable ? 'setting-layout-mica' : ''))
+const containerClass = computed(() => (appStore.micaEnable ? 'mica' : ''))
 
 // scroll bar
 const contentRef = ref()
@@ -83,15 +84,11 @@ function menuClass(path: string) {
 }
 
 // generate menu icon
-const commonIcon = computed(() =>
-	isMenuActived(CommonSettingRoute.path) ? 'fluent:options-16-filled' : 'fluent:options-16-regular',
+const commonIcon = computed(() => `fluent:options-16-${isMenuActived(CommonSettingRoute.path) ? 'filled' : 'regular'}`)
+const appearanceIcon = computed(
+	() => `fluent:color-16-${isMenuActived(AppearanceSettingRoute.path) ? 'filled' : 'regular'}`,
 )
-const appearanceIcon = computed(() =>
-	isMenuActived(AppearanceSettingRoute.path) ? 'fluent:color-16-filled' : 'fluent:color-16-regular',
-)
-const functionIcon = computed(() =>
-	isMenuActived(FunctionSettingRoute.path) ? 'fluent:apps-16-filled' : 'fluent:apps-16-regular',
-)
+const functionIcon = computed(() => `fluent:apps-16-${isMenuActived(FunctionSettingRoute.path) ? 'filled' : 'regular'}`)
 </script>
 
 <style scoped lang="scss">
@@ -102,7 +99,7 @@ const functionIcon = computed(() =>
 	overflow: hidden;
 	background-color: var(--td-bg-color-secondarycontainer);
 
-	&-mica {
+	&.mica {
 		background-color: transparent;
 	}
 }

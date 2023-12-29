@@ -1,15 +1,15 @@
 <template>
-	<div class="function"></div>
+	<div class="sider">sider</div>
 </template>
 
 <script setup lang="ts"></script>
 
 <style scoped lang="scss">
-.function {
-	height: 100%;
+.sider {
 	width: 100%;
+	height: 100%;
 	display: flex;
 	flex-direction: column;
-	gap: var(--td-comp-margin-m);
+	border-left: 1px solid var(--td-component-stroke);
 }
 </style>

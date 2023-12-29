@@ -16,7 +16,7 @@
 </template>
 
 <script setup lang="ts">
-import { useScrollbar } from '@/hooks'
+import { useScrollbar } from '@/hooks/useScrollbar'
 
 const slots = defineSlots<{ footer(): any; default(): any }>()
 const props = defineProps<{ title: string; icon?: string }>()

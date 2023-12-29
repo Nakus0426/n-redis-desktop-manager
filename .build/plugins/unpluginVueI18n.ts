@@ -5,5 +5,5 @@ import path from 'path'
  * setup unplugin-vue-i18n plugin
  */
 export function setupUnpluginVueI18n() {
-	return VueI18nPlugin({ include: path.resolve(process.cwd(), './src/locales/**.json') })
+	return VueI18nPlugin({ legacy: false, include: path.resolve(process.cwd(), './src/locales/**.json') })
 }

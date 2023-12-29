@@ -2,7 +2,7 @@ import { acceptHMRUpdate, defineStore } from 'pinia'
 import { setItem, getItem } from 'localforage'
 import { set, cloneDeep } from 'lodash-es'
 
-export interface Connection {
+export type Connection = {
 	id: string
 	name: string
 	host: string
@@ -15,7 +15,7 @@ export interface Connection {
 	connected?: 'connecting' | 'connected' | 'disconnected'
 }
 
-export interface ConnectionInfo {
+export type ConnectionInfo = {
 	Server?: Record<string, string>
 	Clients?: Record<string, string>
 	Memory?: Record<string, string>

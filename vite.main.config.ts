@@ -16,7 +16,6 @@ export default defineConfig({
 			// @/xxxx => src/xxxx
 			{ find: '@', replacement: pathResolve('src') + '/' },
 		],
-		browserField: false,
 		mainFields: ['module', 'jsnext:main', 'jsnext'],
 	},
 })

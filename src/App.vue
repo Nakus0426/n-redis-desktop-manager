@@ -12,17 +12,17 @@
 
 <script setup lang="ts">
 import { MessagePlugin } from 'tdesign-vue-next'
-import { useAppStore, useConnectionsStore } from '@/store'
-import { useTdesignConfig } from '@/hooks'
+import { useConnectionsStore } from '@/store/modules/connections'
+import { useAppStore } from '@/store/modules/app'
+import { useTdesignConfig } from '@/hooks/useTdesignConfig'
 
-const appStore = useAppStore()
 const { config } = useTdesignConfig()
-
-// init app store
-appStore.initAppLocale()
 
 // init connections store
 useConnectionsStore().syncConnections()
+
+// init app store
+useAppStore().initAppLocale()
 
 // app message handler
 window.mainWindow.onError(error => {

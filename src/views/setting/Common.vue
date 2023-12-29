@@ -22,14 +22,15 @@
 
 <script setup lang="ts">
 import { type SelectOption } from 'tdesign-vue-next'
-import { useLocale } from '@/hooks'
-import { useAppStore } from '@/store'
-import { Cell, CellItem } from './components'
+import { useLocale } from '@/hooks/useLocale'
+import { useAppStore } from '@/store/modules/app'
+import Cell from './components/Cell.vue'
+import CellItem from './components/CellItem.vue'
 
 const appStore = useAppStore()
 
 // app locale switch
-const { t, locale } = useLocale(false)
+const { t, locale } = useLocale()
 const locales: SelectOption[] = [
 	{ label: t('language', 1, { locale: 'zh-CN' }), value: 'zh-CN' },
 	{ label: t('language', 1, { locale: 'zh-TW' }), value: 'zh-TW' },

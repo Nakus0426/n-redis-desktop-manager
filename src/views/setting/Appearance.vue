@@ -25,12 +25,13 @@
 </template>
 
 <script setup lang="ts">
-import { useLocale } from '@/hooks'
-import { Theme, useAppStore } from '@/store'
-import { Cell, CellItem } from './components'
+import { useLocale } from '@/hooks/useLocale'
+import { Theme, useAppStore } from '@/store/modules/app'
+import Cell from './components/Cell.vue'
+import CellItem from './components/CellItem.vue'
 
 const appStore = useAppStore()
-const { t } = useLocale(false)
+const { t } = useLocale()
 
 // is theme actived
 function isThemeActived(theme: Theme) {

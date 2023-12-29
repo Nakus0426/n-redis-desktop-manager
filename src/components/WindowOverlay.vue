@@ -1,42 +1,22 @@
 <template>
-	<div class="window-actions-overlay">
-		<div class="window-actions-overlay_item" v-ripple v-if="minimizable" @click="handleMinimizeClick()">
+	<div class="window-overlay">
+		<div class="window-overlay_item" v-ripple v-if="minimizable" @click="handleMinimizeClick()">
 			<Icon height="16" width="16" icon="fluent:subtract-16-regular" />
 		</div>
-		<div class="window-actions-overlay_item" v-ripple v-if="maximizable" @click="handleMaximizeClick()">
+		<div class="window-overlay_item" v-ripple v-if="maximizable" @click="handleMaximizeClick()">
 			<Icon height="16" width="16" :icon="maximizeIcon" />
 		</div>
-		<div class="window-actions-overlay_item exit" v-ripple @click="handleCloseClick()">
+		<div class="window-overlay_item exit" v-ripple @click="handleCloseClick()">
 			<Icon height="16" width="16" icon="fluent:dismiss-16-regular" />
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { MainMinimize, Windows } from '@/main/keys'
-
-const props = withDefaults(
-	defineProps<{
-		/**
-		 * window api
-		 */
-		window: string
-		/**
-		 * window minimizable
-		 * @default true
-		 */
-		maximizable?: boolean
-		/**
-		 * window maximizable
-		 * @default true
-		 */
-		minimizable?: boolean
-	}>(),
-	{
-		maximizable: true,
-		minimizable: true,
-	},
-)
+const props = withDefaults(defineProps<{ window: string; maximizable?: boolean; minimizable?: boolean }>(), {
+	maximizable: true,
+	minimizable: true,
+})
 
 const isMaximize = ref(false)
 const maximizeIcon = computed(() =>
@@ -53,31 +33,24 @@ if (window?.[props.window]?.onUnMaximize) {
 	})
 }
 
-/**
- * handle minimize button click
- */
+/** minimize button click */
 function handleMinimizeClick() {
-	// window[props.window].minimize()
-	window.ElectronAPI.events.emitTo(Windows.Main, MainMinimize)
+	window[props.window].minimize()
 }
 
-/**
- * handle maximize button click
- */
+/** maximize button click */
 function handleMaximizeClick() {
 	isMaximize.value ? window[props.window].unmaximize() : window[props.window].maximize()
 }
 
-/**
- * handle close button click
- */
+/** handle close button click */
 function handleCloseClick() {
 	window[props.window].close()
 }
 </script>
 
 <style scoped lang="scss">
-.window-actions-overlay {
+.window-overlay {
 	position: absolute;
 	top: 0;
 	right: 0;
