@@ -42,14 +42,13 @@ export class RedisUtil {
 	/** connect to redis */
 	async connect(id: string) {
 		const client = this.clients.get(id)
-		if (!client) throw new Error('连接异常，请重新连接')
 		await client.connect()
 	}
 
 	/** disconnect from redis */
 	async disconnect(id: string) {
 		const client = this.getClient(id)
-		await client.disconnect()
+		await client.quit()
 		this.destory(id)
 	}
 

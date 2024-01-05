@@ -19,3 +19,12 @@ body,
 ::-webkit-scrollbar {
 	display: none;
 }
+
+::view-transition-new(root) {
+	animation-duration: 0.2s;
+	animation: none;
+}
+::view-transition-old(root) {
+	animation-duration: 0.2s;
+	display: none;
+}

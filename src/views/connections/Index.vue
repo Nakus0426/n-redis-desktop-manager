@@ -2,38 +2,59 @@
 	<div class="connections">
 		<div class="header">
 			<TButton variant="dashed" size="small" @click="handleCreateConnectionCick()">
-				<template #icon><Icon height="14" width="14" icon="fluent:add-12-filled" /></template>
+				<template #icon><Icon height="16" width="16" icon="fluent:add-16-regular" /></template>
 				<span>新建连接</span>
 			</TButton>
-			<div class="tabs">
-				<div class="tabs_prefix" v-ripple>
-					<Icon height="14" width="14" icon="fluent:chevron-left-16-filled" />
+			<div class="tabs" :class="{ 'is-overflow': isTabsOverflow }" ref="tabsRef">
+				<div class="tabs_prefix" v-ripple @click="handleTabsScrollClick('pre')">
+					<Icon height="12" width="12" icon="fluent:chevron-left-12-regular" />
 				</div>
-				<div class="tabs_center">
-					<div class="tab" v-for="item in 20" :class="item === 1 ? 'is-actived' : null" v-ripple>
-						<span class="tab_label">{{ item }}</span>
-						<Icon class="tab_close" height="14" width="14" icon="fluent:dismiss-16-regular" />
-					</div>
+				<div class="tabs_center" ref="tabsCenterRef">
+					<template v-for="item in tabs" :key="item.key">
+						<div
+							class="tab"
+							:class="{ 'is-actived': item.isActived }"
+							v-ripple
+							ref="tabRefs"
+							@click="handleTabClick(item)"
+						>
+							<Icon height="16" width="16" :icon="item.icon" />
+							<span class="tab_label">{{ item.title }}</span>
+							<TTooltip content="关闭" theme="light" :show-arrow="false" placement="bottom">
+								<Icon
+									class="tab_close"
+									height="12"
+									width="12"
+									icon="fluent:dismiss-12-regular"
+									@click.stop="handleTabRemoveClick(item.id, item.key)"
+								/>
+							</TTooltip>
+						</div>
+					</template>
 				</div>
-				<div class="tabs_suffix" v-ripple>
-					<Icon height="14" width="14" icon="fluent:chevron-right-16-filled" />
+				<div class="tabs_suffix" v-ripple @click="handleTabsScrollClick('next')">
+					<Icon height="12" width="12" icon="fluent:chevron-right-12-regular" />
 				</div>
 			</div>
 		</div>
 		<div class="body">
 			<div class="sider" ref="siderRef">
-				<Sider />
+				<Sider @edit="handleEditClick" />
 			</div>
 			<div class="content" ref="contentRef">content</div>
 		</div>
+		<ConnectionEditDialog ref="connectionEditDialogRef" />
 	</div>
-	<ConnectionEditDialog ref="connectionEditDialogRef" />
 </template>
 
 <script setup lang="ts">
 import Split from 'split.js'
-import Sider from './Sider.vue'
+import { useResizeObserver } from '@vueuse/core'
+import Sider from './sider/Index.vue'
 import ConnectionEditDialog from './ConnectionEditDialog.vue'
+import { type Tab, useTabs } from './hooks'
+
+const { tabs, activedTab, removeTab } = useTabs()
 
 // panel split
 const siderRef = ref()
@@ -46,6 +67,54 @@ onMounted(() =>
 const connectionEditDialogRef = ref<InstanceType<typeof ConnectionEditDialog>>()
 function handleCreateConnectionCick() {
 	connectionEditDialogRef.value.open()
+}
+
+// edit connection
+function handleEditClick(id: string) {
+	connectionEditDialogRef.value.open(id)
+}
+
+// tabs scroll
+const tabsCenterRef = ref<HTMLElement>()
+const tabRefs = ref<HTMLElement[]>([])
+function handleTabsScrollClick(direction: 'pre' | 'next') {
+	const tabsWidth = tabsCenterRef.value.offsetWidth
+	const tabsScrollLeft = tabsCenterRef.value.scrollLeft
+	const tabsItemWidth = tabRefs.value[0].offsetWidth
+	const tabsItemMarginLeft = parseInt(getComputedStyle(tabRefs.value[0]).marginLeft)
+	const tabsItemMarginRight = parseInt(getComputedStyle(tabRefs.value[0]).marginRight)
+	const tabsItemTotalWidth = tabsItemWidth + tabsItemMarginLeft + tabsItemMarginRight
+	const tabsItemTotalCount = tabRefs.value.length
+	const tabsItemVisibleCount = Math.floor(tabsWidth / tabsItemTotalWidth)
+	const tabsItemScrollCount = tabsItemTotalCount - tabsItemVisibleCount
+	const tabsItemScrollWidth = tabsItemScrollCount * tabsItemTotalWidth
+	if (direction === 'pre' && tabsScrollLeft > 0)
+		tabsCenterRef.value.scrollTo({ left: tabsScrollLeft - tabsItemTotalWidth * 3, behavior: 'smooth' })
+	if (direction === 'next' && tabsScrollLeft < tabsItemScrollWidth)
+		tabsCenterRef.value.scrollTo({ left: tabsScrollLeft + tabsItemTotalWidth * 3, behavior: 'smooth' })
+}
+
+// is tabs overflow
+const isTabsOverflow = ref(false)
+const tabsRef = ref<HTMLElement>()
+function calcTabsOverflow() {
+	nextTick(() => (isTabsOverflow.value = tabsRef.value.scrollWidth > tabsRef.value.clientWidth))
+}
+useResizeObserver(tabsRef, calcTabsOverflow)
+watch(
+	() => tabs.value.length,
+	value => value > 0 && calcTabsOverflow(),
+	{ immediate: true },
+)
+
+// tab click
+function handleTabClick(tab: Tab) {
+	activedTab.value = tab
+}
+
+// tab remove
+function handleTabRemoveClick(id: string, key: string) {
+	removeTab(id, key)
 }
 </script>
 
@@ -85,25 +154,37 @@ function handleCreateConnectionCick() {
 		height: 30px;
 		flex: 1;
 		display: flex;
-		gap: var(--td-comp-margin-s);
 		margin-top: 11px;
 		padding: 0 var(--td-radius-medium);
 		overflow: hidden;
 
+		&.is-overflow {
+			.tabs_prefix,
+			.tabs_suffix {
+				width: 24px;
+			}
+
+			.tabs_center {
+				mask-image: linear-gradient(90deg, transparent, #000 8px, #000 calc(100% - 8px), transparent 100%);
+			}
+		}
+
 		&_prefix,
 		&_suffix {
 			height: 24px;
-			width: 24px;
+			width: 0px;
 			display: flex;
 			align-items: center;
 			justify-content: center;
 			border-radius: var(--td-radius-default);
-			color: var(--td-text-color-primary);
+			color: var(--td-text-color-secondary);
 			cursor: pointer;
+			transition: all var(--td-transition);
 			-webkit-app-region: no-drag;
 			--ripple-color: var(--td-bg-color-secondarycontainer-active);
 
 			&:hover {
+				color: var(--td-text-color-primary);
 				background-color: var(--td-bg-color-secondarycontainer-hover);
 			}
 		}
@@ -112,12 +193,14 @@ function handleCreateConnectionCick() {
 			flex: 1;
 			display: flex;
 			gap: var(--td-comp-margin-xs);
+			padding: 0 var(--td-comp-margin-s);
 			overflow: auto hidden;
 
 			.tab {
 				position: relative;
 				display: flex;
 				align-items: center;
+				gap: var(--td-comp-margin-xs);
 				width: 130px;
 				min-width: 130px;
 				background-color: transparent;
@@ -207,6 +290,7 @@ function handleCreateConnectionCick() {
 	background-color: var(--td-bg-color-container);
 	border-top-left-radius: var(--td-radius-large);
 	border-top: 1px solid var(--td-component-stroke);
+	border-left: 1px solid var(--td-component-stroke);
 	overflow: hidden;
 }
 </style>

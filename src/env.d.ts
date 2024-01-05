@@ -21,3 +21,19 @@ interface ImportMetaEnv {
 interface ImportMeta {
 	readonly env: ImportMetaEnv
 }
+
+declare interface Document extends DocumentViewTransition {}
+
+declare interface DocumentViewTransition {
+	startViewTransition?(updateCallback?: UpdateCallback): ViewTransition
+}
+
+interface ViewTransition {
+	readonly updateCallbackDone: Promise<void>
+	readonly ready: Promise<void>
+	readonly finished: Promise<void>
+
+	skipTransition(): void
+}
+
+type UpdateCallback = () => any

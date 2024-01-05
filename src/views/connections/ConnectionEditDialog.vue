@@ -93,13 +93,14 @@
 </template>
 
 <script setup lang="ts">
-import { type FormRules, type FormInstanceFunctions, MessagePlugin } from 'tdesign-vue-next'
-import { onClickOutside } from '@vueuse/core'
+import { type FormRules, type FormInstanceFunctions, MessagePlugin, DialogPlugin } from 'tdesign-vue-next'
+import { onClickOutside, useEventBus } from '@vueuse/core'
 import { nanoid } from 'nanoid'
 import { cloneDeep } from 'lodash-es'
 import { useLoading } from '@/hooks/useLoading'
 import { useLocale } from '@/hooks/useLocale'
 import { type Connection, useConnectionsStore } from '@/store/modules/connections'
+import { CONNECTIONS_UPDATE_EVENT_KEY } from './keys'
 
 const emit = defineEmits<{ update: [id: string] }>()
 
@@ -187,12 +188,36 @@ async function handleConnectTestClick() {
 const connectTestResultPopupContentRef = ref(null)
 onClickOutside(connectTestResultPopupContentRef, () => (connectTestResultPopupVisible.value = false))
 
+// connected connection update confirm
+function connectedConnectionUpdateConfirm() {
+	return new Promise((resolve, reject) => {
+		const dialogInstance = DialogPlugin.confirm({
+			header: '警告',
+			body: '该连接已建立连接，修改连接信息将断开连接',
+			theme: 'danger',
+			onConfirm: () => {
+				resolve(true)
+				dialogInstance.destroy()
+			},
+			onCancel: () => {
+				resolve(false)
+				dialogInstance.destroy()
+			},
+		})
+	})
+}
+
 // confirm
 const formRef = ref<FormInstanceFunctions>()
 const { isLoading: confirmLoading, enter: enterConfirmLoading, exit: exitConfirmLoading } = useLoading()
 async function handleConfirmClick() {
 	try {
 		enterConfirmLoading()
+		if (isEdit.value && connectionsStore.connections.some(item => item.id === data.value.id)) {
+			const confirm = await connectedConnectionUpdateConfirm()
+			if (confirm) await connectionsStore.disconnectConnection(data.value.id)
+			else return
+		}
 		const validate = await formRef.value.validate()
 		if (validate !== true) return
 		if (isEdit.value) {
@@ -203,6 +228,7 @@ async function handleConfirmClick() {
 		}
 		MessagePlugin.success('保存成功')
 		visible.value = false
+		useEventBus(CONNECTIONS_UPDATE_EVENT_KEY).emit(data.value.id)
 	} catch (error) {
 		MessagePlugin.error(error.message)
 	} finally {

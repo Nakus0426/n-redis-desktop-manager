@@ -1,5 +1,5 @@
 <template>
-	<div class="setting-layout" :class="containerClass">
+	<div class="setting-layout" :class="{ 'is-mica': micaEnable }">
 		<WindowOverlay window="settingWindow" :maximizable="false" />
 		<div class="sider">
 			<div
@@ -32,15 +32,15 @@
 		</div>
 		<div class="content">
 			<div class="content_header">{{ title }}</div>
-			<div class="content_body" ref="contentRef">
+			<OverlayScrollbar class="content_body">
 				<RouterView>
 					<template #default="{ Component }">
-						<Transition enter-active-class="animate__animated animate__fadeInUp animate__faster" mode="out-in">
+						<Transition name="page-switch-horizontal" mode="out-in">
 							<component :is="Component" />
 						</Transition>
 					</template>
 				</RouterView>
-			</div>
+			</OverlayScrollbar>
 		</div>
 	</div>
 </template>
@@ -48,22 +48,14 @@
 <script setup lang="ts">
 import { type RouteRecordRaw } from 'vue-router'
 import { AppearanceSettingRoute, CommonSettingRoute, FunctionSettingRoute } from '@/router/routes'
-import { useAppStore } from '@/store/modules/app'
 import { useLocale } from '@/hooks/useLocale'
-import { useScrollbar } from '@/hooks/useScrollbar'
 
 const router = useRouter()
 const route = useRoute()
-const appStore = useAppStore()
 const { t } = useLocale()
 
 // mica effect
-const containerClass = computed(() => (appStore.micaEnable ? 'mica' : ''))
-
-// scroll bar
-const contentRef = ref()
-const { init: initScrollbar } = useScrollbar(contentRef)
-onMounted(() => initScrollbar())
+const micaEnable = window.mainWindow.getConfig('mica')
 
 // title
 const title = computed(() => t(route.meta.title as string))
@@ -99,7 +91,7 @@ const functionIcon = computed(() => `fluent:apps-16-${isMenuActived(FunctionSett
 	overflow: hidden;
 	background-color: var(--td-bg-color-secondarycontainer);
 
-	&.mica {
+	&.is-mica {
 		background-color: transparent;
 	}
 }

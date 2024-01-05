@@ -1,11 +1,11 @@
 <template>
-	<div class="main-layout" :class="layoutClass">
+	<div class="main-layout" :class="{ 'is-mica': micaEnable }">
 		<div class="sider">
 			<div class="sider_header">
 				<Icon height="24" width="24" icon="custom-logo" />
 			</div>
 			<div class="sider_body">
-				<TTooltip content="连接" placement="right" :show-arrow="false">
+				<TTooltip content="连接" placement="right" :show-arrow="false" theme="light">
 					<div
 						class="sider_body_item"
 						:class="menuClass(ConnectionsIndexRoute.path)"
@@ -15,7 +15,7 @@
 						<Icon height="24" width="24" :icon="connectionIcon" />
 					</div>
 				</TTooltip>
-				<TTooltip content="终端" placement="right" :show-arrow="false">
+				<TTooltip content="终端" placement="right" :show-arrow="false" theme="light">
 					<div
 						class="sider_body_item"
 						:class="menuClass(TerminalIndexRoute.path)"
@@ -51,8 +51,10 @@
 		<div class="content">
 			<RouterView>
 				<template #default="{ Component }">
-					<Transition enter-active-class="animate__animated animate__fadeInUp animate__faster" mode="out-in">
-						<component :is="Component" />
+					<Transition name="page-switch-horizontal" mode="out-in">
+						<KeepAlive>
+							<component :is="Component" />
+						</KeepAlive>
 					</Transition>
 				</template>
 			</RouterView>
@@ -64,15 +66,13 @@
 <script setup lang="ts">
 import { type DropdownOption } from 'tdesign-vue-next'
 import { type RouteRecordRaw } from 'vue-router'
-import { useAppStore } from '@/store/modules/app'
 import { ConnectionsIndexRoute, TerminalIndexRoute } from '@/router/routes'
 
-const appStore = useAppStore()
 const router = useRouter()
 const route = useRoute()
 
 // mica effect
-const layoutClass = computed(() => (appStore.micaEnable ? 'mica' : ''))
+const micaEnable = window.mainWindow.getConfig('mica')
 
 // handling menu click events
 function handleMenuClick(route: RouteRecordRaw) {
@@ -111,7 +111,7 @@ function handleExtraMenuClick(option: DropdownOption) {
 	overflow: hidden;
 	background-color: var(--td-bg-color-secondarycontainer);
 
-	&.mica {
+	&.is-mica {
 		background-color: transparent;
 	}
 }

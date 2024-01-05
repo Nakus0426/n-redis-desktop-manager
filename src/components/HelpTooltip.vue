@@ -1,6 +1,6 @@
 <template>
 	<div class="help-tooltip" :style="wrapStyle">
-		<TTooltip v-bind="$props" :content="$slots?.content ?? content" :show-arrow="false">
+		<TTooltip v-bind="$props" :content="$slots?.content ?? content" :show-arrow="false" theme="light">
 			<Icon class="help-tooltip_icon" :height="height" :width="width" icon="fluent:question-circle-20-regular" />
 		</TTooltip>
 	</div>

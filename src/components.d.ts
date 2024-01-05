@@ -8,11 +8,13 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     BackTop: typeof import('./components/BackTop.vue')['default']
+    ContextMenu: typeof import('./components/ContextMenu.vue')['default']
     Dialog: typeof import('./components/Dialog.vue')['default']
     DiffEditor: typeof import('./components/DiffEditor.vue')['default']
     Editor: typeof import('./components/Editor.vue')['default']
     HelpTooltip: typeof import('./components/HelpTooltip.vue')['default']
     Icon: typeof import('@iconify/vue')['Icon']
+    OverlayScrollbar: typeof import('./components/OverlayScrollbar.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     TButton: typeof import('tdesign-vue-next')['Button']

@@ -1,6 +1,12 @@
 import { defineConfig } from 'vite'
 import vueJsx from '@vitejs/plugin-vue-jsx'
-import { setupUnpluginAutoImport, setupUnpluginVueComponents, setupUnpluginVueI18n, setupVue } from './.build/plugins'
+import {
+	setupUnpluginAutoImport,
+	setupUnpluginVueComponents,
+	setupUnpluginVueI18n,
+	setupVue,
+	setupVueDevtools,
+} from './.build/plugins'
 import { resolve } from 'path'
 
 function pathResolve(dir: string) {
@@ -20,5 +26,6 @@ export default defineConfig({
 		setupUnpluginVueComponents(),
 		vueJsx(),
 		setupUnpluginVueI18n(),
+		setupVueDevtools(),
 	],
 })

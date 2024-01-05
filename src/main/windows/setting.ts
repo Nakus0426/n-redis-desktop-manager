@@ -1,6 +1,7 @@
-import { ipcMain, BrowserWindow } from 'electron'
+import { ipcMain, BrowserWindow, nativeTheme } from 'electron'
 import { join } from 'path'
 import { Channels } from './channels'
+import { configStore } from '../configStore'
 
 class SettingWindow {
 	private instance: BrowserWindow
@@ -22,6 +23,7 @@ class SettingWindow {
 			resizable: false,
 			frame: false,
 			title: '设置',
+			backgroundMaterial: configStore.get('mica') ? 'mica' : 'auto',
 			webPreferences: {
 				nodeIntegration: true,
 				preload: join(__dirname, 'preload.js'),

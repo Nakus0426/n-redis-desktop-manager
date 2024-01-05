@@ -25,6 +25,7 @@ class MainWindow {
 			minHeight: 640,
 			center: true,
 			frame: false,
+			backgroundMaterial: configStore.get('mica') ? 'mica' : 'auto',
 			webPreferences: {
 				preload: join(__dirname, 'preload.js'),
 				nodeIntegration: true,
@@ -33,6 +34,7 @@ class MainWindow {
 		// this.instance.removeMenu()
 		if (MAIN_WINDOW_VITE_DEV_SERVER_URL) this.instance.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL)
 		else this.instance.loadFile(join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`))
+		nativeTheme.themeSource = configStore.get('theme')
 		this.setupEvents()
 		this.setupIpc()
 	}
@@ -80,42 +82,81 @@ class MainWindow {
 			})
 		})
 		ipcMain.handle(Channels.Main.redis.create, (event, value) =>
-			redisUtil.create({
-				...value,
-				error: (id, error) => {
-					this.instance.webContents.send(Channels.Main.onError, error.message)
-					this.instance.webContents.send(Channels.Main.redis.onError, id, error)
-				},
-				ready: id => this.instance.webContents.send(Channels.Main.redis.onReady, id),
-				end: id => this.instance.webContents.send(Channels.Main.redis.onEnd, id),
-				connect: id => this.instance.webContents.send(Channels.Main.redis.onConnect, id),
-				reconnect: id => this.instance.webContents.send(Channels.Main.redis.onReconnect, id),
-			}),
+			this.handleError(() =>
+				redisUtil.create({
+					...value,
+					error: (id, e) => {
+						this.instance.webContents.send(Channels.Main.onError, e.message)
+						this.instance.webContents.send(Channels.Main.redis.onError, id, e)
+					},
+					ready: id => this.instance.webContents.send(Channels.Main.redis.onReady, id),
+					end: id => this.instance.webContents.send(Channels.Main.redis.onEnd, id),
+					connect: id => this.instance.webContents.send(Channels.Main.redis.onConnect, id),
+					reconnect: id => this.instance.webContents.send(Channels.Main.redis.onReconnect, id),
+				}),
+			),
 		)
-		ipcMain.handle(Channels.Main.redis.connect, (event, value) => redisUtil.connect(value))
-		ipcMain.handle(Channels.Main.redis.disconnect, (event, value) => redisUtil.disconnect(value))
-		ipcMain.handle(Channels.Main.redis.destory, (event, value) => redisUtil.destory(value))
-		ipcMain.on(Channels.Main.redis.isConnected, (event, value) => (event.returnValue = redisUtil.isConnected(value)))
+		ipcMain.handle(Channels.Main.redis.connect, (event, value) => this.handleError(() => redisUtil.connect(value)))
+		ipcMain.handle(Channels.Main.redis.disconnect, (event, value) =>
+			this.handleError(() => redisUtil.disconnect(value)),
+		)
+		ipcMain.handle(Channels.Main.redis.destory, (event, value) => this.handleError(() => redisUtil.destory(value)))
+		ipcMain.on(
+			Channels.Main.redis.isConnected,
+			(event, value) => (event.returnValue = this.handleError(() => redisUtil.isConnected(value))),
+		)
 		ipcMain.handle(Channels.Main.redis.ping, (event, id) => redisUtil.ping(id))
-		ipcMain.handle(Channels.Main.redis.configGet, (event, id, value) => redisUtil.configGet(id, value))
-		ipcMain.handle(Channels.Main.redis.select, (event, id, value) => redisUtil.select(id, value))
-		ipcMain.handle(Channels.Main.redis.info, (event, id, value) => redisUtil.info(id, value))
-		ipcMain.handle(Channels.Main.redis.keys, (event, id, value) => redisUtil.keys(id, value))
-		ipcMain.handle(Channels.Main.redis.set, (event, id, key, value, expire) => redisUtil.set(id, key, value, expire))
-		ipcMain.handle(Channels.Main.redis.hset, (event, id, key, field, value) => redisUtil.hset(id, key, field, value))
-		ipcMain.handle(Channels.Main.redis.get, (event, id, key, type) => redisUtil.get(id, key))
-		ipcMain.handle(Channels.Main.redis.smembers, (event, id, key, type) => redisUtil.smembers(id, key))
-		ipcMain.handle(Channels.Main.redis.hget, (event, id, key, type) => redisUtil.hget(id, key))
-		ipcMain.handle(Channels.Main.redis.del, (event, id, key) => redisUtil.del(id, key))
-		ipcMain.handle(Channels.Main.redis.hdel, (event, id, key, field) => redisUtil.hdel(id, key, field))
-		ipcMain.handle(Channels.Main.redis.rename, (event, id, key, newKey) => redisUtil.rename(id, key, newKey))
-		ipcMain.handle(Channels.Main.redis.exists, (event, id, key) => redisUtil.exists(id, key))
-		ipcMain.handle(Channels.Main.redis.expire, (event, id, key, expire) => redisUtil.expire(id, key, expire))
-		ipcMain.handle(Channels.Main.redis.type, (event, id, key) => redisUtil.type(id, key))
-		ipcMain.handle(Channels.Main.redis.ttl, (event, id, key) => redisUtil.ttl(id, key))
-		ipcMain.handle(Channels.Main.redis.memoryUsage, (event, id, key) => redisUtil.memoryUsage(id, key))
-		ipcMain.handle(Channels.Main.redis.srem, (event, id, key, member) => redisUtil.srem(id, key, member))
-		ipcMain.handle(Channels.Main.redis.sadd, (event, id, key, member) => redisUtil.sadd(id, key, member))
+		ipcMain.handle(Channels.Main.redis.configGet, (event, id, value) =>
+			this.handleError(() => redisUtil.configGet(id, value)),
+		)
+		ipcMain.handle(Channels.Main.redis.select, (event, id, value) =>
+			this.handleError(() => redisUtil.select(id, value)),
+		)
+		ipcMain.handle(Channels.Main.redis.info, (event, id, value) => this.handleError(() => redisUtil.info(id, value)))
+		ipcMain.handle(Channels.Main.redis.keys, (event, id, value) => this.handleError(() => redisUtil.keys(id, value)))
+		ipcMain.handle(Channels.Main.redis.set, (event, id, key, value, expire) =>
+			this.handleError(() => redisUtil.set(id, key, value, expire)),
+		)
+		ipcMain.handle(Channels.Main.redis.hset, (event, id, key, field, value) =>
+			this.handleError(() => redisUtil.hset(id, key, field, value)),
+		)
+		ipcMain.handle(Channels.Main.redis.get, (event, id, key, type) => this.handleError(() => redisUtil.get(id, key)))
+		ipcMain.handle(Channels.Main.redis.smembers, (event, id, key, type) =>
+			this.handleError(() => redisUtil.smembers(id, key)),
+		)
+		ipcMain.handle(Channels.Main.redis.hget, (event, id, key, type) => this.handleError(() => redisUtil.hget(id, key)))
+		ipcMain.handle(Channels.Main.redis.del, (event, id, key) => this.handleError(() => redisUtil.del(id, key)))
+		ipcMain.handle(Channels.Main.redis.hdel, (event, id, key, field) =>
+			this.handleError(() => redisUtil.hdel(id, key, field)),
+		)
+		ipcMain.handle(Channels.Main.redis.rename, (event, id, key, newKey) =>
+			this.handleError(() => redisUtil.rename(id, key, newKey)),
+		)
+		ipcMain.handle(Channels.Main.redis.exists, (event, id, key) => this.handleError(() => redisUtil.exists(id, key)))
+		ipcMain.handle(Channels.Main.redis.expire, (event, id, key, expire) =>
+			this.handleError(() => redisUtil.expire(id, key, expire)),
+		)
+		ipcMain.handle(Channels.Main.redis.type, (event, id, key) => this.handleError(() => redisUtil.type(id, key)))
+		ipcMain.handle(Channels.Main.redis.ttl, (event, id, key) => this.handleError(() => redisUtil.ttl(id, key)))
+		ipcMain.handle(Channels.Main.redis.memoryUsage, (event, id, key) =>
+			this.handleError(() => redisUtil.memoryUsage(id, key)),
+		)
+		ipcMain.handle(Channels.Main.redis.srem, (event, id, key, member) =>
+			this.handleError(() => redisUtil.srem(id, key, member)),
+		)
+		ipcMain.handle(Channels.Main.redis.sadd, (event, id, key, member) =>
+			this.handleError(() => redisUtil.sadd(id, key, member)),
+		)
+	}
+
+	/** handle error */
+	private async handleError(func: Function) {
+		try {
+			return await func()
+		} catch (e) {
+			this.instance.webContents.send(Channels.Main.onError, e.message)
+			throw new Error(e.message)
+		}
 	}
 }
 

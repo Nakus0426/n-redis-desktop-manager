@@ -6,9 +6,9 @@
 				<div class="header_title">{{ props.title }}</div>
 			</div>
 		</template>
-		<div class="scroll-wrapper" ref="scrollWrapperRef">
+		<OverlayScrollbar class="scroll-wrapper">
 			<slot name="default" />
-		</div>
+		</OverlayScrollbar>
 		<template v-if="slots?.footer" #footer>
 			<slot name="footer" />
 		</template>
@@ -16,19 +16,12 @@
 </template>
 
 <script setup lang="ts">
-import { useScrollbar } from '@/hooks/useScrollbar'
-
 const slots = defineSlots<{ footer(): any; default(): any }>()
 const props = defineProps<{ title: string; icon?: string }>()
 const emit = defineEmits<{ opened: [] }>()
 
-// scrollbar
-const scrollWrapperRef = ref()
-const { init: initScrollbar } = useScrollbar(scrollWrapperRef)
-
 // dialog opened
 function handleDialogOpened() {
-	nextTick(() => initScrollbar())
 	emit('opened')
 }
 </script>

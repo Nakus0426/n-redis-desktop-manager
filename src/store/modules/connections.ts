@@ -48,7 +48,7 @@ export const useConnectionsStore = defineStore('Connections', () => {
 
 	/** generate connections */
 	function generateConnections(topConnection: Connection[], normalConnections: Connection[]) {
-		connections.value = topConnection.concat(normalConnections)
+		document.startViewTransition(() => (connections.value = topConnection.concat(normalConnections)))
 		syncConnectionConnectStatus()
 	}
 
@@ -82,6 +82,7 @@ export const useConnectionsStore = defineStore('Connections', () => {
 		normalConnections.push(connection)
 		const res = await setItem(ConnectionKeys.NormalConnections, normalConnections)
 		if (res) generateConnections(topConnections, normalConnections)
+		return connection.id
 	}
 
 	/** remove connection */
@@ -99,6 +100,7 @@ export const useConnectionsStore = defineStore('Connections', () => {
 			const res = await setItem(ConnectionKeys.TopConnections, topConnections)
 			if (res) generateConnections(topConnections, normalConnections)
 		}
+		return id
 	}
 
 	/** update connection */
@@ -115,6 +117,7 @@ export const useConnectionsStore = defineStore('Connections', () => {
 		const value = connection.top ? topConnections : normalConnections
 		const res = await setItem(key, value)
 		if (res) generateConnections(topConnections, normalConnections)
+		return connection.id
 	}
 
 	/** placing connection on top */
