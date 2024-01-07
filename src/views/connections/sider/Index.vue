@@ -12,13 +12,7 @@
 							:icon="connectionLoadingMap.get(item.id) ? 'svg-spinners:ring-resize' : 'fluent:chevron-down-16-regular'"
 						/>
 						<TTooltip :show-arrow="false" theme="light" placement="top" content="已连接">
-							<Icon
-								class="cell_header_connected"
-								height="16"
-								width="16"
-								icon="fluent:plug-connected-16-regular"
-								v-if="item.connected === 'connected'"
-							/>
+							<div class="cell_header_connected" v-if="item.connected === 'connected'" />
 						</TTooltip>
 						<TextEllipsis class="cell_header_label" :content="item.name" />
 					</div>
@@ -32,11 +26,13 @@
 				</div>
 			</div>
 		</template>
+		<div class="empty" v-if="connectionsStore.connections.length === 0">无数据</div>
 	</OverlayScrollbar>
 </template>
 
 <script setup lang="ts">
 import { set } from 'lodash-es'
+import { DialogPlugin, MessagePlugin } from 'tdesign-vue-next'
 import type { ContextMenuOption } from '@/components/ContextMenu.vue'
 import { type Connection, useConnectionsStore } from '@/store/modules/connections'
 import { useTabs } from '../hooks'
@@ -59,18 +55,41 @@ function generateContextMenu(connection: Connection) {
 			icon: `fluent:pin${connection.top ? '-off' : ''}-16-regular`,
 		},
 		{ label: '编辑', value: 'edit', icon: 'fluent:settings-16-regular' },
-		{ label: '删除', value: 'remove', icon: 'fluent:delete-16-regular', theme: 'error', divider: connected },
+		{ label: '删除', value: 'remove', icon: 'fluent:delete-16-regular', theme: 'error', divider: true },
+		{
+			label: connected ? '断开连接' : '建立连接',
+			value: connected ? 'disconnect' : 'connect',
+			icon: 'fluent:power-20-regular',
+			theme: connected ? 'error' : 'success',
+		},
 	]
-	if (connected)
-		contextMenu.push({ label: '断开连接', value: 'disconnect', icon: 'fluent:power-20-regular', theme: 'error' })
 	return contextMenu
 }
 function handleContextMenuClick(value: ContextMenuOption['value'], id: string) {
 	if (value === 'edit') emit('edit', id)
 	if (value === 'top') connectionsStore.topConnection(id)
 	if (value === 'cancelTop') connectionsStore.cancelTopConnection(id)
-	if (value === 'remove') connectionsStore.removeConnection(id)
+	if (value === 'connect') connectionsStore.connectConnection(id)
 	if (value === 'disconnect') connectionsStore.disconnectConnection(id)
+	if (value === 'remove') {
+		const { isLoading: isRemoveLoading, enter: enterRemoveLoading, exit: exitRemoveLoading } = useLoading()
+		const dialogInstance = DialogPlugin.confirm({
+			header: '删除确认',
+			body: '确定要删除该连接吗？',
+			theme: 'danger',
+			confirmBtn: { loading: isRemoveLoading.value, theme: 'danger', variant: 'outline' },
+			onConfirm: async () => {
+				try {
+					enterRemoveLoading()
+					await connectionsStore.removeConnection(id)
+					MessagePlugin.success('删除成功')
+					dialogInstance.destroy()
+				} finally {
+					exitRemoveLoading()
+				}
+			},
+		})
+	}
 }
 
 // header class
@@ -140,8 +159,8 @@ function bindBodyRef(el: any, id: string) {
 		}
 
 		&.is-actived {
-			background-color: var(--td-bg-color-container-opacity);
-			backdrop-filter: blur(15px);
+			background-color: var(--td-bg-color-container);
+			
 
 			.cell_header_arrow {
 				transform: rotate(180deg);
@@ -163,7 +182,10 @@ function bindBodyRef(el: any, id: string) {
 		}
 
 		&_connected {
-			color: var(--td-success-color);
+			height: 6px;
+			width: 6px;
+			border-radius: 3px;
+			background-color: var(--td-success-color);
 		}
 
 		&_arrow {
@@ -180,5 +202,14 @@ function bindBodyRef(el: any, id: string) {
 		opacity: 0;
 		overflow: hidden;
 	}
+}
+
+.empty {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font: var(--td-font-body-medium);
+	color: var(--td-text-color-secondary);
 }
 </style>

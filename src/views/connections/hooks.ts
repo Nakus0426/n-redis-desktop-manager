@@ -1,5 +1,5 @@
 import { createGlobalState, useEventBus } from '@vueuse/core'
-import { MessagePlugin, type SelectOption } from 'tdesign-vue-next'
+import { type SelectOption } from 'tdesign-vue-next'
 import { useLoading } from '@/hooks/useLoading'
 import { CONNECTIONS_UPDATE_EVENT_KEY } from './keys'
 
@@ -75,4 +75,24 @@ export function useDatabaseSelect(id: string, immidiate = false) {
 	immidiate && init()
 
 	return { options, isLoading, init }
+}
+
+/** get all keys hook */
+export function useGetAllKeys(id: string, immidiate = false) {
+	const { isLoading, enter, exit } = useLoading()
+	const keys = ref<string[]>([])
+
+	async function init() {
+		try {
+			enter()
+			const res = await window.mainWindow.redis.keys(id, '*')
+			keys.value = res.sort()
+		} finally {
+			exit()
+		}
+	}
+
+	immidiate && init()
+
+	return { keys, isLoading, init }
 }

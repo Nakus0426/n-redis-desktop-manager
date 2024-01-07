@@ -18,18 +18,19 @@ export class RedisUtil {
 
 	/** create redis client */
 	async create(options: CreateClientOptions) {
-		if (this.clients.has(options.id)) {
-			await this.clients.get(options.id).disconnect()
-			this.destory(options.id)
+		const { id, ignoreError, error: errorCallback, ready, end, connect, reconnect } = options
+		if (this.clients.has(id)) {
+			await this.clients.get(id).quit()
+			this.destory(id)
 		}
 		options.socket = { reconnectStrategy: false }
 		const client = createClient(options)
-		if (!options.ignoreError) client.on('error', error => options.error(options.id, error))
-		client.on('ready', () => options.ready(options.id))
-		client.on('end', () => options.end(options.id))
-		client.on('connect', () => options.connect(options.id))
-		client.on('reconnecting', () => options.reconnect(options.id))
-		this.clients.set(options.id, client)
+		if (!ignoreError) client.on('error', error => errorCallback(id, error))
+		client.on('ready', () => ready(id))
+		client.on('end', () => end(id))
+		client.on('connect', () => connect(id))
+		client.on('reconnecting', () => reconnect(id))
+		this.clients.set(id, client)
 	}
 
 	/** get client */

@@ -18,7 +18,7 @@
 					</template>
 				</TSelect>
 				<TTooltip content="刷新" theme="light" :show-arrow="false">
-					<TButton size="small" variant="outline">
+					<TButton size="small" variant="outline" @click="init()">
 						<template #icon><Icon height="16" width="16" icon="fluent:arrow-counterclockwise-16-regular" /></template>
 					</TButton>
 				</TTooltip>
@@ -34,28 +34,24 @@
 				</TInput>
 			</div>
 		</div>
-		<div class="body">
-			<TSkeleton :loading="true" :row-col="skeletonRowCol">
-				<template v-for="item in 100">
-					<ContextMenu :options="[{ label: '123', value: '123' }]">
-						<div class="body_item" v-ripple>
-							<Icon height="16" width="16" icon="fluent:key-16-regular" />
-							<TextEllipsis
-								class="body_item_label"
-								content="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-							/>
-						</div>
-					</ContextMenu>
-				</template>
-			</TSkeleton>
-		</div>
+		<TSkeleton class="body" :loading="isKeysLoading" :row-col="skeletonRowCol">
+			<template v-for="item in keys" :key="item">
+				<ContextMenu :options="contextMenuOptions">
+					<div class="body_item" v-ripple>
+						<Icon height="16" width="16" icon="fluent:key-16-regular" />
+						<TextEllipsis class="body_item_label" :content="item" />
+					</div>
+				</ContextMenu>
+			</template>
+		</TSkeleton>
 	</div>
 </template>
 
 <script setup lang="ts">
 import { type SkeletonRowCol } from 'tdesign-vue-next'
-import { useDatabaseSelect } from '../hooks'
+import { useDatabaseSelect, useGetAllKeys } from '../hooks'
 import { type Connection } from '@/store/modules/connections'
+import { type ContextMenuOption } from '@/components/ContextMenu.vue'
 
 const props = defineProps<{ connection: Connection }>()
 
@@ -67,12 +63,22 @@ const selctedDatabase = ref<number>(0)
 const { isLoading: isDatabaseLoading, init: initDatabase, options: databases } = useDatabaseSelect(props.connection.id)
 
 // init keys
-function initKeys() {}
+const { isLoading: isKeysLoading, init: getAllKeys, keys } = useGetAllKeys(props.connection.id)
+function initKeys() {
+	window.mainWindow.redis.select(props.connection.id, selctedDatabase.value)
+	getAllKeys()
+}
 
 // init
-function init() {
-	initDatabase()
+async function init() {
+	await initDatabase()
+	initKeys()
 }
+
+// context menu
+const contextMenuOptions: ContextMenuOption[] = [
+	{ label: '删除键', value: 'remove', icon: 'fluent:delete-16-regular', theme: 'error' },
+]
 
 defineExpose({ init })
 </script>

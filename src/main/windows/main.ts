@@ -19,8 +19,8 @@ class MainWindow {
 		this.instance = new BrowserWindow({
 			icon: './src/assets/icons/logo.ico',
 			show: false,
-			width: 1440,
-			height: 900,
+			width: 1024,
+			height: 640,
 			minWidth: 1024,
 			minHeight: 640,
 			center: true,
@@ -103,7 +103,7 @@ class MainWindow {
 		ipcMain.handle(Channels.Main.redis.destory, (event, value) => this.handleError(() => redisUtil.destory(value)))
 		ipcMain.on(
 			Channels.Main.redis.isConnected,
-			(event, value) => (event.returnValue = this.handleError(() => redisUtil.isConnected(value))),
+			async (event, value) => (event.returnValue = await this.handleError(() => redisUtil.isConnected(value))),
 		)
 		ipcMain.handle(Channels.Main.redis.ping, (event, id) => redisUtil.ping(id))
 		ipcMain.handle(Channels.Main.redis.configGet, (event, id, value) =>

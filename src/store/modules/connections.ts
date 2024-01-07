@@ -79,6 +79,7 @@ export const useConnectionsStore = defineStore('Connections', () => {
 			return name === _name || (host === _host && port === _port && username === _username && password === _password)
 		})
 		if (isNormalExist || isTopExist) throw new Error('该连接已存在')
+		connection.connected = 'disconnected'
 		normalConnections.push(connection)
 		const res = await setItem(ConnectionKeys.NormalConnections, normalConnections)
 		if (res) generateConnections(topConnections, normalConnections)
