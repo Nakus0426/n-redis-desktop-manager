@@ -85,10 +85,7 @@ class MainWindow {
 			this.handleError(() =>
 				redisUtil.create({
 					...value,
-					error: (id, e) => {
-						this.instance.webContents.send(Channels.Main.onError, e.message)
-						this.instance.webContents.send(Channels.Main.redis.onError, id, e)
-					},
+					error: (id, e) => this.instance.webContents.send(Channels.Main.redis.onError, id, e),
 					ready: id => this.instance.webContents.send(Channels.Main.redis.onReady, id),
 					end: id => this.instance.webContents.send(Channels.Main.redis.onEnd, id),
 					connect: id => this.instance.webContents.send(Channels.Main.redis.onConnect, id),

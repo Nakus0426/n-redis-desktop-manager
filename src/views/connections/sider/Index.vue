@@ -9,7 +9,11 @@
 							class="cell_header_arrow"
 							height="16"
 							width="16"
-							:icon="connectionLoadingMap.get(item.id) ? 'svg-spinners:ring-resize' : 'fluent:chevron-down-16-regular'"
+							:icon="
+								connectionLoadingMap.get(item.id).isLoading.value
+									? 'svg-spinners:bars-rotate-fade'
+									: 'fluent:chevron-down-16-regular'
+							"
 						/>
 						<TTooltip :show-arrow="false" theme="light" placement="top" content="已连接">
 							<div class="cell_header_connected" v-if="item.connected === 'connected'" />
@@ -21,7 +25,7 @@
 					<component
 						:is="item.display === 'list' ? List : Tree"
 						:connection="item"
-						:ref="el => bindBodyRef(el, item.id)"
+						:ref="el => bindBodyRef(el, `${item.display}-${item.id}`)"
 					/>
 				</div>
 			</div>
@@ -48,6 +52,7 @@ const { activedTab, addTab } = useTabs()
 // context menu
 function generateContextMenu(connection: Connection) {
 	const connected = connection.connected === 'connected'
+	const isDisplayList = connection.display === 'list'
 	const contextMenu: ContextMenuOption[] = [
 		{
 			label: connection.top ? '取消置顶' : '置于顶部',
@@ -55,7 +60,13 @@ function generateContextMenu(connection: Connection) {
 			icon: `fluent:pin${connection.top ? '-off' : ''}-16-regular`,
 		},
 		{ label: '编辑', value: 'edit', icon: 'fluent:settings-16-regular' },
-		{ label: '删除', value: 'remove', icon: 'fluent:delete-16-regular', theme: 'error', divider: true },
+		{ label: '删除', value: 'remove', icon: 'fluent:delete-16-regular', theme: 'error' },
+		{
+			label: isDisplayList ? '树形视图' : '列表视图',
+			value: isDisplayList ? 'tree' : 'list',
+			icon: isDisplayList ? 'fluent:text-bullet-list-16-regular' : 'fluent:text-bullet-list-tree-16-regular',
+			divider: true,
+		},
 		{
 			label: connected ? '断开连接' : '建立连接',
 			value: connected ? 'disconnect' : 'connect',
@@ -71,13 +82,19 @@ function handleContextMenuClick(value: ContextMenuOption['value'], id: string) {
 	if (value === 'cancelTop') connectionsStore.cancelTopConnection(id)
 	if (value === 'connect') connectionsStore.connectConnection(id)
 	if (value === 'disconnect') connectionsStore.disconnectConnection(id)
+	if (value === 'list' || value === 'tree') {
+		const connection = connectionsStore.connections.find(item => item.id === id)
+		connection.display = value
+		connectionsStore.updateConnection(connection)
+	}
 	if (value === 'remove') {
 		const { isLoading: isRemoveLoading, enter: enterRemoveLoading, exit: exitRemoveLoading } = useLoading()
 		const dialogInstance = DialogPlugin.confirm({
 			header: '删除确认',
 			body: '确定要删除该连接吗？',
 			theme: 'danger',
-			confirmBtn: { loading: isRemoveLoading.value, theme: 'danger', variant: 'outline' },
+			placement: 'center',
+			confirmBtn: { loading: isRemoveLoading.value, theme: 'danger' },
 			onConfirm: async () => {
 				try {
 					enterRemoveLoading()
@@ -96,25 +113,30 @@ function handleContextMenuClick(value: ContextMenuOption['value'], id: string) {
 const headerClass = computed(() => {
 	const classMap = {}
 	connectionsStore.connections.forEach(item => {
-		set(classMap, `${item.id}.is-actived`, activedTab.value?.id === item.id)
+		set(classMap, `${item.id}.is-expanded`, expandedConnectionId.value === item.id)
 		set(classMap, `${item.id}.is-connected`, item.connected === 'connected')
 	})
 	return classMap
 })
 
 // connection click
-const connectionLoadingMap = ref(new Map<string, boolean>())
+const expandedConnectionId = ref<string>()
+const connectionLoadingMap = computed(() => {
+	const map = new Map<string, ReturnType<typeof useLoading>>()
+	connectionsStore.connections.forEach(item => map.set(item.id, useLoading(0)))
+	return map
+})
 async function handleConnectionClick(connection: Connection) {
-	const { id, name: title } = connection
-	const { isLoading: isConnectionLoading, enter: enterConnectionLoading, exit: exitConnectionLoading } = useLoading()
-	connectionLoadingMap.value.set(id, isConnectionLoading.value)
+	const { id, name: title, display } = connection
 	try {
-		enterConnectionLoading()
+		connectionLoadingMap.value.get(id).enter()
 		if (connection.connected === 'disconnected') await connectionsStore.connectConnection(id)
-		if (activedTab.value?.key !== id) addTab({ id, key: id, title, isConnection: true })
-		bodyRef.value.get(id)?.init()
+		const isSameConnection = expandedConnectionId.value === id
+		if (!isSameConnection) await bodyRef.value.get(`${display}-${id}`).init()
+		if (!isSameConnection && activedTab.value?.key !== id) addTab({ id, key: id, title, isConnection: true })
+		expandedConnectionId.value = isSameConnection ? null : id
 	} finally {
-		exitConnectionLoading()
+		connectionLoadingMap.value.get(id).exit()
 	}
 }
 
@@ -149,8 +171,9 @@ function bindBodyRef(el: any, id: string) {
 		font: var(--td-font-body-large);
 		color: var(--td-text-color-primary);
 		padding: var(--td-comp-paddingTB-m) var(--td-comp-paddingLR-m);
-		cursor: pointer;
+		border-bottom: 1px solid transparent;
 		transition: all var(--td-transition);
+		cursor: pointer;
 		z-index: 3;
 		--ripple-color: var(--td-bg-color-container-active);
 
@@ -158,9 +181,10 @@ function bindBodyRef(el: any, id: string) {
 			background-color: var(--td-bg-color-container-hover);
 		}
 
-		&.is-actived {
-			background-color: var(--td-bg-color-container);
-			
+		&.is-expanded {
+			background-color: var(--td-bg-color-container-opacity);
+			backdrop-filter: blur(15px);
+			border-bottom: 1px solid var(--td-component-stroke);
 
 			.cell_header_arrow {
 				transform: rotate(180deg);
@@ -189,6 +213,7 @@ function bindBodyRef(el: any, id: string) {
 		}
 
 		&_arrow {
+			color: var(--td-text-color-secondary);
 			transition: all var(--td-transition);
 		}
 	}
@@ -198,6 +223,7 @@ function bindBodyRef(el: any, id: string) {
 		height: 0;
 		display: grid;
 		grid-template-rows: 0fr;
+		border-bottom: 1px solid transparent;
 		transition: all var(--td-transition);
 		opacity: 0;
 		overflow: hidden;

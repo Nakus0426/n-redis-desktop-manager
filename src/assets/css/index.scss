@@ -20,11 +20,11 @@ body,
 	display: none;
 }
 
-::view-transition-new(root) {
+::view-transition-new(*) {
 	animation-duration: 0.2s;
 	animation: none;
 }
-::view-transition-old(root) {
+::view-transition-old(*) {
 	animation-duration: 0.2s;
 	display: none;
 }

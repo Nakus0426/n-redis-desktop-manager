@@ -9,28 +9,30 @@
 				<div class="tabs_prefix" v-ripple @click="handleTabsScrollClick('pre')">
 					<Icon height="12" width="12" icon="fluent:chevron-left-12-regular" />
 				</div>
-				<div class="tabs_center" ref="tabsCenterRef">
-					<template v-for="item in tabs" :key="item.key">
-						<div
-							class="tab"
-							:class="{ 'is-actived': item.isActived }"
-							v-ripple
-							ref="tabRefs"
-							@click="handleTabClick(item)"
-						>
-							<Icon height="16" width="16" :icon="item.icon" />
-							<span class="tab_label">{{ item.title }}</span>
-							<TTooltip content="关闭" theme="light" :show-arrow="false" placement="bottom">
-								<Icon
-									class="tab_close"
-									height="12"
-									width="12"
-									icon="fluent:dismiss-12-regular"
-									@click.stop="handleTabRemoveClick(item.id, item.key)"
-								/>
-							</TTooltip>
-						</div>
-					</template>
+				<div class="tabs_center" ref="tabsCenterRef" id="tabs">
+					<TransitionGroup name="tab">
+						<template v-for="(item, index) in tabs" :key="item.key">
+							<div
+								class="tab"
+								:class="{ 'is-actived': item.isActived }"
+								v-ripple
+								ref="tabRefs"
+								@click="handleTabClick(index, item)"
+							>
+								<Icon height="16" width="16" :icon="item.icon" />
+								<TextEllipsis class="tab_label" :content="item.title" />
+								<TTooltip content="关闭" theme="light" :show-arrow="false" placement="bottom">
+									<Icon
+										class="tab_close"
+										height="12"
+										width="12"
+										icon="fluent:dismiss-12-regular"
+										@click.stop="handleTabRemoveClick(item.id, item.key)"
+									/>
+								</TTooltip>
+							</div>
+						</template>
+					</TransitionGroup>
 				</div>
 				<div class="tabs_suffix" v-ripple @click="handleTabsScrollClick('next')">
 					<Icon height="12" width="12" icon="fluent:chevron-right-12-regular" />
@@ -97,24 +99,32 @@ function handleTabsScrollClick(direction: 'pre' | 'next') {
 // is tabs overflow
 const isTabsOverflow = ref(false)
 const tabsRef = ref<HTMLElement>()
-function calcTabsOverflow() {
-	nextTick(() => (isTabsOverflow.value = tabsRef.value.scrollWidth > tabsRef.value.clientWidth))
+async function calcTabsOverflow() {
+	await nextTick()
+	isTabsOverflow.value = tabsCenterRef.value.scrollWidth > tabsCenterRef.value.clientWidth
 }
-useResizeObserver(tabsRef, calcTabsOverflow)
-watch(
-	() => tabs.value.length,
-	value => value > 0 && calcTabsOverflow(),
-	{ immediate: true },
-)
+useResizeObserver(tabsCenterRef, calcTabsOverflow)
+watch(() => tabs.value.length, calcTabsOverflow, { immediate: true })
 
 // tab click
-function handleTabClick(tab: Tab) {
+function handleTabClick(index: number, tab: Tab) {
 	activedTab.value = tab
 }
 
 // tab remove
 function handleTabRemoveClick(id: string, key: string) {
 	removeTab(id, key)
+}
+
+// tab scroll into view
+watch(activedTab, async value => {
+	await nextTick()
+	if (!value || !isTabsOverflow.value) return
+	const index = tabs.value.findIndex(item => item.id === value.id && item.key === value.key)
+	if (index !== -1) setTimeout(() => tabScrollIntoView(index), 200)
+})
+function tabScrollIntoView(index: number) {
+	tabRefs.value[index].scrollIntoView({ behavior: 'smooth', inline: 'center' })
 }
 </script>
 
@@ -267,9 +277,6 @@ function handleTabRemoveClick(id: string, key: string) {
 				&_label {
 					flex: 1;
 					font: var(--td-font-body-medium);
-					text-overflow: ellipsis;
-					white-space: nowrap;
-					overflow: hidden;
 				}
 
 				&_close {
@@ -292,5 +299,17 @@ function handleTabRemoveClick(id: string, key: string) {
 	border-top: 1px solid var(--td-component-stroke);
 	border-left: 1px solid var(--td-component-stroke);
 	overflow: hidden;
+}
+
+.tab-enter-active,
+.tab-leave-active,
+.tab-move {
+	transition: all var(--td-transition);
+}
+
+.tab-enter-from,
+.tab-leave-to {
+	opacity: 0;
+	transform: translateY(5px);
 }
 </style>

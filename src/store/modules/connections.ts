@@ -48,8 +48,10 @@ export const useConnectionsStore = defineStore('Connections', () => {
 
 	/** generate connections */
 	function generateConnections(topConnection: Connection[], normalConnections: Connection[]) {
-		document.startViewTransition(() => (connections.value = topConnection.concat(normalConnections)))
-		syncConnectionConnectStatus()
+		document.startViewTransition(() => {
+			connections.value = topConnection.concat(normalConnections)
+			syncConnectionConnectStatus()
+		})
 	}
 
 	/** sync connection connect status */

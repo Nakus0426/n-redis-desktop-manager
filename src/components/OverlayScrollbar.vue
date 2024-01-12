@@ -9,7 +9,7 @@ import { useOverlayScrollbars } from 'overlayscrollbars-vue'
 
 const containerRef = ref<HTMLElement>()
 const [init, instance] = useOverlayScrollbars({
-	options: { scrollbars: { autoHide: 'leave', clickScroll: true } },
+	options: { scrollbars: { autoHide: 'leave', clickScroll: true }, overflow: { x: 'hidden' } },
 	defer: true,
 })
 

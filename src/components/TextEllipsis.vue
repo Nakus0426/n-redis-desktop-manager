@@ -17,10 +17,9 @@ const { isOutside } = useMouseInElement(containerRef, { handleOutside: false })
 watch(
 	isOutside,
 	value => {
-		if (value) return
-		isOverflow.value = containerRef.value.clientWidth < contentRef.value.offsetWidth
+		if (!value) isOverflow.value = containerRef.value.clientWidth < contentRef.value.offsetWidth
 	},
-	{ immediate: true }
+	{ immediate: true },
 )
 
 // title

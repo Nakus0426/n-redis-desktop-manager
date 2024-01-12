@@ -26,7 +26,7 @@ useAppStore().initAppLocale()
 
 // app message handler
 window.mainWindow.onError(error => {
-	if (error) MessagePlugin.error(error)
+	if (error) MessagePlugin.error({ content: error, placement: 'bottom' })
 })
 </script>
 

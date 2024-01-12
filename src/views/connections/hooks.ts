@@ -8,7 +8,7 @@ export type Tab = {
 	key: string
 	title: string
 	icon?: string
-	isConnection: boolean
+	isConnection?: boolean
 	isActived?: boolean
 }
 
@@ -27,8 +27,8 @@ export const useTabs = createGlobalState(() => {
 
 	function addTab(tab: Tab) {
 		tab.icon = tab.isConnection ? 'fluent:database-16-regular' : 'fluent:key-16-regular'
+		if (!tabs.value.some(item => item.id === tab.id && item.key === tab.key)) tabs.value.push(tab)
 		activedTab.value = tab
-		tabs.value.push(tab)
 	}
 
 	function removeTab(id: string, key: string) {
@@ -95,4 +95,22 @@ export function useGetAllKeys(id: string, immidiate = false) {
 	immidiate && init()
 
 	return { keys, isLoading, init }
+}
+
+/** remove key hook */
+export function useRemoveKey(id: string, key: string, immidiate = false) {
+	const { isLoading, enter, exit } = useLoading()
+
+	async function remove() {
+		try {
+			enter()
+			await window.mainWindow.redis.del(id, key)
+		} finally {
+			exit()
+		}
+	}
+
+	immidiate && remove()
+
+	return { isLoading, remove }
 }

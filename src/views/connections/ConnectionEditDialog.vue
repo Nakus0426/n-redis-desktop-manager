@@ -195,6 +195,7 @@ function connectedConnectionUpdateConfirm() {
 			header: '警告',
 			body: '该连接已建立连接，修改连接信息将断开连接',
 			theme: 'danger',
+			placement: 'center',
 			onConfirm: () => {
 				resolve(true)
 				dialogInstance.destroy()

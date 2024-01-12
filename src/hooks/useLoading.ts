@@ -2,7 +2,7 @@
  * loading state with delay
  * @param delay delay duration, default to 300ms
  */
-export function useLoading(delay = 300) {
+export function useLoading(delay = 200) {
 	const loading = ref(false)
 	const delayLoading = ref(false)
 
@@ -24,9 +24,7 @@ export function useLoading(delay = 300) {
 		loading.value = false
 	}
 
-	watch(loading, value => {
-		if (value) countDelay()
-	})
+	watch(loading, value => value && countDelay())
 
 	/** is it currently in a loading state */
 	const isLoading = computed(() => loading.value && delayLoading.value)
