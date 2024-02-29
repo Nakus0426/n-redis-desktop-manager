@@ -1,8 +1,3 @@
-// overlayScrollbars
-[data-overlayscrollbars-viewport] {
-	position: initial !important;
-}
-
 .os-theme-dark {
 	--os-size: var(--td-comp-paddingLR-m) !important;
 	--os-padding-perpendicular: 3px !important;
@@ -24,87 +19,8 @@
 	}
 }
 
-// button
-.t-button {
-	gap: var(--td-comp-margin-xs) !important;
-
-	&--variant-text {
-		border: none !important;
-	}
-}
-
-// table
-.t-table {
-	&__header {
-		&--fixed {
-			& > tr > th {
-				background-color: var(--td-bg-color-container) !important;
-			}
-		}
-	}
-}
-
-// dialog
-.t-dialog {
-	display: flex !important;
-	flex-direction: column !important;
-	max-height: 80vh !important;
-	max-width: 80vw !important;
-	padding: 0 !important;
-	overflow: hidden !important;
-
-	&__header {
-		padding: var(--td-comp-paddingLR-l) !important;
-	}
-
-	&__body {
-		display: flex !important;
-		flex: 1 !important;
-		padding: 0 !important;
-		overflow: hidden !important;
-
-		&__icon,
-		&--icon {
-			padding: 0 var(--td-comp-paddingLR-l) var(--td-comp-paddingLR-l) var(--td-comp-paddingLR-l) !important;
-		}
-	}
-
-	&__footer {
-		padding: var(--td-comp-paddingLR-l) !important;
-		background-color: var(--td-bg-color-secondarycontainer) !important;
-	}
-}
-
 // animate.css
 .animate__animated.animate__faster {
 	-webkit-animation-duration: 0.15s !important;
 	animation-duration: 0.15s !important;
-}
-
-// dropdown
-.t-dropdown {
-	background-color: var(--td-bg-color-container-opacity);
-	backdrop-filter: blur(15px);
-}
-
-// popup
-.t-popup {
-	&__content {
-		background-color: var(--td-bg-color-container-opacity);
-		backdrop-filter: blur(15px);
-	}
-}
-
-// split.js
-.gutter.gutter-horizontal {
-	transition: background-color var(--td-transition);
-	cursor: col-resize;
-
-	&:hover {
-		background-color: var(--td-brand-color-hover);
-	}
-
-	&:active {
-		background-color: var(--td-brand-color-active);
-	}
 }
