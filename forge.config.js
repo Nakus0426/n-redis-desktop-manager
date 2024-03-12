@@ -1,7 +1,7 @@
-module.exports = {
+export default {
 	packagerConfig: {
 		asar: true,
-		icon: 'src/assets/icons/logo',
+		icon: 'public/images/logo',
 	},
 	rebuildConfig: {},
 	makers: [
@@ -11,18 +11,8 @@ module.exports = {
 				setupIcon: 'src/assets/icons/logo.ico',
 			},
 		},
-		{
-			name: '@electron-forge/maker-rpm',
-			config: {
-				setupIcon: 'src/assets/icons/logo.ico',
-			},
-		},
 	],
 	plugins: [
-		{
-			name: '@electron-forge/plugin-auto-unpack-natives',
-			config: {},
-		},
 		{
 			name: '@electron-forge/plugin-vite',
 			config: {

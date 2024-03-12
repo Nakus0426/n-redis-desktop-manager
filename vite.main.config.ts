@@ -1,21 +1,28 @@
-import { defineConfig } from 'vite'
-import { resolve } from 'path'
+import { type ConfigEnv, type UserConfig, defineConfig, mergeConfig } from 'vite'
+import { getBuildConfig, getBuildDefine, external, pluginHotRestart } from './vite.base.config'
 
-function pathResolve(dir: string) {
-	return resolve(process.cwd(), '.', dir)
-}
-
-export default defineConfig({
-	build: {
-		rollupOptions: {
-			external: ['serialport', 'sqlite3'],
+export default defineConfig(env => {
+	const forgeEnv = env as ConfigEnv<'build'>
+	const { forgeConfigSelf } = forgeEnv
+	const define = getBuildDefine(forgeEnv)
+	const config: UserConfig = {
+		build: {
+			lib: {
+				entry: forgeConfigSelf.entry!,
+				fileName: () => '[name].js',
+				formats: ['es'],
+			},
+			rollupOptions: {
+				external,
+			},
 		},
-	},
-	resolve: {
-		alias: [
-			// @/xxxx => src/xxxx
-			{ find: '@', replacement: pathResolve('src') + '/' },
-		],
-		mainFields: ['module', 'jsnext:main', 'jsnext'],
-	},
+		plugins: [pluginHotRestart('restart')],
+		define,
+		resolve: {
+			mainFields: ['module', 'jsnext:main', 'jsnext'],
+			alias: [{ find: '@', replacement: '/src' }],
+		},
+	}
+
+	return mergeConfig(getBuildConfig(forgeEnv), config)
 })

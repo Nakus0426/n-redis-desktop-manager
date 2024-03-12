@@ -1,21 +1,24 @@
 {
+	"$schema": "https://json.schemastore.org/jsconfig",
 	"compilerOptions": {
-		"target": "esnext",
-		"useDefineForClassFields": true,
-		"module": "esnext",
+		"target": "ESNext",
+		"module": "ESNext",
 		"moduleResolution": "node",
+		"allowJs": true,
 		"strict": false,
 		"jsx": "preserve",
-		"sourceMap": true,
+		"skipLibCheck": true,
 		"resolveJsonModule": true,
 		"esModuleInterop": true,
-		"types": ["tdesign-vue-next/global", "@intlify/unplugin-vue-i18n/messages"],
-		"lib": ["esnext", "dom"],
+		"noImplicitAny": true,
+		"forceConsistentCasingInFileNames": true,
+		"types": ["@intlify/unplugin-vue-i18n/messages", "naive-ui/volar"],
 		"baseUrl": ".",
+		"outDir": "dist",
 		"paths": {
 			"@/*": ["src/*"]
 		}
 	},
 	"include": ["**/*.tsx", "**/*.ts", "**/*.vue", "**/*.d.ts"],
-	"exclude": ["node_modules", "**/*.js", "dist"]
+	"exclude": ["node_modules", "**/*.js", "dist", ".vite"]
 }

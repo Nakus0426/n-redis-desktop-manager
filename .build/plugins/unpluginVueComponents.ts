@@ -1,4 +1,4 @@
-import { TDesignResolver } from 'unplugin-vue-components/resolvers'
+import { NaiveUiResolver } from 'unplugin-vue-components/resolvers'
 import Components from 'unplugin-vue-components/vite'
 import { ComponentResolver } from 'unplugin-vue-components/types'
 
@@ -9,7 +9,7 @@ export function setupUnpluginVueComponents() {
 	return Components({
 		dts: 'src/components.d.ts',
 		globs: ['src/components/**!(modules)/*.vue', 'src/components/*.vue'],
-		resolvers: [TDesignResolver({ library: 'vue-next' }), IconifyResolver()],
+		resolvers: [NaiveUiResolver(), IconifyResolver()],
 	})
 }
 

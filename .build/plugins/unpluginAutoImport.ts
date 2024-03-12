@@ -1,5 +1,4 @@
 import AutoImport from 'unplugin-auto-import/vite'
-import { TDesignResolver } from 'unplugin-vue-components/resolvers'
 
 /**
  * setup unplugin-auto-import plugin
@@ -7,8 +6,13 @@ import { TDesignResolver } from 'unplugin-vue-components/resolvers'
 export function setupUnpluginAutoImport() {
 	return AutoImport({
 		dts: 'src/z-auto-imports.d.ts',
-		imports: ['vue', 'vue-router'],
+		imports: [
+			'vue',
+			'vue-router',
+			{
+				'naive-ui': ['useDialog', 'useMessage', 'useNotification', 'useLoadingBar'],
+			},
+		],
 		vueTemplate: true,
-		resolvers: [TDesignResolver({ library: 'vue-next' })],
 	})
 }

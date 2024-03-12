@@ -1,4 +1,4 @@
-import { acceptHMRUpdate, defineStore } from 'pinia'
+import { defineStore } from 'pinia'
 
 export type Theme = 'light' | 'dark' | 'system'
 
@@ -38,7 +38,7 @@ export const useAppStore = defineStore(
 			},
 			{ immediate: true },
 		)
-		function setAppTheme(theme: Theme) {
+		function setAppTheme(_theme: Theme) {
 			const css = document.createElement('style')
 			css.appendChild(
 				document.createTextNode(
@@ -52,8 +52,7 @@ export const useAppStore = defineStore(
 				),
 			)
 			document.head.appendChild(css)
-			document.documentElement.setAttribute('theme-mode', theme)
-			const _ = window.getComputedStyle(css).opacity
+			theme.value = _theme
 			document.head.removeChild(css)
 		}
 
@@ -77,5 +76,3 @@ export const useAppStore = defineStore(
 	},
 	{ persist: true },
 )
-
-if (import.meta.hot) import.meta.hot.accept(acceptHMRUpdate(useAppStore, import.meta.hot))

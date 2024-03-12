@@ -13,10 +13,6 @@ body,
 	user-select: none;
 }
 
-::-webkit-scrollbar {
-	display: none;
-}
-
 ::view-transition-new(*) {
 	animation-duration: 0.2s;
 	animation: none;

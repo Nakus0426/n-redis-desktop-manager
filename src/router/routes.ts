@@ -1,3 +1,9 @@
 import { RouteRecordRaw } from 'vue-router'
 
-export const routes = []
+const IndexRoute: RouteRecordRaw = {
+	path: '/',
+	name: 'Index',
+	component: () => import('@/layout/MainLayout.vue'),
+}
+
+export const routes = [IndexRoute]

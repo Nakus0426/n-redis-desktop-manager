@@ -1,5 +1,7 @@
-import { defineConfig } from 'vite'
+import { type ConfigEnv, defineConfig } from 'vite'
 import vueJsx from '@vitejs/plugin-vue-jsx'
+import { browserslistToTargets } from 'lightningcss'
+import browserslist from 'browserslist'
 import {
 	setupUnpluginAutoImport,
 	setupUnpluginVueComponents,
@@ -7,25 +9,39 @@ import {
 	setupVue,
 	setupVueDevtools,
 } from './.build/plugins'
-import { resolve } from 'path'
+import { pluginExposeRenderer } from './vite.base.config'
 
-function pathResolve(dir: string) {
-	return resolve(process.cwd(), '.', dir)
-}
+export default defineConfig(env => {
+	const forgeEnv = env as ConfigEnv<'renderer'>
+	const { root, mode, forgeConfigSelf } = forgeEnv
+	const name = forgeConfigSelf.name ?? ''
 
-export default defineConfig({
-	resolve: {
-		alias: [
-			// @/xxxx => src/xxxx
-			{ find: '@', replacement: pathResolve('src') + '/' },
+	return {
+		root,
+		mode,
+		clearScreen: false,
+		resolve: {
+			preserveSymlinks: true,
+			alias: [{ find: '@', replacement: '/src' }],
+		},
+		build: {
+			outDir: `.vite/renderer/${name}`,
+			cssMinify: 'lightningcss',
+		},
+		css: {
+			transformer: 'lightningcss',
+			lightningcss: {
+				targets: browserslistToTargets(browserslist('>= 0.25%')),
+			},
+		},
+		plugins: [
+			setupVue(),
+			setupUnpluginAutoImport(),
+			setupUnpluginVueComponents(),
+			vueJsx(),
+			setupUnpluginVueI18n(),
+			setupVueDevtools(),
+			pluginExposeRenderer(name),
 		],
-	},
-	plugins: [
-		setupVue(),
-		setupUnpluginAutoImport(),
-		setupUnpluginVueComponents(),
-		vueJsx(),
-		setupUnpluginVueI18n(),
-		setupVueDevtools(),
-	],
+	}
 })

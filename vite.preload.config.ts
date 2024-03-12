@@ -1,15 +1,28 @@
-import { defineConfig } from 'vite'
-import { resolve } from 'path'
+import { type ConfigEnv, type UserConfig, defineConfig, mergeConfig } from 'vite'
+import { getBuildConfig, external, pluginHotRestart } from './vite.base.config'
 
-function pathResolve(dir: string) {
-	return resolve(process.cwd(), '.', dir)
-}
+export default defineConfig(env => {
+	const forgeEnv = env as ConfigEnv<'build'>
+	const { forgeConfigSelf } = forgeEnv
+	const config: UserConfig = {
+		resolve: {
+			alias: [{ find: '@', replacement: '/src' }],
+		},
+		build: {
+			rollupOptions: {
+				external,
+				input: forgeConfigSelf.entry!,
+				output: {
+					format: 'cjs',
+					inlineDynamicImports: true,
+					entryFileNames: '[name].cjs',
+					chunkFileNames: '[name].cjs',
+					assetFileNames: '[name].[ext]',
+				},
+			},
+		},
+		plugins: [pluginHotRestart('reload')],
+	}
 
-export default defineConfig({
-	resolve: {
-		alias: [
-			// @/xxxx => src/xxxx
-			{ find: '@', replacement: pathResolve('src') + '/' },
-		],
-	},
+	return mergeConfig(getBuildConfig(forgeEnv), config)
 })

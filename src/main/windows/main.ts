@@ -1,9 +1,12 @@
 import { ipcMain, BrowserWindow, nativeTheme, app } from 'electron'
-import { join } from 'path'
+import { join, dirname } from 'path'
+import { fileURLToPath } from 'url'
 import { settingWindow } from './setting'
 import { Channels } from './channels'
 import { redisUtil } from '@/utils/RedisUtil'
 import { configStore } from '../configStore'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 class MainWindow {
 	private instance: BrowserWindow
@@ -17,7 +20,7 @@ class MainWindow {
 			return
 		}
 		this.instance = new BrowserWindow({
-			icon: './src/assets/icons/logo.ico',
+			icon: './public/images/logo.ico',
 			show: false,
 			width: 1024,
 			height: 640,
@@ -25,16 +28,23 @@ class MainWindow {
 			minHeight: 640,
 			center: true,
 			frame: false,
+			titleBarStyle: 'hidden',
+			titleBarOverlay: true,
 			backgroundMaterial: configStore.get('mica') ? 'mica' : 'auto',
 			webPreferences: {
-				preload: join(__dirname, 'preload.js'),
+				preload: join(__dirname, 'preload.cjs'),
 				nodeIntegration: true,
 			},
 		})
 		// this.instance.removeMenu()
 		if (MAIN_WINDOW_VITE_DEV_SERVER_URL) this.instance.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL)
 		else this.instance.loadFile(join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`))
-		nativeTheme.themeSource = configStore.get('theme')
+		nativeTheme.themeSource = configStore.get('theme') || 'system'
+		this.instance.setTitleBarOverlay({
+			color: 'rgba(0, 0, 0, 0)',
+			height: 30,
+			symbolColor: nativeTheme.shouldUseDarkColors ? 'rgba(255, 255, 255, 0.9)' : 'rgb(31, 34, 37)',
+		})
 		this.setupEvents()
 		this.setupIpc()
 	}
