@@ -1,50 +1,13 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="UTF-8" />
-		<style>
-			body {
-				margin: 0;
-				padding: 0;
-			}
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hello World!</title>
 
-			.app_loading {
-				height: 100vh;
-				width: 100vw;
-				display: flex;
-				align-items: center;
-				justify-content: center;
-				overflow: hidden;
-				-webkit-app-region: drag;
-			}
-
-			#light {
-				display: none;
-				height: 96px;
-				width: 96px;
-			}
-
-			#dark {
-				display: none;
-				height: 96px;
-				width: 96px;
-			}
-		</style>
-	</head>
-	<body>
-		<div id="app">
-			<div class="app_loading">
-				<img src="/images/logo-light.svg" id="light" />
-				<img src="/images/logo-dark.svg" id="dark" />
-			</div>
-		</div>
-		<script type="module" src="/src/render.ts"></script>
-		<script>
-			const app = JSON.parse(localStorage.getItem('STORE_APP') || '{}')
-			const isDarkTheme = app?.theme === 'dark'
-			const micaEnable = window.mainWindow.getConfig('mica')
-			document.getElementById(isDarkTheme ? 'dark' : 'light').style.display = 'block'
-			document.getElementById('app').style.background = micaEnable ? 'transparent' : isDarkTheme ? '#101014' : '#FAFAFC'
-		</script>
-	</body>
+  </head>
+  <body>
+    <h1>💖 Hello World!</h1>
+    <p>Welcome to your Electron application.</p>
+    <script type="module" src="/src/renderer.ts"></script>
+  </body>
 </html>
